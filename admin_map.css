@@ -1,0 +1,171 @@
+*{
+    font-size: 20px;
+    font-family: 'Work Sans', sans-serif;
+}
+body {
+    background-color: rgb(255, 255, 255);
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+/*Header*/
+.header {
+    background-color: #e7e6e5;
+    text-align: left;
+    font-size: 40px;
+    margin-top: -80px;
+    padding: 30px 0.5rem;
+    color: rgb(15, 1, 1);
+    align-items: center;
+
+}
+
+.h3-header{
+    margin-top: -60px;
+    margin-left: 24px;
+    color: rgb(110, 94, 50);
+}
+
+.navbar {
+    list-style-type: none;
+    margin-top: -35px;
+    padding: 2px;
+    background-color: #3b3b3b;
+    overflow: hidden;
+    font-size: 22px;
+}
+  
+li a {
+    color: white;
+    text-align: center;
+    padding: 25px;
+    text-decoration: none;
+}
+
+li a:visited {
+    text-decoration: none;
+}
+
+li a:hover,
+li a:focus {
+    background-color: rgb(185, 175, 158);
+    color: #000000;
+    cursor: pointer;
+    padding: 25px;
+    
+}
+
+.active{
+   background-color: #e7e6e5;
+   color: #000000;
+   padding: 25px;
+   margin-left: -6px;
+} 
+/*First Section*/
+.Firstsection{
+    margin-top: 10px 0px 10px 0px;
+    background-color: #e7e6e5;
+    text-align: justify;
+    border-radius: 15px 35px 30px;
+}
+
+.Firstsection h2{
+    font-family: 'Work Sans', sans-serif;
+    text-align: center;
+    font-size: 32px;
+    margin-top: 18px;
+    padding-top: 9px;
+}
+
+.Firstsection p{
+    text-align: center;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.filter{
+    margin-left: 20px;
+    font-weight: 500;
+    text-align: center;
+}
+
+label{
+    padding: 7px;
+}
+/**/
+
+#map{
+    width: 100%;
+    height: 50vh;
+    border: solid 2px rgba(0, 0, 0, 0.581);
+    border-radius: 4px;
+  }
+  
+  /* Set the body and html height to 100% for full height */
+  
+.map-container {
+    width: 100%; /* Make the map container's width 100% */
+    border: 2px solid #ccc; /* Set the border properties */
+    border-radius: 5px; /* Optional: Add border radius */
+}
+
+
+/*FOOTER*/
+.Footer {
+    padding: 10px;
+    background-color: #333;
+    text-align: center;
+    color:white;
+}
+
+.nav02 a {
+    display: inline;
+    color: #ffffff;
+    text-align: center;
+    font-size: 25px;
+    padding: 20px 10%;
+    text-decoration: none;
+}
+
+.nav02 a:visited {
+    text-decoration: none;
+}
+
+.nav02 a:hover,
+.nav02 a:focus {
+    cursor: pointer;
+}
+
+.Footer ul {
+    list-style-type: none;
+    
+}
+
+.fa {
+    padding: 20px;
+    font-size: 30px;
+    width: 5px;
+    text-align: center;
+    text-decoration: none;
+  }
+
+.fa-facebook {
+    background: #3B5998;
+    color: white;
+  }
+
+.fa-instagram {
+    background: #871996;
+    color: white;
+  }
+
+.fa-linkedin {
+    background: #007bb5;
+    color: white;
+}
+
+h2{
+    margin: 1.2em;
+}
+
