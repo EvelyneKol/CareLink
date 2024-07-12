@@ -1,0 +1,385 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: verdana;
+    background-color: rgb(255, 255, 255);
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.header {
+    background-color: #f3ebdb;
+    text-align: left;
+    font-size: 40px;
+    color: rgb(15, 1, 1);
+    align-items: center;
+
+}
+
+.navbar {
+    list-style-type: none;
+    margin-top: -35px;
+    padding: 10px;
+    background-color: #3b3b3b;
+    overflow: hidden;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:visited {
+    text-decoration: none;
+}
+
+li a:hover,
+li a:focus {
+    background-color: rgba(241, 226, 199, 0.74);
+    color: #000000;
+    cursor: pointer;
+}
+
+.active {
+    background-color: #f3ebdb;
+    color: #000000;
+}
+
+
+/* Firstsection */
+.Firstsection {
+    margin-top: 10px 0px 10px 0px;
+    background-color: #f3ebdb;
+    text-align: justify;
+    border-radius: 15px 35px 30px;
+}
+
+.Firstsection h2 {
+    font-family: 'Work Sans', sans-serif;
+    text-align: center;
+    font-size: 32px;
+    margin-top: 15px;
+    padding-top: 10px;
+
+}
+
+.logo1 {
+    float: left;
+    display: block;
+    margin-right: 0.5rem;
+
+}
+
+.Firstsection p {
+    padding-bottom: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+/* Secondsection */
+.Secondsection h2 {
+    margin: 10px 0px 5px 0px;
+}
+
+.Secondsection,
+.col1,
+.col2,
+.col3,
+.col4,
+.col5 {
+    text-align: center;
+    font-family: 'Work Sans', sans-serif;
+}
+
+.sim1,
+.sim2,
+.sim3 {
+    background-color: rgb(185, 175, 158);
+    border-radius: 50%;
+}
+
+.col1 h2,
+.col2 h2,
+.col3 h2,
+.col4 h2,
+.col5 h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+}
+
+/* Theardsection */
+.Theardsection {
+    margin-top: 50px;
+}
+
+.card1,
+.card2,
+.card3 {
+    background-color: #f3ebdb;
+    text-align: justify;
+}
+
+.card1 h2,
+.card2 h2,
+.card3 h2 {
+    font-family: 'Work Sans', sans-serif;
+    text-align: center;
+    font-size: 32px;
+    margin-top: 15px;
+    padding-top: 10px;
+
+}
+
+.Icon1,
+.Icon3 {
+    float: left;
+    display: block;
+    margin-right: 1rem;
+
+}
+
+.Icon2 {
+    float: right;
+    display: block;
+    margin-left: 1rem;
+}
+
+.card1 p,
+.card2 p,
+.card3 p {
+    font-family: sans-serif;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+
+}
+
+/* Forthsection */
+.Forthsection {
+    text-align: center;
+    margin: 1rem 0 1rem 0;
+}
+
+.Forthsection button {
+    background-color: #f3ebdb;
+    border-radius: 6px;
+    border: solid 1px;
+    border-color: #858585;
+    padding: 10px 70px;
+    margin-top: 1rem;
+    transition-duration: 0.4s;
+}
+
+.Forthsection a {
+    font-size: 30px;
+    display: inline;
+    color: #000000;
+    text-decoration: none;
+}
+
+.Forthsection a:visited {
+    text-decoration: none;
+}
+
+.Forthsection a:focus {
+    cursor: pointer;
+}
+
+.singin:hover {
+    background-color: rgb(185, 175, 158);
+}
+
+.singin:hover a {
+    color: #ffffff;
+    /* white text color */
+}
+
+.singup:hover {
+    background-color: rgb(185, 175, 158);
+}
+
+.singup:hover a {
+    color: #ffffff;
+    /* white text color */
+}
+
+
+/* Fifthsection */
+.Fifthsection {
+    margin-top: 10px;
+    background-color: #f3ebdb;
+    text-align: center;
+}
+
+.Fifthsection h2 {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 30px;
+    margin-top: 15px;
+    padding-top: 10px;
+
+}
+
+.Fifthsection p {
+    padding-bottom: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.photo {
+    width: 100px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+
+/*review*/
+
+.heading {
+    font-size: 25px;
+    margin-right: 25px;
+}
+
+.fa {
+    font-size: 25px;
+}
+
+.checked {
+    color: orange;
+}
+
+/* Three column layout */
+.side {
+    float: left;
+    width: 15%;
+    margin-top: 10px;
+}
+
+.middle {
+    margin-top: 10px;
+    float: left;
+    width: 70%;
+}
+
+/* Place text to the right */
+.right {
+    text-align: right;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* The bar container */
+.bar-container {
+    width: 100%;
+    background-color: #f1f1f1;
+    text-align: center;
+    color: rgb(223, 214, 193);
+}
+
+/* Individual bars */
+.bar {
+    width: 60%;
+    height: 18px;
+    background-color: #f0e6c5;
+}
+
+
+/* Responsive layout - make the columns stack on top of each other instead of next to each other */
+@media (max-width: 400px) {
+
+    .side,
+    .middle {
+        width: 100%;
+    }
+
+    .right {
+        display: none;
+    }
+}
+
+
+
+/*FOOTER*/
+.Footer {
+    padding: 10px;
+    background-color: #333;
+    text-align: center;
+    color: white;
+}
+
+.nav02 a {
+    display: inline;
+    color: #ffffff;
+    text-align: center;
+    font-size: 25px;
+    text-decoration: none;
+    padding: auto;
+}
+
+.nav02 a:visited {
+    text-decoration: none;
+}
+
+.nav02 a:hover,
+.nav02 a:focus {
+    cursor: pointer;
+}
+
+.Footer ul {
+    list-style-type: none;
+}
+
+.column {
+    overflow-wrap: break-word;
+    /* Added to handle long words in columns */
+}
+
+.email {
+    word-wrap: break-word;
+    /* Added to allow email to break into next line */
+}
+
+.Footer .fa {
+    padding: 2%;
+    /* Adjusted padding as a percentage for responsiveness */
+    font-size: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    /* Ensures that padding affects the layout */
+    margin: 1%;
+    /* Added margin for spacing between links */
+}
+
+.fa-linkedin {
+    background: #007bb5;
+    color: white;
+}
+
+.fa-facebook {
+    background: #3B5998;
+    color: white;
+}
+
+.fa-instagram {
+    background: #871996;
+    color: white;
+}

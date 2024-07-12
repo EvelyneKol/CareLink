@@ -1,0 +1,155 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: verdana;
+    background-color: rgb(255, 255, 255);
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.header {
+    background-color: #EBE3D5;
+    text-align: left;
+    font-size: 40px;
+    color: rgb(15, 1, 1);
+    align-items: center;
+
+}
+
+.navbar {
+    list-style-type: none;
+    margin-top: -35px;
+    padding: 10px;
+    background-color: #3b3b3b;
+    overflow: hidden;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:visited {
+    text-decoration: none;
+}
+
+li a:hover,
+li a:focus {
+    background-color: rgba(241, 226, 199, 0.74);
+    color: #000000;
+    cursor: pointer;
+}
+
+.active {
+    background-color: #EBE3D5;
+    color: #000000;
+}
+
+/* second sectin */
+
+.Secondsection .col1, .col2{
+  margin-top: 15px;
+
+}
+.submit,
+.reset {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 5px 14px;
+  border-radius: 4px;
+  background-color: rgba(221, 221, 221, 0.662);
+  color: black;
+  border: none;
+  transition-duration: 0.4s;
+}
+
+.submit:active,
+.submit:hover {
+  background-color: rgb(0, 146, 195);
+  color: rgb(255, 255, 255);
+}
+
+.reset:active,
+.reset:hover {
+  background-color: rgb(248, 62, 5);
+  color: rgb(255, 255, 255);
+}
+
+.col2 #map{
+  width: 100%;
+  height: 50vh;
+  border: solid 2px rgba(0, 0, 0, 0.581);
+  border-radius: 4px;
+}
+
+
+
+/*FOOTER*/
+.Footer {
+    padding: 10px;
+    background-color: #333;
+    text-align: center;
+    color: white;
+  }
+  
+  .nav02 a {
+    display: inline;
+    color: #ffffff;
+    text-align: center;
+    font-size: 25px;
+    text-decoration: none;
+    padding: auto;
+  }
+  
+  .nav02 a:visited {
+    text-decoration: none;
+  }
+  
+  .nav02 a:hover,
+  .nav02 a:focus {
+    cursor: pointer;
+  }
+  
+  .Footer ul {
+    list-style-type: none;
+  }
+  
+  .column {
+    overflow-wrap: break-word; /* Added to handle long words in columns */
+  }
+  
+  .email {
+    word-wrap: break-word; /* Added to allow email to break into next line */
+  }
+  .Footer .fa {
+    padding: 2%; /* Adjusted padding as a percentage for responsiveness */
+    font-size: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block; /* Ensures that padding affects the layout */
+    margin: 1%; /* Added margin for spacing between links */
+  }
+  
+  .fa-linkedin {
+    background: #007bb5;
+    color: white;
+  }
+  
+  .fa-facebook {
+    background: #3B5998;
+    color: white;
+  }
+  
+  .fa-instagram {
+    background: #871996;
+    color: white;
+  }

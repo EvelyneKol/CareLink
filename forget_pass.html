@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/jpg" sizes="96x96" href="favicon-96x96.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/forget_pass.css">
+    <script src="forget_pass.js"></script>
+    <title>Restore password</title>
+</head>
+
+<body>
+
+    <div class="container-shadow"></div>
+    <div class="container">
+        <div class="form-container">
+            <a href="sign_in.html" class="previous">&laquo; Previous</a>
+            <p>Restore your password</p>
+            <form id="forget-password">
+                <label>Email</label>
+                <input type="email" placeholder="Enter Your Email" id="email" name="email" autocomplete="off"
+                    spellcheck="false" required>
+                <div class="button-center">
+                    <button class="button1" onclick="sendVerificationCode()"><strong>Send code</strong></button>
+                </div>
+                <label for="verification-code">Code</label>
+                <input type="text" placeholder="Enter the code you received" id="verification-code"
+                    name="verification-code" required>
+                <div class="button-center">
+                    <button class="button1" onclick="createNewPassword()"><strong>Create a new
+                            password</strong></button>
+                </div>
+            </form>
+
+            <footer>
+                <div class="hr"></div>
+                <p>Didn't receive a code?</p>
+                <div class="fp"><a href="#" onclick="resendVerificationCode()">Resend</a></div>
+            </footer>
+        </div>
+    </div>
+    <script>
+        function sendVerificationCode() {
+            // Simulate sending a verification code via email
+            const email = document.getElementById("email").value;
+
+            // Replace the following lines with actual server-side logic to send an email
+            console.log(`Verification code sent to ${email}`);
+
+            // Display the verification code input field
+            document.getElementById("verification-code").style.display = "block";
+        }
+
+        function resendVerificationCode() {
+            // Simulate resending a verification code
+            const email = document.getElementById("email").value;
+
+            // Replace the following lines with actual server-side logic to resend the email
+            console.log(`Verification code resent to ${email}`);
+        }
+
+        function createNewPassword() {
+            const verificationCode = document.getElementById("verification-code").value;
+
+            // Replace the following lines with actual server-side logic to validate the verification code
+            if (verificationCode === "123456") {
+                console.log("Verification code is correct. Proceed to create a new password.");
+                // Add logic to update the password in the database or perform other necessary actions
+            } else {
+                alert("Incorrect verification code. Please enter the correct code.");
+            }
+        }
+    </script>
+
+</body>
+
+</html>

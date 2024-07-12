@@ -1,0 +1,78 @@
+h1{ 
+    text-align: center;
+    margin-top: 20px;
+    color: #000000;
+}
+
+/*navbar*/
+.navbar {
+    list-style-type: none;
+    margin-top: 30px;
+    padding: 1px;
+    height: 40px;
+    background-color: #3b3b3b;
+    overflow: hidden;
+}
+
+
+li a {
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:visited {
+    text-decoration: none;
+}
+
+li a:hover,
+li a:focus {
+    background-color: rgba(241, 226, 199, 0.74);
+    color: #000000;
+    cursor: pointer;
+}
+
+.active{
+   background-color: #EBE3D5;
+   color: #000000;
+   padding: 25px;
+} 
+
+/* p */
+p{
+    margin-top: 20px;
+}
+
+/* Button */
+button{
+    width: 130px;
+    height: 50px;
+}
+
+.pbutton{
+    text-align: center;
+    margin: auto;
+}
+
+/* h3*/
+h3{
+    margin-top: 15px;
+}
+
+/* Table */
+
+#item_table {
+    width: 350px;
+    border-collapse: collapse;
+}
+
+#item_table th, #item_table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#item_table th {
+    background-color: #f2f2f2;
+}
