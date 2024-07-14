@@ -1,99 +1,107 @@
 <?php
-  $servername = "localhost";
-  $username = "root";
-  $password = "karagiannis";
-  $dbname = "carelink";
+    $servername = "localhost";
+    $username = "root";
+    $password = "karagiannis";
+    $dbname = "carelink";
 
-  // Create connection
-  $conn = new mysqli($servername, $username, $password, $dbname);
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
 
-  // Check connection
-  if ($conn->connect_error) {
-      die("Failed to connect to MySQL: " . $conn->connect_error);
-  }
+    // Check connection
+    if ($conn->connect_error) {
+        die("Failed to connect to MySQL: " . $conn->connect_error);
+    }
 
-  // Check if the username is set in cookies
-if(isset($_COOKIE['username'])){
-    $defaultUsername = $_COOKIE['username'];
-} else {
-    $defaultUsername = "";
-}
+    // Check if the username is set in cookies
+    if(isset($_COOKIE['username'])){
+        $defaultUsername = $_COOKIE['username'];
+    } else {
+        $defaultUsername = "";
+    }
 
-  // Your SQL query for requests
-  $request = "SELECT request.*, civilian.civilian_number , civilian.civilian_location 
-          FROM request 
-          JOIN civilian ON request.request_civilian = civilian.civilian_username";
+        // Your SQL query for requests
+    $request = "SELECT request.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
+                SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
+                FROM request 
+                JOIN civilian ON request.request_civilian = civilian.civilian_username 
+                WHERE request.state='WAITING'";
 
-  $data1 = array();
+    $data1 = array();
+    $sqlrequest = $conn->query($request);
 
-  $sqlrequest = $conn->query($request);
+    if ($sqlrequest) {
+        while ($row = $sqlrequest->fetch_assoc()) {
+            $number = $row["civilian_number"];
+            $first_name = $row["civilian_first_name"];
+            $last_name = $row["civilian_last_name"];
 
-  if ($sqlrequest) {
-      while ($row = $sqlrequest->fetch_assoc()) {
-          // Split the coordinates into latitude and longitude
-          list($latitude, $longitude) = explode(",",$row["civilian_location"]);
-          $number = $row["civilian_number"];
-
-          $data1[] = array(
-            "id_request" => $row["id_request"],
-            "request_civilian" => $row["request_civilian"],
-            "request_category" => $row["request_category"],
-            "request_product_name" => $row["request_product_name"],
-            "persons" => $row["persons"],
-            "request_date_posted" => $row["request_date_posted"],
-            "request_time_posted" => $row["request_time_posted"], 
-            "state" => $row["state"],
-            "number" => $number,
-            "latitude" => $latitude,
-            "longitude" => $longitude
-        );
-      }
-
-      // Close the result set
-      $sqlrequest->close();
-  } else {
-      die("Error executing the SQL query: " . $conn->error);
-  }
-
-  /* // Your SQL query for offers
-  $offers = "SELECT offer.*, civilian.civilian_number , civilian.civilian_location
-          FROM offer 
-          JOIN civilian ON offer.offer_civilian = civilian.civilian_username";
-
-  $data2 = array();
-  $sqloffers = $conn->query($offers);
-
-  if ($sqloffers) {
-      while ($row = $sqloffers->fetch_assoc()) {
-          // Split the coordinates into latitude and longitude
-          list($latitude, $longitude) = explode(",", $row["civilian_location"]);
-          $number = $row["civilian_number"];
+            $data1[] = array(
+                "id_request" => $row["id_request"],
+                "request_civilian" => $row["request_civilian"],
+                "request_category" => $row["request_category"],
+                "request_product_name" => $row["request_product_name"],
+                "persons" => $row["persons"],
+                "request_date_posted" => $row["request_date_posted"],
+                "request_time_posted" => $row["request_time_posted"], 
+                "state" => $row["state"],
+                "number" => $number,
+                "first_name" => $first_name,
+                "last_name" => $last_name,
+                "latitude" => $row["latitude"], 
+                "longitude" => $row["longitude"]
+            );
+        }
+        // Close the result set
+        $sqlrequest->close();
+    } else {
+        die("Error executing the SQL query: " . $conn->error);
+    }
 
 
-          $data2[] = array(
-              "offer_id" => $row["offer_id"],
-              "offer_civilian" => $row["offer_civilian"],
-              "offer_category" => $row["offer_category"],
-              "offer_product_name" => $row["offer_product_name"],
-              "offer_quantity" => $row["offer_quantity"],
-              "offer_date_posted" => $row["offer_date_posted"],
-              "offer_time_posted" => $row["offer_time_posted"],
-              "offer_status" => $row["offer_status"],
-              "number" => $number,
-              "latitude" => $latitude,
-              "longitude" => $longitude
-          );
-      }
+    $offers = "SELECT offer.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
+                SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
+                FROM offer 
+                JOIN civilian ON offer.offer_civilian = civilian.civilian_username
+                WHERE offer.offer_status='WAITING'";
 
-      // Close the result set
-      $sqloffers->close();
-  } else {
-      die("Error executing the SQL query: " . $conn->error);
-  }
+    $data2 = array();
+    $sqloffers = $conn->query($offers);
 
+    if ($sqloffers) {
+        while ($row = $sqloffers->fetch_assoc()) {
+            $number = $row["civilian_number"];
+            $first_name = $row["civilian_first_name"];
+            $last_name = $row["civilian_last_name"];
 
-  // Your SQL query for requests
-  $myrequest = "SELECT request.*,civilian.civilian_number,civilian.civilian_location,task.task_date,task.task_time
+            $data2[] = array(
+                "offer_id" => $row["offer_id"],
+                "offer_civilian" => $row["offer_civilian"],
+                "offer_category" => $row["offer_category"],
+                "offer_product_name" => $row["offer_product_name"],
+                "offer_quantity" => $row["offer_quantity"],
+                "offer_date_posted" => $row["offer_date_posted"],
+                "offer_time_posted" => $row["offer_time_posted"],
+                "offer_status" => $row["offer_status"],
+                "number" => $number,
+                "first_name" => $first_name,
+                "last_name" => $last_name,
+                "latitude" => $row["latitude"], 
+                "longitude" => $row["longitude"]
+            );
+        }
+
+        // Close the result set
+        $sqloffers->close();
+    } else {
+        die("Error executing the SQL query: " . $conn->error);
+    }
+
+    $myrequest = "SELECT request.*,civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
+                    task.*
                     FROM
                     request
                     JOIN
@@ -104,96 +112,154 @@ if(isset($_COOKIE['username'])){
                     request.id_request IN (
                         SELECT task_request_id
                         FROM task
+                        WHERE task_volunteer = '$defaultUsername') AND request.state = 'ON THE WAY'";
+
+    $data3 = array();
+
+    $sqlmyrequest = $conn->query($myrequest);
+
+    if ($sqlmyrequest) {
+        while ($row = $sqlmyrequest->fetch_assoc()) {
+            $number = $row["civilian_number"];
+            $first_name = $row["civilian_first_name"];
+            $last_name = $row["civilian_last_name"];
+
+            $data3[] = array(
+                "id_request" => $row["id_request"],
+                "request_civilian" => $row["request_civilian"],
+                "request_category" => $row["request_category"],
+                "request_product_name" => $row["request_product_name"],
+                "persons" => $row["persons"],
+                "request_date_posted" => $row["request_date_posted"],
+                "request_time_posted" => $row["request_time_posted"], 
+                "state" => $row["state"],
+                "number" => $number,
+                "first_name" => $first_name,
+                "last_name" => $last_name,
+                "latitude" => $row["latitude"], 
+                "longitude" => $row["longitude"], 
+                "task_date" => $row["task_date"],
+                "task_time" => $row["task_time"], 
+                "task_volunteer" => $row["task_volunteer"]
+                
+            );
+        }
+        // Close the result set
+        $sqlmyrequest->close();
+    } else {
+        die("Error executing the SQL query: " . $conn->error);
+    }
+
+    $myoffers = "SELECT offer.*,civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
+                    task.*
+                    FROM
+                    offer
+                    JOIN
+                    civilian ON offer.offer_civilian = civilian.civilian_username
+                    JOIN
+                    task ON offer.offer_id = task.task_offer_id
+                    WHERE
+                    offer.offer_id IN (
+                        SELECT task_offer_id
+                        FROM task
                         WHERE task_volunteer = '$defaultUsername')";
 
-  $data3 = array();
+    $data4 = array();
 
-  $sqlmyrequest = $conn->query($myrequest);
+    $sqlmyoffers = $conn->query($myoffers);
 
-  if ($sqlmyrequest) {
-      while ($row = $sqlmyrequest->fetch_assoc()) {
-          // Split the coordinates into latitude and longitude
-          list($latitude, $longitude) = explode(",", $row["civilian_location"]);
-          $number = $row["civilian_number"];
+    if ($sqlmyoffers) {
+        while ($row = $sqlmyoffers->fetch_assoc()) {
+            $number = $row["civilian_number"];
+            $first_name = $row["civilian_first_name"];
+            $last_name = $row["civilian_last_name"];
 
-          $data3[] = array(
-              "id_request" => $row["id_request"],
-              "request_civilian" => $row["request_civilian"],
-              "request_category" => $row["request_category"],
-              "request_product_name" => $row["request_product_name"],
-              "persons" => $row["persons"],
-              "date_posted" => $row["date_posted"],
-              "time_posted" => $row["time_posted"],
-              "stated" => $row["state"],
-              "number" => $number,
-              "dateaccept" => $row["task_date"],
-              "timeaccept" => $row["task_time"],
-              "latitude" => $latitude,
-              "longitude" => $longitude
-          );
-      }
-      // Close the result set
-      $sqlmyrequest->close();
-  } else {
-      die("Error executing the SQL query: " . $conn->error);
-  }  */
-
-  if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
-
-    // For the load form
-    if (isset($_POST['Cateload']) && isset($_POST['Prodload']) && isset($_POST['Quantload'])) {
-        $Category1 = $_POST['Cateload'];
-        $Product1 = $_POST['Prodload'];
-        $Quantity1 = (int)$_POST['Quantload'];
-
-        $stmt1 = $conn->prepare("INSERT INTO vehicle (driver, products, quantity) VALUES (?, ?, ?)");
-        $stmt1->bind_param("ssi", $username, $Product1, $Quantity1);
-
-        $stmt2 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock - ? AND quantity_on_truck = quantity_on_truck + ? WHERE category_name = ? AND products = ?");
-        $stmt2->bind_param("iiss", $Quantity1, $Quantity1, $Category1, $Product1);
-
-        if ($stmt1->execute() && $stmt2->execute()) {
-            // Redirect to a different page after successful form submission
-            header("Location: volunteer.php");
-            exit();
-        } else {
-            echo "Error: " . $stmt1->error . " " . $stmt2->error;
+            $data4[] = array(
+                "offer_id" => $row["offer_id"],
+                "offer_civilian" => $row["offer_civilian"],
+                "offer_category" => $row["offer_category"],
+                "offer_product_name" => $row["offer_product_name"],
+                "offer_quantity" => $row["offer_quantity"],
+                "offer_date_posted" => $row["offer_date_posted"],
+                "offer_time_posted" => $row["offer_time_posted"],
+                "offer_status" => $row["offer_status"],
+                "number" => $number,
+                "first_name" => $first_name,
+                "last_name" => $last_name,
+                "latitude" => $row["latitude"], 
+                "longitude" => $row["longitude"],
+                "task_date" => $row["task_date"],
+                "task_time" => $row["task_time"], 
+                "task_volunteer" => $row["task_volunteer"]
+                
+            );
         }
-
-        $stmt1->close();
-        $stmt2->close();
+        // Close the result set
+        $sqlmyoffers->close();
+    } else {
+        die("Error executing the SQL query: " . $conn->error);
     }
 
-    // For the unload form
-    if (isset($_POST['Cateunload']) && isset($_POST['Produnload']) && isset($_POST['Quantunload'])) {
-        $CategoryUnload = $_POST['Cateunload'];
-        $ProductUnload = $_POST['Produnload'];
-        $QuantityUnload = (int)$_POST['Quantunload'];
 
-        $stmtUnload1 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock + ? AND quantity_on_truck = quantity_on_truck - ? WHERE category_name = ? AND products = ?");
-        $stmtUnload1->bind_param("iiss", $QuantityUnload, $QuantityUnload, $CategoryUnload, $ProductUnload );
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $username = $_POST['username'];
 
-        $stmtUnload2 = $conn->prepare("DELETE FROM vehicle WHERE products = ? AND quantity = ?");
-        $stmtUnload2->bind_param("si", $ProductUnload, $QuantityUnload);
+        // For the load form
+        if (isset($_POST['Cateload']) && isset($_POST['Prodload']) && isset($_POST['Quantload'])&& isset($_POST['address1'])) {
+            $Category1 = $_POST['Cateload'];
+            $Product1 = $_POST['Prodload'];
+            $Quantity1 = (int)$_POST['Quantload'];
+            $location1 = $_POST['address1'];
 
-        if ($stmtUnload1->execute() && $stmtUnload2->execute()) {
-            // Redirect to a different page after successful form submission
-            header("Location: volunteer.php");
-            exit();
-        } else {
-            echo "Error: " . $stmtUnload1->error . " " . $stmtUnload2->error;
+            $stmt1 = $conn->prepare("INSERT INTO vehicle (driver, products, quantity, vehicle_location) VALUES (?, ?, ?, ?)");
+            $stmt1->bind_param("ssis", $defaultUsername, $Product1, $Quantity1, $location1);
+
+            $stmt2 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock - ?, quantity_on_truck = quantity_on_truck + ? WHERE category_name = ? AND products = ?");
+            $stmt2->bind_param("iiss", $Quantity1, $Quantity1, $Category1, $Product1);
+
+            if ($stmt1->execute() && $stmt2->execute()) {
+                // Redirect to a different page after successful form submission
+                header("Location: volunteer.php");
+                exit();
+            } else {
+                echo "Error: " . $stmt1->error . " " . $stmt2->error;
+            }
+
+            $stmt1->close();
+            $stmt2->close();
         }
 
-        $stmtUnload1->close();
-        $stmtUnload2->close();
-    }
-}
+        // For the unload form
+        if (isset($_POST['Cateunload']) && isset($_POST['Produnload']) && isset($_POST['Quantunload'])&& isset($_POST['address2'])) {
+            $CategoryUnload = $_POST['Cateunload'];
+            $ProductUnload = $_POST['Produnload'];
+            $QuantityUnload = (int)$_POST['Quantunload'];
+            $location2 = $_POST['address2'];
 
-  // Close the database connection
-  $conn->close();
+            $stmtUnload1 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock + ?, quantity_on_truck = quantity_on_truck - ? WHERE category_name = ? AND products = ?");
+            $stmtUnload1->bind_param("iiss", $QuantityUnload, $QuantityUnload, $CategoryUnload, $ProductUnload );
+
+            $stmtUnload2 = $conn->prepare("UPDATE vehicle SET quantity = CASE WHEN (quantity - ?) < 0 THEN 0 ELSE (quantity - ?) END WHERE products = ? ");
+            $stmtUnload2->bind_param("si", $QuantityUnload, $Produnload);
+
+            if ($stmtUnload1->execute() && $stmtUnload2->execute()) {
+                // Redirect to a different page after successful form submission
+                header("Location: volunteer.php");
+                exit();
+            } else {
+                echo "Error: " . $stmtUnload1->error . " " . $stmtUnload2->error;
+            }
+
+            $stmtUnload1->close();
+            $stmtUnload2->close();
+        }
+    }
+
+    // Close the database connection
+    $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="el">
 <head>
@@ -214,9 +280,47 @@ if(isset($_COOKIE['username'])){
   <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="css/test3.css">
+  <link rel="stylesheet" href="volunteer.css">
+  <style>
+        .thirdsection .Acceptbut,.Delivery {
+            background-color: rgb(3, 129, 178);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            }
 
+        .thirdsection .Delete {
+            background-color: rgb(178, 29, 3);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            }
+
+        .thirdsection .Acceptbut:hover,.Delivery:hover {
+            background-color: rgba(3, 128, 178, 0.7);
+            color: rgb(217, 217, 217);
+            }
+        .thirdsection .Delete:hover{
+            background-color: rgba(178, 29, 3, 0.678);
+            color: rgb(217, 217, 217);
+            }
+    </style>
 </head>
+
 
 <body>
     <div class="header container-fluid">
@@ -229,7 +333,7 @@ if(isset($_COOKIE['username'])){
 
     <div class="Main container-fluid">
         <div class="Firstsection">
-            <h2> Volunteer members</h2>
+            <h2> Volunteer</h2>
             <div class="container mt-5">
                 <div class="row">
                     <div class="col-sm-4">
@@ -281,30 +385,34 @@ if(isset($_COOKIE['username'])){
                                 <input type="text" class="form-control p-2" id="txtUsername" name="username"
                                 placeholder="Write your Username..." autocomplete="on" required value="<?php echo $defaultUsername; ?>" readonly>
                             </div>
-                            <div class="col-sm-6"></div>
+                            <div class="col-sm-6">
+                                <label for="address1">Vehicle-Location</label>
+                                <input type="text" class="form-control p-2" placeholder="Enter Your Address" id="address1" name="address1" autocomplete="on"
+                                spellcheck="false" required readonly>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-sm-6">
                             <label for="Cateload" class="form-label">Category</label>
                             <select id="Cateload" class="form-control p-2" name="Cateload">
-                                <option value="Category1" selected>Category1</option>
-                                <option value="dairy">dairy</option>
-                                <option value="Category3">Category3</option>
-                                <option value="Category4">Category4</option>
-                                <option value="Category5">Category5</option>
-                                <option value="Category6">Category6</option>
+                                <option value="Food" selected>Food</option>
+                                <option value="Food">Food</option>
+                                <option value="Food">Food</option>
+                                <option value="Food">Food</option>
+                                <option value="Food">Food</option>
+                                <option value="Food">Food</option>
                             </select>
                             </div>
                             
                             <div class="col-sm-6">
                             <label for="Prodload" class="form-label">Product</label>
                             <select id="Prodload" class="form-control p-2" name="Prodload">
-                                <option value="Product1" selected>Product1</option>
-                                <option value="milk">milk</option>
-                                <option value="Producty3">Product3</option>
-                                <option value="Product4">Product4</option>
-                                <option value="Product5">Product5</option>
-                                <option value="Product6">Product6</option>
+                                <option value="Oil" selected>Oil</option>
+                                <option value="Oil">Oil</option>
+                                <option value="Oil">Oil</option>
+                                <option value="Oil">Oil</option>
+                                <option value="Oil">Oil</option>
+                                <option value="Oil">Oil</option>
                             </select>
                             </div>
                         </div>
@@ -342,25 +450,37 @@ if(isset($_COOKIE['username'])){
                         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" onsubmit="resetForm()">
                         <div class="row">
                             <div class="col-sm-6">
+                                <label for="txtUsername" class="form-label">Username</label>
+                                <input type="text" class="form-control p-2" id="txtUsername" name="username"
+                                placeholder="Write your Username..." autocomplete="on" required value="<?php echo $defaultUsername; ?>" readonly>
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="address2">Vehicle-Location</label>
+                                <input type="text" class="form-control p-2" placeholder="Enter Your Address" id="address2" name="address2" autocomplete="on"
+                                spellcheck="false" required readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
                             <label for="Cateunload" class="form-label">Category</label>
                             <select id="Cateunload" class="form-control p-2" name="Cateunload">
-                                <option value="Category1" selected>Category1</option>
-                                <option value="dairy">dairy</option>
-                                <option value="Category3">Category3</option>
-                                <option value="Category4">Category4</option>
-                                <option value="Category5">Category5</option>
-                                <option value="Category6">Category6</option>
+                                <option value="Food" selected>Food</option>
+                                <option value="Food">dairy</option>
+                                <option value="Food">Food</option>
+                                <option value="Food">Food</option>
+                                <option value="Food">Food</option>
+                                <option value="Food">Food</option>
                             </select>
                             </div>
                             <div class="col-sm-6">
                             <label for="Produnload" class="form-label">Product</label>
                             <select id="Produnload" class="form-control p-2" name="Produnload">
-                                <option value="Product1" selected>Product1</option>
-                                <option value="milk">milk</option>
-                                <option value="Producty3">Product3</option>
-                                <option value="Product4">Product4</option>
-                                <option value="Product5">Product5</option>
-                                <option value="Product6">Product6</option>
+                                <option value="Oil" selected>Oil</option>
+                                <option value="Oil">Oil</option>
+                                <option value="Oil">Oil</option>
+                                <option value="Oil">Oil</option>
+                                <option value="Oil">Oil</option>
+                                <option value="Oil">Oil</option>
                             </select>
                             </div>
                         </div>
@@ -449,19 +569,21 @@ if(isset($_COOKIE['username'])){
                 </ul>
             </div>
         </div>
-  </div>
+    </div>
+
+  <script> var data1 = <?php echo json_encode($data1); ?>;</script>
+  <script> var data2 = <?php echo json_encode($data2); ?>;</script>
+  <script> var data3 = <?php echo json_encode($data3); ?>;</script>
+  <script> var data4 = <?php echo json_encode($data4); ?>;</script>
+  <script src="volunteer.js"></script>
   <script>
-    var data = <?php echo json_encode($data1); ?>;
-  </script>
-  <script src="volunteer1.js"></script>
-  <script>
-  function hideForm(formId) {
-      var form = document.getElementById(formId);
-      form.style.display = 'none';
-    }
+    function hideForm(formId) {
+        var form = document.getElementById(formId);
+        form.style.display = 'none';
+        }
   </script>
 
-<script>
+  <script>
     function showRequests(username) {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
@@ -481,8 +603,7 @@ if(isset($_COOKIE['username'])){
         showRequests(defaultUsername);
     });
 
-
-    function handleMarkerButtonClick(requestId) {
+    function handle_requests(requestId) {
         var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
         var url = "addrequest_volunteer.php";
 
@@ -517,8 +638,161 @@ if(isset($_COOKIE['username'])){
 
         // Send the AJAX request with the form data
         xhr.send(formData);
+    } 
+
+    function handle_offers(offerId) {
+        var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
+        var url = "addoffer_volunteer.php";
+
+        // Create a FormData object and append the data you want to send
+        var formData = new FormData();
+        formData.append("offerId", offerId);
+        formData.append("username", username);
+
+        // Create the XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+
+        // Setup the AJAX request
+        xhr.open("POST", url, true);
+
+        // Set up the onload and onerror functions
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+                // Handle the success response
+                console.log(xhr.responseText);
+                // You can update the UI or perform other actions if needed
+                location.reload();
+            } else {
+                // Handle the error response
+                console.error("Error: " + xhr.statusText);
+            }
+        };
+
+        xhr.onerror = function () {
+            // Handle the network error
+            console.error("Network error");
+        };
+
+        // Send the AJAX request with the form data
+        xhr.send(formData);
     }
-</script>
+
+    // Παράδωση Request
+    function deliver_requests(requestId) {
+        var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
+        var url = "deliver_request_volunteer.php";
+
+        // Create a FormData object and append the data you want to send
+        var formData = new FormData();
+        formData.append("requestId", requestId);
+        formData.append("username", username);
+
+        // Create the XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+
+        // Setup the AJAX request
+        xhr.open("POST", url, true);
+
+        // Set up the onload and onerror functions
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+                // Handle the success response
+                console.log(xhr.responseText);
+                // You can update the UI or perform other actions if needed
+                location.reload();
+            } else {
+                // Handle the error response
+                console.error("Error: " + xhr.statusText);
+            }
+        };
+
+        xhr.onerror = function () {
+            // Handle the network error
+            console.error("Network error");
+        };
+
+        // Send the AJAX request with the form data
+        xhr.send(formData);
+    }
+
+
+    // Διαγραφή request 
+    function delete_request(requestId) {
+        var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
+        var url = "delete_request_volunteer.php";
+
+        // Create a FormData object and append the data you want to send
+        var formData = new FormData();
+        formData.append("requestId", requestId);
+        formData.append("username", username);
+
+        // Create the XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+
+        // Setup the AJAX request
+        xhr.open("POST", url, true);
+
+        // Set up the onload and onerror functions
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+                // Handle the success response
+                console.log(xhr.responseText);
+                // You can update the UI or perform other actions if needed
+                location.reload();
+            } else {
+                // Handle the error response
+                console.error("Error: " + xhr.statusText);
+            }
+        };
+
+        xhr.onerror = function () {
+            // Handle the network error
+            console.error("Network error");
+        };
+
+        // Send the AJAX request with the form data
+        xhr.send(formData);
+    }
+
+
+    // Διαγραφή Offer 
+    function delete_offer(offerId) {
+        var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
+        var url = "delete_offer_volunteer.php";
+
+        // Create a FormData object and append the data you want to send
+        var formData = new FormData();
+        formData.append("offerId", offerId);
+        formData.append("username", username);
+
+        // Create the XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+
+        // Setup the AJAX request
+        xhr.open("POST", url, true);
+
+        // Set up the onload and onerror functions
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+                // Handle the success response
+                console.log(xhr.responseText);
+                // You can update the UI or perform other actions if needed
+                location.reload();
+            } else {
+                // Handle the error response
+                console.error("Error: " + xhr.statusText);
+            }
+        };
+
+        xhr.onerror = function () {
+            // Handle the network error
+            console.error("Network error");
+        };
+
+        // Send the AJAX request with the form data
+        xhr.send(formData);
+    }
+  </script>
 
 </body>
 </html>
