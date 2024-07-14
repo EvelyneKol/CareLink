@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
-$username = "evelina";
-$password = "Evel1084599!";
+$username = "root";
+$password = "karagiannis";
 $dbname = "carelink";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -33,18 +33,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $civilian_result = $civilian_query->get_result();
 
     if ($admin_result->num_rows > 0) {
+        // Set cookies for the username and password
+        setcookie("username", $username, time() + (86400 * 30), "/"); // 86400 seconds = 1 day
+        setcookie("password", $password, time() + (86400 * 30), "/");
+
         $_SESSION['loggedin'] = true;
         $_SESSION['username'] = $username;
         $_SESSION['role'] = 'admin';
         header("Location: admin.php");
         exit();
     } elseif ($volunteer_result->num_rows > 0) {
+        // Set cookies for the username and password
+        setcookie("username", $username, time() + (86400 * 30), "/"); // 86400 seconds = 1 day
+        setcookie("password", $password, time() + (86400 * 30), "/");
+
         $_SESSION['loggedin'] = true;
         $_SESSION['username'] = $username;
         $_SESSION['role'] = 'volunteer';
         header("Location: volunteer.php");
         exit();
     } elseif ($civilian_result->num_rows > 0) {
+        // Set cookies for the username and password
+        setcookie("username", $username, time() + (86400 * 30), "/"); // 86400 seconds = 1 day
+        setcookie("password", $password, time() + (86400 * 30), "/");
+        
         $_SESSION['loggedin'] = true;
         $_SESSION['username'] = $username;
         $_SESSION['role'] = 'civilian';

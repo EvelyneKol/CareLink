@@ -1,7 +1,7 @@
 <?php
     $servername = "localhost";
-    $username = "evelina";
-    $password = "Evel1084599!";
+    $username = "root";
+    $password = "karagiannis";
     $dbname = "carelink";
 
     // Create connection
@@ -227,7 +227,7 @@
 
             if ($stmt1->execute() && $stmt2->execute()) {
                 // Redirect to a different page after successful form submission
-                header("Location: test.php");
+                header("Location: volunteer.php");
                 exit();
             } else {
                 echo "Error: " . $stmt1->error . " " . $stmt2->error;
@@ -252,7 +252,7 @@
 
             if ($stmtUnload1->execute() && $stmtUnload2->execute()) {
                 // Redirect to a different page after successful form submission
-                header("Location: test.php");
+                header("Location: volunteer.php");
                 exit();
             } else {
                 echo "Error: " . $stmtUnload1->error . " " . $stmtUnload2->error;
@@ -286,7 +286,7 @@
   <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="test3.css">
+  <link rel="stylesheet" href="volunteer.css">
   <style>
         .thirdsection .Acceptbut,.Delivery {
             background-color: rgb(3, 129, 178);
@@ -546,6 +546,8 @@
         <div class="forthection">
           <h2 class="with-hr" id="C">My tasks</h2>
           <hr>
+          <!-- Add a div to display the user requests -->
+        <div id="userRequests"></div>
         </div>
     </div>
 
