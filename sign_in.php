@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
-$username = "root";
-$password = "karagiannis";
+$username = "evelina";
+$password = "Evel1084599!";
 $dbname = "carelink";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -9,6 +9,8 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+
+session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
@@ -31,34 +33,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $civilian_result = $civilian_query->get_result();
 
     if ($admin_result->num_rows > 0) {
-        // Set cookies for the username and password
-        setcookie("username", $username, time() + (86400 * 30), "/"); // 86400 seconds = 1 day
-        setcookie("password", $password, time() + (86400 * 30), "/");
-    
-        header("Location: Civilian.php?username=$username");
+        $_SESSION['loggedin'] = true;
+        $_SESSION['username'] = $username;
+        $_SESSION['role'] = 'admin';
+        header("Location: admin.php");
         exit();
     } elseif ($volunteer_result->num_rows > 0) {
-        // Set cookies for the username and password
-        setcookie("username", $username, time() + (86400 * 30), "/"); // 86400 seconds = 1 day
-        setcookie("password", $password, time() + (86400 * 30), "/");
-    
-        header("Location: test.php?username=$username");
+        $_SESSION['loggedin'] = true;
+        $_SESSION['username'] = $username;
+        $_SESSION['role'] = 'volunteer';
+        header("Location: volunteer.php");
         exit();
     } elseif ($civilian_result->num_rows > 0) {
-        // Set cookies for the username and password
-        setcookie("username", $username, time() + (86400 * 30), "/"); // 86400 seconds = 1 day
-        setcookie("password", $password, time() + (86400 * 30), "/");
-    
-        header("Location: Civilian.php?username=$username");
+        $_SESSION['loggedin'] = true;
+        $_SESSION['username'] = $username;
+        $_SESSION['role'] = 'civilian';
+        header("Location: Civilian.php");
         exit();
     } else {
-        $error_message = "Invalid username or password";
+        $error_message = "Invalid username or password!";
     }
 }
 
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -70,12 +68,6 @@ $conn->close();
     <title>Sign in Form</title>
 </head>
 <body>
-    <?php
-    if (isset($error_message)) {
-        echo "<p>$error_message</p>";
-    }
-    ?>
-
     <div class="container">
 
         <div class="form-container">
@@ -94,6 +86,11 @@ $conn->close();
                     <input type="checkbox" id="showpass" name="showpass" onclick="passwordvisibility()">
                     <label for="keepme" id="keepme">Keep me Signed in</label>
                     <input type="checkbox" id="remember" name="remember" onclick="">
+                    <?php
+                    if (isset($error_message)) {
+                        echo "<p class='error-message'>$error_message</p>";
+                    }
+                    ?>
                     <div class="button-center">
                     <button class="button1" onclick="login()"><strong>Log In</strong></button>
                     </div>
@@ -132,9 +129,8 @@ $conn->close();
 
             if (username === "" || password === "") {
                 alert("Please fill in all fields.");
-            } else if (password.length < 8 || password.length > 15 || !/[A-Z]/.test(password) || !/[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password)) {
-                alert("Password must be 8-15 characters long and include at least one capital letter and one symbol.");
-            } else {
+            } 
+            else {
                 // Add your login logic here
                 alert("Logging in...");
             }
