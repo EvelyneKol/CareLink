@@ -1,4 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'admin') {
+    header('Location: sign_in.php');
+    exit();
+}
+?>
+
 <!DOCTYPE html>
+
 <html lang="el">
 
 <head>
@@ -29,7 +38,7 @@
             <li><a href="Contact-info-main-menu.html">Database </a></li>
         </ul>
         <ul class="nav">            
-            <li><a href="#"><i class="fa fa-sign-out" style="font-size:24px" ></i> Log out</a></li>
+            <li><a href="logout.php"><i class="fa fa-sign-out" style="font-size:24px" ></i> Log out</a></li>
         </ul>
     </div>
 

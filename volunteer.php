@@ -1,11 +1,17 @@
 <?php
     $servername = "localhost";
-    $username = "root";
-    $password = "karagiannis";
+    $username = "evelina";
+    $password = "Evel1084599!";
     $dbname = "carelink";
 
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
+
+    session_start();
+    if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'volunteer') {
+        header('Location: sign_in.php');
+        exit();
+    }
 
     // Check connection
     if ($conn->connect_error) {
@@ -221,7 +227,7 @@
 
             if ($stmt1->execute() && $stmt2->execute()) {
                 // Redirect to a different page after successful form submission
-                header("Location: volunteer.php");
+                header("Location: test.php");
                 exit();
             } else {
                 echo "Error: " . $stmt1->error . " " . $stmt2->error;
@@ -246,7 +252,7 @@
 
             if ($stmtUnload1->execute() && $stmtUnload2->execute()) {
                 // Redirect to a different page after successful form submission
-                header("Location: volunteer.php");
+                header("Location: test.php");
                 exit();
             } else {
                 echo "Error: " . $stmtUnload1->error . " " . $stmtUnload2->error;
@@ -280,7 +286,7 @@
   <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="volunteer.css">
+  <link rel="stylesheet" href="test3.css">
   <style>
         .thirdsection .Acceptbut,.Delivery {
             background-color: rgb(3, 129, 178);
