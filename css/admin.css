@@ -1,5 +1,8 @@
+*{
+    font-size: 20px;
+    font-family: 'Work Sans', sans-serif;
+}
 body {
-    margin: 0;
     background-color: rgb(255, 255, 255);
     overflow-x: hidden;
     overflow-y: scroll;
@@ -7,7 +10,7 @@ body {
 
 /*Header*/
 .header {
-    background-color: #EBE3D5;
+    background-color: #e7e6e5;
     text-align: left;
     font-size: 40px;
     margin-top: -80px;
@@ -23,21 +26,19 @@ body {
     color: rgb(110, 94, 50);
 }
 
-/*navbar*/
 .navbar {
     list-style-type: none;
-    margin: 0;
-    margin-top: -25px;
-    padding: 1px;
+    margin-top: -35px;
+    padding: 2px;
     background-color: #3b3b3b;
     overflow: hidden;
+    font-size: 22px;
 }
-
-
+  
 li a {
     color: white;
     text-align: center;
-    padding: 14px 16px;
+    padding: 25px;
     text-decoration: none;
 }
 
@@ -47,22 +48,24 @@ li a:visited {
 
 li a:hover,
 li a:focus {
-    background-color: rgba(241, 226, 199, 0.74);
+    background-color: rgb(185, 175, 158);
     color: #000000;
     cursor: pointer;
     padding: 25px;
+    
 }
 
 .active{
-   background-color: #EBE3D5;
+   background-color: #e7e6e5;
    color: #000000;
    padding: 25px;
+   margin-left: -6px;
 } 
 
 /*First Section*/
 .Firstsection{
     margin-top: 10px 0px 10px 0px;
-    background-color: #EBE3D5;
+    background-color: #e7e6e5;
     text-align: justify;
     border-radius: 15px 35px 30px;
 }
@@ -71,9 +74,8 @@ li a:focus {
     font-family: 'Work Sans', sans-serif;
     text-align: center;
     font-size: 32px;
-    margin-top: 15px;
-    padding-top: 10px;
-
+    margin-top: 18px;
+    padding-top: 9px;
 }
 .logo1{
     float: left;
@@ -82,99 +84,56 @@ li a:focus {
 
 }
 .Firstsection p{
-    padding-bottom: 10px;
+    padding-bottom: 0px;
     padding-right: 10px;
     padding-left: 10px;
 }
 
 .a2{  
     text-decoration: none;
-    color: #000000; 
+    color: #000000;
+    font-size: 25px; 
+}
+
+/* Secondsection */
+.select{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.Secondsection{
+    text-align: center;
+    align-items: center;
+    padding-bottom: 30px;
+}
+
+table,
+th,
+td {
+    border: 3px solid #e7e6e5;
+    font-size: 20px;
+    margin: auto;
+    justify-content: center;
+}
+table{
+    margin: 15px;
+    width: 90%;
+}
+
+.form {
+    text-align: center;
+    padding: 40px;
+    margin-top: 150px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /**/
-.Secondsection h2 {
-    margin: 10px 0px 5px 0px;
-}
-
-.Secondsection,
-.col1,
-.col2,
-.col3,
-.col4,
-.col5 {
-    text-align: center;
-    font-family: 'Work Sans', sans-serif;
-}
-
-.sim1, .sim2 ,.sim3{
-    background-color: rgb(161, 151, 135);
-    border-radius: 50%;
-}
-
-.col1 h2,
-.col2 h2,
-.col3 h2,
-.col4 h2,
-.col5 h2 {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-    margin-top: 10px;
-    margin-bottom: 10px;
-
-}
-
-
-.Theardsection{
-    margin-top: 50px;
-}
-.card1,.card2, .card3{
-    background-color: #EBE3D5;
-    text-align: justify;
-}
-.card1 h2 ,.card2 h2, .card3 h2{
-    font-family: 'Work Sans', sans-serif;
-    text-align: center;
-    font-size: 32px;
-    margin-top: 15px;
-    padding-top: 10px;
-
-}
-.Icon1, .Icon3{
-    float: left;
-    display: block;
-    margin-right: 1rem;
-
-}
-
-.Icon2{
-    float: right;
-    display: block;
-    margin-left: 1rem;
-}
-
-.card1 p, .card2 p, .card3 p{
-    font-family:sans-serif;
-    padding-bottom: 10px;
-    padding-right: 10px;
-    padding-left: 10px;
-    
-}
-
 .Forthsection{
     text-align: center;
     margin: 1rem 0 1rem 0;
-}
-.Forthsection button{
-    background-color: rgb(249, 249, 249);
-    border-radius: 6px;
-    border: solid 1px;
-    border-color: #858585;
-    padding: 10px 70px;
-    margin-top: 1rem;
-    transition-duration: 0.4s;
 }
 
 .Forthsection a {
@@ -182,6 +141,18 @@ li a:focus {
     display: inline;
     color: #000000;
     text-decoration: none;
+}
+
+.Forthsection button {
+    background-color: #e7e6e5;
+    border-radius: 6px;
+    border: solid 1px;
+    border-color: #858585;
+    padding: 10px 70px;
+    margin-top: 1rem;
+    transition-duration: 0.4s;
+    font-size: 30px;
+    color: #000000;
 }
 
 .Forthsection a:visited {
@@ -193,10 +164,22 @@ li a:focus {
 }
 
 
+.add:hover {
+    background-color: rgb(185, 175, 158);
+}
+
+.add:hover a {
+    color: #ffffff;
+    /* white text color */
+} 
+
+
+/*Fifthsection*/
 .Fifthsection{
-    margin-top: 10px 10px 10px 0px;
-    background-color: #EBE3D5;
+    padding: 20px;
+    background-color: #e7e6e5;
     text-align: justify;
+    margin-bottom: 30px;
 }
 .Fifthsection h2{
     font-family: 'Work Sans', sans-serif;
@@ -205,35 +188,6 @@ li a:focus {
     margin-top: 15px;
     padding-top: 10px;
 
-}
-
-.Fifthsection p{
-    padding-bottom: 10px;
-    padding-right: 10px;
-    padding-left: 10px;
-}
-
-.photo{
-    width: 120px;
-    margin-bottom: 20px;
-    margin-top: 10px;
-}
-
-
-.singin:hover {
-    background-color: #B0A695;
-}
-
-.singin:hover a {
-    color: #ffffff; /* white text color */
-}
-
-.singup:hover {
-    background-color: #B0A695;
-}
-
-.singup:hover a {
-    color: #ffffff; /* white text color */
 }
 
 /*FOOTER*/

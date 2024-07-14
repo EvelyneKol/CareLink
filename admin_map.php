@@ -23,7 +23,6 @@ if ($location->num_rows > 0) {
     echo "Base location not found";
 }
 
-
 $sql = "SELECT vehicle_location FROM vehicle";
 $result = $conn->query($sql);
 
@@ -35,11 +34,48 @@ if ($result->num_rows > 0) {
     }
 }
 
+// Fetch request data
+$request = "SELECT request.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
+                SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
+                FROM request 
+                JOIN civilian ON request.request_civilian = civilian.civilian_username 
+                WHERE request.state='WAITING'";
+
+$data1 = array();
+$sqlrequest = $conn->query($request);
+
+if ($sqlrequest) {
+    while ($row = $sqlrequest->fetch_assoc()) {
+        $data1[] = array(
+            "id_request" => $row["id_request"],
+            "request_civilian" => $row["request_civilian"],
+            "request_category" => $row["request_category"],
+            "request_product_name" => $row["request_product_name"],
+            "persons" => $row["persons"],
+            "request_date_posted" => $row["request_date_posted"],
+            "request_time_posted" => $row["request_time_posted"], 
+            "state" => $row["state"],
+            "number" => $row["civilian_number"],
+            "first_name" => $row["civilian_first_name"],
+            "last_name" => $row["civilian_last_name"],
+            "latitude" => $row["latitude"], 
+            "longitude" => $row["longitude"]
+        );
+    }
+    // Close the result set
+    $sqlrequest->close();
+} else {
+    die("Error executing the SQL query: " . $conn->error);
+}
+
 // Κλείσιμο σύνδεσης με τη βάση δεδομένων
 $conn->close();
+
+// Encode request data as JSON
+$request_data_json = json_encode($data1);
+
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -48,7 +84,7 @@ $conn->close();
     <title>CareLink Map</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="admin_map.css">
+    <link rel="stylesheet" href="css/admin_map.css">
     <link rel="icon" type="image/jpg" sizes="96x96" href="images/favicon.png">
     <link rel="stylesheet" href="leaflet-routing-machine.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
@@ -58,7 +94,6 @@ $conn->close();
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
-
 
 <body>
     <div class="header">
@@ -79,35 +114,29 @@ $conn->close();
         </ul>
     </div>
 
-
     <div class="Firstsection">
         <h2> Maps </h2>
         <div class="filter">
-          <input type="checkbox" id="layer1" class="filter-btn" onchange="toggleLayer('layer1')" checked>
-          <label for="layer1">Tasks undertaken</label>
-      
-          <input type="checkbox" id="layer2" class="filter-btn" onchange="toggleLayer('layer2')" checked>
-          <label for="layer2">On the way tasks</label>
+        <form class="filters">
+                <input type="radio" id="layer1" name="mapLayer" onchange="toggleLayer('layer1')" checked>
+                <label for="layer1">Requests</label>
 
-          <input type="checkbox" id="layer2" class="filter-btn" onchange="toggleLayer('layer2')" checked>
-          <label for="layer2">Offers</label>
-          
-          <input type="checkbox" id="layer2" class="filter-btn" onchange="toggleLayer('layer2')" checked>
-          <label for="layer2">Vehicles</label>
+                <input type="radio" id="layer2" name="mapLayer" onchange="toggleLayer('layer2')">
+                <label for="layer2">Offers</label>
 
-          <input type="checkbox" id="layer2" class="filter-btn" onchange="toggleLayer('layer2')" checked>
-          <label for="layer2">Vehicles with active tasks</label>
+                <input type="radio" id="layer3" name="mapLayer" onchange="toggleLayer('layer3')">
+                <label for="layer3">Lines</label>
 
-          <input type="checkbox" id="layer2" class="filter-btn" onchange="toggleLayer('layer2')" checked>
-          <label for="layer2">Lines</label>
+                <input type="radio" id="layer4" name="mapLayer" onchange="toggleLayer('layer4')">
+                <label for="layer4">Vehicles on Action</label>
 
+                <input type="radio" id="layer5" name="mapLayer" onchange="toggleLayer('layer5')">
+                <label for="layer5">Vehicles without tasks</label>
+            </form>
+            <div id='map' class="map-container"></div>
       </div>
-      
    </div>
     
-
-    <div id='map' class="map-container"></div>
-
     <div class="Footer container-fluid">
         <div class="row">
           <div class="column col-sm-3">
@@ -143,8 +172,9 @@ $conn->close();
     // Initialize the map
     let map = L.map('map').setView([38.2904558214517, 21.79578903224108], 13);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
+    L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL', {
+    attribution:
+        '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
     }).addTo(map);
 
     // Define the icon
@@ -155,6 +185,16 @@ $conn->close();
         popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
     });
 
+    
+    let requestMarker = 
+     L.icon({
+                iconUrl: 'pin1.png', // Path to your custom icon image
+                iconSize: [32, 32], // Size of the icon
+                iconAnchor: [16, 32], // Anchor point of the icon, usually the center bottom
+                popupAnchor: [0, -32] // Popup anchor relative to the icon
+            
+    });
+    
     // Initialize the base marker as draggable with initial coordinates from PHP
     let base = L.marker([<?php echo $base_location; ?>], {
         draggable: true,
@@ -187,67 +227,41 @@ $conn->close();
             }
         });
     });
-    // Define an icon for the truck
-    var vehicle = L.icon({
-            iconUrl: 'images/Truck_map.png',
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41]
+
+
+    let markerLayer = L.layerGroup().addTo(map);
+
+    // Function to add request markers
+    function addRequestMarkers() {
+        // Fetch request data from PHP
+        let requestData = <?php echo $request_data_json; ?>;
+        
+        // Clear existing markers
+        markerLayer.clearLayers();
+
+        // Loop through request data and add markers
+        requestData.forEach(function(request) {
+            let marker = L.marker([request.latitude, request.longitude], { icon: requestMarker })
+                .bindPopup(`<b>Request ID:</b> ${request.id_request}<br><b>Civilian:</b> ${request.first_name} ${request.last_name}<br><b>Category:</b> ${request.request_category}<br><b>Product:</b> ${request.request_product_name}<br><b>Persons:</b> ${request.persons}<br><b>Date:</b> ${request.request_date_posted}<br><b>Time:</b> ${request.request_time_posted}<br><b>State:</b> ${request.state}`);
+            markerLayer.addLayer(marker);
         });
-
-    // Loop through the fetched locations and create markers dynamically
-    <?php
-    foreach ($locations as $location) {
-        // Split the location string to get latitude and longitude
-        list($lat, $lng) = explode(',', $location);
-    ?>
-        // Create marker for each location with red icon
-        L.marker([<?php echo $lat; ?>, <?php echo $lng; ?>], { icon: vehicle }).addTo(map);
-    <?php
     }
-    ?>
 
-var waitingRequestsLayer;
-var waitingOffersLayer;
+    // Initial call to add request markers
+    addRequestMarkers();
 
-function toggleLayer(layerId) {
-    // Get the checkbox element by its ID
-    var checkbox = document.getElementById(layerId);
-
-    // Check if the checkbox is checked
-    if (checkbox.checked) {
-        // If checked, add the layer to the map
-        switch (layerId) {
-            case 'layer1':
-                // Add layer 1 to the map
-                break;
-            case 'layer2':
-                // Add layer 2 to the map
-                break;
-            // Add more cases as needed for other layers
-        }
-    } else {
-        // If not checked, remove the layer from the map
-        switch (layerId) {
-            case 'layer1':
-                // Remove layer 1 from the map
-                break;
-            case 'layer2':
-                // Remove layer 2 from the map
-                break;
-            // Add more cases as needed for other layers
+    // Function to toggle layer
+    function toggleLayer(layerId) {
+        if (layerId === 'layer1') {
+            // Show request markers
+            addRequestMarkers();
+        } else {
+            // Clear markers
+            markerLayer.clearLayers();
+            // Handle other layers as needed
         }
     }
-}
+    </script>
 
-
-
-</script>
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-
-
-  
 </body>
-
 </html>

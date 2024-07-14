@@ -65,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["startDate"]) && isset(
     <title>CL Administrator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="css/admin.css">
     <link rel="icon" type="image/jpg" sizes="96x96" href="images/favicon.png">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -115,7 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["startDate"]) && isset(
                 </p>     
               </div>
               <div class="col-sm-4">
-                <h3><a class="a2" href="admin_map.html">Maps</a><i class="fa fa-map" style="font-size:24px"></i></h3>        
+                <h3><a class="a2" href="admin_map.php">Maps</a><i class="fa fa-map" style="font-size:24px"></i></h3>        
                 <p>With different <strong>markers</strong>, the base, the location of every
                   rescue vehicle, the requests and offers not completed can be seen in the map.</p>     
               </div>
