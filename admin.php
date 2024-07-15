@@ -1,60 +1,4 @@
-<?php
-$servername = "localhost";
-$username = "evelina";
-$password = "Evel1084599!";
-$dbname = "carelink";
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-session_start();
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'admin') {
-    header('Location: sign_in.php');
-    exit();
-}
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Fetch unique category names
-$sql = "SELECT DISTINCT category_name FROM categories";
-$result = $conn->query($sql);
-
-//chart
-// Initialize variables to hold default values
-$counts = array(0, 0, 0, 0);
-
-// Process form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["startDate"]) && isset($_POST["endDate"])) {
-    $startDate = $_POST["startDate"];
-    $endDate = $_POST["endDate"];
-
-    // Ensure dates are not empty
-    if (!empty($startDate) && !empty($endDate)) {
-        // SQL query to fetch counts of offers and requests based on their states and date range
-        $chart = "SELECT 
-                    (SELECT COUNT(*) FROM offer WHERE offer_date_posted BETWEEN '$startDate' AND '$endDate' AND offer_status = 'WAITING') AS NewOffers,
-                    (SELECT COUNT(*) FROM offer WHERE offer_date_posted BETWEEN '$startDate' AND '$endDate' AND offer_status = 'COMPLETED') AS CompletedOffers,
-                    (SELECT COUNT(*) FROM request WHERE request_date_posted BETWEEN '$startDate' AND '$endDate' AND state = 'WAITING') AS NewRequests,
-                    (SELECT COUNT(*) FROM request WHERE request_date_posted BETWEEN '$startDate' AND '$endDate' AND state = 'COMPLETED') AS CompletedRequests";
-
-        $result = $conn->query($chart);
-
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $counts = array(
-                $row["NewRequests"],
-                $row["CompletedRequests"],
-                $row["NewOffers"],
-                $row["CompletedOffers"]
-            );
-        }
-    }
-}
-
-?>
 
 
 <!DOCTYPE html>
@@ -252,37 +196,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["startDate"]) && isset(
   src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
 </script>
 <script>
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['New Requests', 'Completed Requests', 'New Offers', 'Completed Offers'],
-            datasets: [{
-                label: 'Number of Requests and Offers',
-                data: <?php echo json_encode($counts); ?>, // Pass the counts obtained from PHP here
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)'
-                ],
-                borderWidth: 1
-            }]
+$(document).ready(function() {
+    // AJAX request to fetch data from fetch_data.php
+    $.ajax({
+        url: 'fetch_statistics_data.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            // Data received, update chart
+            updateChart(data);
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
+        error: function(xhr, status, error) {
+            console.error('Error fetching data:', error);
         }
     });
+
+    function updateChart(data) {
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Waiting Requests', 'Completed Requests', 'Waiting Offers', 'Completed Offers'],
+                datasets: [{
+                    label: 'Number of Requests and Offers',
+                    data: [data.WaitingRequests, data.CompletedRequests, data.WaitingOffers, data.CompletedOffers],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+});
 </script>
 
 </body>
