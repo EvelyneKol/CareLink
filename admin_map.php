@@ -12,7 +12,13 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Επιλογή των συντεταγμένων της βάσης από τη βάση δεδομένων
+session_start();
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'admin') {
+    header('Location: sign_in.php');
+    exit();
+}
+
+/* // Επιλογή των συντεταγμένων της βάσης από τη βάση δεδομένων
 $base = "SELECT base_location FROM base WHERE base_id = 1"; // Υποθέτουμε ότι η βάση έχει μόνο ένα στοιχείο με αναγνωριστικό 1
 $location = $conn->query($base);
 
@@ -21,61 +27,69 @@ if ($location->num_rows > 0) {
     $base_location = $row["base_location"];
 } else {
     echo "Base location not found";
-}
+} */
 
-$sql = "SELECT vehicle_location FROM vehicle";
-$result = $conn->query($sql);
-
-$locations = array();
-if ($result->num_rows > 0) {
-    // Fetch locations from the database
-    while ($row = $result->fetch_assoc()) {
-        $locations[] = $row['vehicle_location'];
-    }
-}
-
-// Fetch request data
-$request = "SELECT request.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
+// Function to fetch data and write to JSON file
+function fetchRequests($conn) {
+    $request = "SELECT request.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
                 SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
                 SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
                 FROM request 
-                JOIN civilian ON request.request_civilian = civilian.civilian_username 
-                WHERE request.state='WAITING'";
+                JOIN civilian ON request.request_civilian = civilian.civilian_username ";
 
-$data1 = array();
-$sqlrequest = $conn->query($request);
+    $data1 = array();
+    $sqlrequest = $conn->query($request);
 
-if ($sqlrequest) {
-    while ($row = $sqlrequest->fetch_assoc()) {
-        $data1[] = array(
-            "id_request" => $row["id_request"],
-            "request_civilian" => $row["request_civilian"],
-            "request_category" => $row["request_category"],
-            "request_product_name" => $row["request_product_name"],
-            "persons" => $row["persons"],
-            "request_date_posted" => $row["request_date_posted"],
-            "request_time_posted" => $row["request_time_posted"], 
-            "state" => $row["state"],
-            "number" => $row["civilian_number"],
-            "first_name" => $row["civilian_first_name"],
-            "last_name" => $row["civilian_last_name"],
-            "latitude" => $row["latitude"], 
-            "longitude" => $row["longitude"]
-        );
+    if ($sqlrequest) {
+        while ($row = $sqlrequest->fetch_assoc()) {
+            $data1[] = array(
+                "id_request" => $row["id_request"],
+                "request_civilian" => $row["request_civilian"],
+                "request_category" => $row["request_category"],
+                "request_product_name" => $row["request_product_name"],
+                "persons" => $row["persons"],
+                "request_date_posted" => $row["request_date_posted"],
+                "request_time_posted" => $row["request_time_posted"], 
+                "state" => $row["state"],
+                "number" => $row["civilian_number"],
+                "first_name" => $row["civilian_first_name"],
+                "last_name" => $row["civilian_last_name"],
+                "latitude" => $row["latitude"], 
+                "longitude" => $row["longitude"]
+            );
+        }
+
+        // Encode $data1 array to JSON
+        $json_data = json_encode($data1);
+
+        // Specify the path to store the JSON file
+        $json_file = 'data1.json';
+
+        // Write JSON data to file
+        if (file_put_contents($json_file, $json_data)) {
+            return "JSON data successfully written to $json_file";
+        } else {
+            return "Unable to write JSON data to $json_file";
+        }
+
+        $sqlrequest->close();
+    } else {
+        return "Error executing the SQL query: " . $conn->error;
     }
-    // Close the result set
-    $sqlrequest->close();
+}
+
+// Check if this request is to update the JSON file
+if (isset($_GET['update_json1'])) {
+    echo fetchRequests($conn);
+    exit();
 } else {
-    die("Error executing the SQL query: " . $conn->error);
+    fetchRequests($conn);
 }
 
 // Κλείσιμο σύνδεσης με τη βάση δεδομένων
 $conn->close();
-
-// Encode request data as JSON
-$request_data_json = json_encode($data1);
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -116,7 +130,7 @@ $request_data_json = json_encode($data1);
 
     <div class="Firstsection">
         <h2> Maps </h2>
-        <div class="filter">
+        <br>
         <form class="filters">
                 <input type="radio" id="layer1" name="mapLayer" onchange="toggleLayer('layer1')" checked>
                 <label for="layer1">Requests</label>
@@ -133,8 +147,7 @@ $request_data_json = json_encode($data1);
                 <input type="radio" id="layer5" name="mapLayer" onchange="toggleLayer('layer5')">
                 <label for="layer5">Vehicles without tasks</label>
             </form>
-            <div id='map' class="map-container"></div>
-      </div>
+            <div id='map'></div>
    </div>
     
     <div class="Footer container-fluid">
@@ -168,100 +181,7 @@ $request_data_json = json_encode($data1);
     
     </div>
 
-    <script>
-    // Initialize the map
-    let map = L.map('map').setView([38.2904558214517, 21.79578903224108], 13);
-
-    L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL', {
-    attribution:
-        '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
-    }).addTo(map);
-
-    // Define the icon
-    let customIcon = L.icon({
-        iconUrl: 'images/base.png',
-        iconSize: [32, 32], // Size of the icon
-        iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
-        popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
-    });
-
-    
-    let requestMarker = 
-     L.icon({
-                iconUrl: 'pin1.png', // Path to your custom icon image
-                iconSize: [32, 32], // Size of the icon
-                iconAnchor: [16, 32], // Anchor point of the icon, usually the center bottom
-                popupAnchor: [0, -32] // Popup anchor relative to the icon
-            
-    });
-    
-    // Initialize the base marker as draggable with initial coordinates from PHP
-    let base = L.marker([<?php echo $base_location; ?>], {
-        draggable: true,
-        icon: customIcon // Set the custom icon
-    }).addTo(map);
-
-    // Add a popup message to the base marker
-    base.bindPopup("Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com'").openPopup();
-
-    // Function to handle dragend event of the marker
-    base.on('dragend', function(event){
-        let marker = event.target;
-        let position = marker.getLatLng(); // Get the new coordinates
-        let lat = position.lat;
-        let lng = position.lng;
-
-        // Send an AJAX request to update the base location in the database
-        $.ajax({
-            url: 'update_base_location.php', // Αντικαταστήστε αυτό με τη σωστή διαδρομή προς τον PHP επεξεργαστή
-            method: 'POST',
-            data: {
-                lat: lat,
-                lng: lng
-            },
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(xhr, status, error) {
-                console.error(error);
-            }
-        });
-    });
-
-
-    let markerLayer = L.layerGroup().addTo(map);
-
-    // Function to add request markers
-    function addRequestMarkers() {
-        // Fetch request data from PHP
-        let requestData = <?php echo $request_data_json; ?>;
-        
-        // Clear existing markers
-        markerLayer.clearLayers();
-
-        // Loop through request data and add markers
-        requestData.forEach(function(request) {
-            let marker = L.marker([request.latitude, request.longitude], { icon: requestMarker })
-                .bindPopup(`<b>Request ID:</b> ${request.id_request}<br><b>Civilian:</b> ${request.first_name} ${request.last_name}<br><b>Category:</b> ${request.request_category}<br><b>Product:</b> ${request.request_product_name}<br><b>Persons:</b> ${request.persons}<br><b>Date:</b> ${request.request_date_posted}<br><b>Time:</b> ${request.request_time_posted}<br><b>State:</b> ${request.state}`);
-            markerLayer.addLayer(marker);
-        });
-    }
-
-    // Initial call to add request markers
-    addRequestMarkers();
-
-    // Function to toggle layer
-    function toggleLayer(layerId) {
-        if (layerId === 'layer1') {
-            // Show request markers
-            addRequestMarkers();
-        } else {
-            // Clear markers
-            markerLayer.clearLayers();
-            // Handle other layers as needed
-        }
-    }
-    </script>
+    <script src="admin_map.js"></script>
 
 </body>
 </html>
