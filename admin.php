@@ -1,19 +1,69 @@
+<?php
+$servername = "localhost";
+$username = "evelina";
+$password = "Evel1084599!";
+$dbname = "carelink";
 
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
 
+session_start();
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'admin') {
+    header('Location: sign_in.php');
+    exit();
+}
+
+/* // Initial counts for the all-time data
+$waitingRequests = 0;
+$completedRequests = 0;
+$waitingOffers = 0;
+$completedOffers = 0;
+
+// Fetch initial counts (all-time data)
+$sqlWaitingRequests = "SELECT COUNT(*) AS WaitingRequests FROM request WHERE state = 'WAITING'";
+$resultWaitingRequests = $conn->query($sqlWaitingRequests);
+if ($resultWaitingRequests) {
+    $row = $resultWaitingRequests->fetch_assoc();
+    $waitingRequests = $row['WaitingRequests'];
+}
+
+$sqlCompletedRequests = "SELECT COUNT(*) AS CompletedRequests FROM request WHERE state = 'COMPLETED'";
+$resultCompletedRequests = $conn->query($sqlCompletedRequests);
+if ($resultCompletedRequests) {
+    $row = $resultCompletedRequests->fetch_assoc();
+    $completedRequests = $row['CompletedRequests'];
+}
+
+$sqlWaitingOffers = "SELECT COUNT(*) AS WaitingOffers FROM offer WHERE offer_status = 'WAITING'";
+$resultWaitingOffers = $conn->query($sqlWaitingOffers);
+if ($resultWaitingOffers) {
+    $row = $resultWaitingOffers->fetch_assoc();
+    $waitingOffers = $row['WaitingOffers'];
+}
+
+$sqlCompletedOffers = "SELECT COUNT(*) AS CompletedOffers FROM offer WHERE offer_status = 'COMPLETED'";
+$resultCompletedOffers = $conn->query($sqlCompletedOffers);
+if ($resultCompletedOffers) {
+    $row = $resultCompletedOffers->fetch_assoc();
+    $completedOffers = $row['CompletedOffers'];
+} */
+
+$conn->close();
+?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
-    <title>CL Administrator</title>
+    <title>CareLinkAdministrator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="icon" type="image/jpg" sizes="96x96" href="images/favicon.png">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
@@ -147,17 +197,17 @@
 
     <div id="D" class="Fifthsection">
         <h2>Service statistics</h2>
-        <form id="dateFilterForm">
-            <label for="startDate">Start Date:</label>
-            <input type="date" id="startDate" name="startDate">
-            
-            <label for="endDate">End Date:</label>
-            <input type="date" id="endDate" name="endDate">
-            
-            <button type="submit">Apply Filter</button>
+        <h6>Find the number of New (Waiting) and Completed Requests and Offers in a specific time period</h6>
+        <br>
+        <form id="filterForm">
+            <label for="start_date">Start Date:</label>
+            <input type="date" id="start_date" name="start_date" required>
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" name="end_date" required>
+            <button type="submit">Apply</button>
         </form>
-        <div style="width: 75%; margin: auto;">
-          <canvas id="myChart"></canvas>
+        <div style="width: 70%; margin: auto;">
+          <canvas id="statisticsChart"></canvas>
         </div>
     </div>
 
@@ -192,60 +242,66 @@
     
     </div>
 
-<script
-  src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
-</script>
-<script>
-$(document).ready(function() {
-    // AJAX request to fetch data from fetch_data.php
-    $.ajax({
-        url: 'fetch_statistics_data.php',
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            // Data received, update chart
-            updateChart(data);
-        },
-        error: function(xhr, status, error) {
-            console.error('Error fetching data:', error);
-        }
-    });
 
-    function updateChart(data) {
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Waiting Requests', 'Completed Requests', 'Waiting Offers', 'Completed Offers'],
-                datasets: [{
-                    label: 'Number of Requests and Offers',
-                    data: [data.WaitingRequests, data.CompletedRequests, data.WaitingOffers, data.CompletedOffers],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+<script>
+        $(document).ready(function() {
+            var ctx = document.getElementById('statisticsChart').getContext('2d');
+            var statisticsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Waiting Offers', 'Completed Offers', 'Waiting Requests', 'Completed Requests'],
+                    datasets: [{
+                        label: 'Count',
+                        data: [0, 0, 0, 0],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
+            });
+
+            $('#filterForm').on('submit', function(e) {
+                e.preventDefault();
+                var startDate = $('#start_date').val();
+                var endDate = $('#end_date').val();
+                $.ajax({
+                    type: 'POST',
+                    url: 'fetch_statistics_data.php',
+                    data: {
+                        startDate: startDate,
+                        endDate: endDate
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        statisticsChart.data.datasets[0].data = [
+                            response.WaitingOffers,
+                            response.CompletedOffers,
+                            response.WaitingRequests,
+                            response.CompletedRequests
+                        ];
+                        statisticsChart.update();
+                    }
+                });
+            });
         });
-    }
-});
-</script>
+    </script>
 
 </body>
 
