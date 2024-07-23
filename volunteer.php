@@ -25,189 +25,282 @@
         $defaultUsername = "";
     }
 
-        // Your SQL query for requests
-    $request = "SELECT request.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
-                SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
-                SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
-                FROM request 
-                JOIN civilian ON request.request_civilian = civilian.civilian_username 
-                WHERE request.state='WAITING'";
-
-    $data1 = array();
-    $sqlrequest = $conn->query($request);
-
-    if ($sqlrequest) {
-        while ($row = $sqlrequest->fetch_assoc()) {
-            $number = $row["civilian_number"];
-            $first_name = $row["civilian_first_name"];
-            $last_name = $row["civilian_last_name"];
-
-            $data1[] = array(
-                "id_request" => $row["id_request"],
-                "request_civilian" => $row["request_civilian"],
-                "request_category" => $row["request_category"],
-                "request_product_name" => $row["request_product_name"],
-                "persons" => $row["persons"],
-                "request_date_posted" => $row["request_date_posted"],
-                "request_time_posted" => $row["request_time_posted"], 
-                "state" => $row["state"],
-                "number" => $number,
-                "first_name" => $first_name,
-                "last_name" => $last_name,
-                "latitude" => $row["latitude"], 
-                "longitude" => $row["longitude"]
-            );
-        }
-        // Close the result set
-        $sqlrequest->close();
-    } else {
-        die("Error executing the SQL query: " . $conn->error);
-    }
-
-
-    $offers = "SELECT offer.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
-                SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
-                SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
-                FROM offer 
-                JOIN civilian ON offer.offer_civilian = civilian.civilian_username
-                WHERE offer.offer_status='WAITING'";
-
-    $data2 = array();
-    $sqloffers = $conn->query($offers);
-
-    if ($sqloffers) {
-        while ($row = $sqloffers->fetch_assoc()) {
-            $number = $row["civilian_number"];
-            $first_name = $row["civilian_first_name"];
-            $last_name = $row["civilian_last_name"];
-
-            $data2[] = array(
-                "offer_id" => $row["offer_id"],
-                "offer_civilian" => $row["offer_civilian"],
-                "offer_category" => $row["offer_category"],
-                "offer_product_name" => $row["offer_product_name"],
-                "offer_quantity" => $row["offer_quantity"],
-                "offer_date_posted" => $row["offer_date_posted"],
-                "offer_time_posted" => $row["offer_time_posted"],
-                "offer_status" => $row["offer_status"],
-                "number" => $number,
-                "first_name" => $first_name,
-                "last_name" => $last_name,
-                "latitude" => $row["latitude"], 
-                "longitude" => $row["longitude"]
-            );
-        }
-
-        // Close the result set
-        $sqloffers->close();
-    } else {
-        die("Error executing the SQL query: " . $conn->error);
-    }
-
-    $myrequest = "SELECT request.*,civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
+    // Function to fetch data and write to JSON file
+    function fetchRequests($conn) {
+        $request = "SELECT request.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
                     SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
-                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
-                    task.*
-                    FROM
-                    request
-                    JOIN
-                    civilian ON request.request_civilian = civilian.civilian_username
-                    JOIN
-                    task ON request.id_request = task.task_request_id
-                    WHERE
-                    request.id_request IN (
-                        SELECT task_request_id
-                        FROM task
-                        WHERE task_volunteer = '$defaultUsername') AND request.state = 'ON THE WAY'";
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
+                    FROM request 
+                    JOIN civilian ON request.request_civilian = civilian.civilian_username 
+                    WHERE request.state='WAITING'";
 
-    $data3 = array();
+        $data1 = array();
+        $sqlrequest = $conn->query($request);
 
-    $sqlmyrequest = $conn->query($myrequest);
+        if ($sqlrequest) {
+            while ($row = $sqlrequest->fetch_assoc()) {
+                $data1[] = array(
+                    "id_request" => $row["id_request"],
+                    "request_civilian" => $row["request_civilian"],
+                    "request_category" => $row["request_category"],
+                    "request_product_name" => $row["request_product_name"],
+                    "persons" => $row["persons"],
+                    "request_date_posted" => $row["request_date_posted"],
+                    "request_time_posted" => $row["request_time_posted"], 
+                    "state" => $row["state"],
+                    "number" => $row["civilian_number"],
+                    "first_name" => $row["civilian_first_name"],
+                    "last_name" => $row["civilian_last_name"],
+                    "latitude" => $row["latitude"], 
+                    "longitude" => $row["longitude"]
+                );
+            }
 
-    if ($sqlmyrequest) {
-        while ($row = $sqlmyrequest->fetch_assoc()) {
-            $number = $row["civilian_number"];
-            $first_name = $row["civilian_first_name"];
-            $last_name = $row["civilian_last_name"];
+            // Encode $data1 array to JSON
+            $json_data = json_encode($data1);
 
-            $data3[] = array(
-                "id_request" => $row["id_request"],
-                "request_civilian" => $row["request_civilian"],
-                "request_category" => $row["request_category"],
-                "request_product_name" => $row["request_product_name"],
-                "persons" => $row["persons"],
-                "request_date_posted" => $row["request_date_posted"],
-                "request_time_posted" => $row["request_time_posted"], 
-                "state" => $row["state"],
-                "number" => $number,
-                "first_name" => $first_name,
-                "last_name" => $last_name,
-                "latitude" => $row["latitude"], 
-                "longitude" => $row["longitude"], 
-                "task_date" => $row["task_date"],
-                "task_time" => $row["task_time"], 
-                "task_volunteer" => $row["task_volunteer"]
-                
-            );
+            // Specify the path to store the JSON file
+            $json_file = 'data1.json';
+
+            // Write JSON data to file
+            if (file_put_contents($json_file, $json_data)) {
+                return "JSON data successfully written to $json_file";
+            } else {
+                return "Unable to write JSON data to $json_file";
+            }
+
+            $sqlrequest->close();
+        } else {
+            return "Error executing the SQL query: " . $conn->error;
         }
-        // Close the result set
-        $sqlmyrequest->close();
-    } else {
-        die("Error executing the SQL query: " . $conn->error);
     }
 
-    $myoffers = "SELECT offer.*,civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
+    // Check if this request is to update the JSON file
+    if (isset($_GET['update_json1'])) {
+        echo fetchRequests($conn);
+        exit();
+    } else {
+        fetchRequests($conn);
+    }
+
+    function fetchOffers($conn) {
+        $offers = "SELECT offer.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
                     SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
-                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
-                    task.*
-                    FROM
-                    offer
-                    JOIN
-                    civilian ON offer.offer_civilian = civilian.civilian_username
-                    JOIN
-                    task ON offer.offer_id = task.task_offer_id
-                    WHERE
-                    offer.offer_id IN (
-                        SELECT task_offer_id
-                        FROM task
-                        WHERE task_volunteer = '$defaultUsername')";
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
+                    FROM offer 
+                    JOIN civilian ON offer.offer_civilian = civilian.civilian_username
+                    WHERE offer.offer_status='WAITING'";
 
-    $data4 = array();
+        $data2 = array();
+        $sqloffers = $conn->query($offers);
 
-    $sqlmyoffers = $conn->query($myoffers);
+        if ($sqloffers) {
+            while ($row = $sqloffers->fetch_assoc()) {
+                $number = $row["civilian_number"];
+                $first_name = $row["civilian_first_name"];
+                $last_name = $row["civilian_last_name"];
 
-    if ($sqlmyoffers) {
-        while ($row = $sqlmyoffers->fetch_assoc()) {
-            $number = $row["civilian_number"];
-            $first_name = $row["civilian_first_name"];
-            $last_name = $row["civilian_last_name"];
+                $data2[] = array(
+                    "offer_id" => $row["offer_id"],
+                    "offer_civilian" => $row["offer_civilian"],
+                    "offer_category" => $row["offer_category"],
+                    "offer_product_name" => $row["offer_product_name"],
+                    "offer_quantity" => $row["offer_quantity"],
+                    "offer_date_posted" => $row["offer_date_posted"],
+                    "offer_time_posted" => $row["offer_time_posted"],
+                    "offer_status" => $row["offer_status"],
+                    "number" => $number,
+                    "first_name" => $first_name,
+                    "last_name" => $last_name,
+                    "latitude" => $row["latitude"], 
+                    "longitude" => $row["longitude"]
+                );
+            }
 
-            $data4[] = array(
-                "offer_id" => $row["offer_id"],
-                "offer_civilian" => $row["offer_civilian"],
-                "offer_category" => $row["offer_category"],
-                "offer_product_name" => $row["offer_product_name"],
-                "offer_quantity" => $row["offer_quantity"],
-                "offer_date_posted" => $row["offer_date_posted"],
-                "offer_time_posted" => $row["offer_time_posted"],
-                "offer_status" => $row["offer_status"],
-                "number" => $number,
-                "first_name" => $first_name,
-                "last_name" => $last_name,
-                "latitude" => $row["latitude"], 
-                "longitude" => $row["longitude"],
-                "task_date" => $row["task_date"],
-                "task_time" => $row["task_time"], 
-                "task_volunteer" => $row["task_volunteer"]
-                
-            );
+            // Encode $data1 array to JSON
+            $json_data = json_encode($data2);
+
+            // Specify the path to store the JSON file
+            $json_file = 'data2.json';
+
+            // Write JSON data to file
+            if (file_put_contents($json_file, $json_data)) {
+                return "JSON data successfully written to $json_file";
+            } else {
+                return "Unable to write JSON data to $json_file";
+            }
+
+            // Close the result set
+            $sqloffers->close();
+        } else {
+            die("Error executing the SQL query: " . $conn->error);
         }
-        // Close the result set
-        $sqlmyoffers->close();
-    } else {
-        die("Error executing the SQL query: " . $conn->error);
     }
 
+    // Check if this request is to update the JSON file
+    if (isset($_GET['update_json2'])) {
+        echo fetchOffers($conn);
+        exit();
+    } else {
+        fetchOffers($conn);
+    }
+
+    function fetchMyRequests($conn, $defaultUsername){
+        $myrequest = "SELECT request.*,civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
+                        SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                        SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
+                        task.*
+                        FROM
+                        request
+                        JOIN
+                        civilian ON request.request_civilian = civilian.civilian_username
+                        JOIN
+                        task ON request.id_request = task.task_request_id
+                        WHERE
+                        request.id_request IN (
+                            SELECT task_request_id
+                            FROM task
+                            WHERE task_volunteer = '$defaultUsername') AND request.state = 'ON THE WAY'";
+
+        $data3 = array();
+
+        $sqlmyrequest = $conn->query($myrequest);
+
+        if ($sqlmyrequest) {
+            while ($row = $sqlmyrequest->fetch_assoc()) {
+                $number = $row["civilian_number"];
+                $first_name = $row["civilian_first_name"];
+                $last_name = $row["civilian_last_name"];
+
+                $data3[] = array(
+                    "id_request" => $row["id_request"],
+                    "request_civilian" => $row["request_civilian"],
+                    "request_category" => $row["request_category"],
+                    "request_product_name" => $row["request_product_name"],
+                    "persons" => $row["persons"],
+                    "request_date_posted" => $row["request_date_posted"],
+                    "request_time_posted" => $row["request_time_posted"], 
+                    "state" => $row["state"],
+                    "number" => $number,
+                    "first_name" => $first_name,
+                    "last_name" => $last_name,
+                    "latitude" => $row["latitude"], 
+                    "longitude" => $row["longitude"], 
+                    "task_date" => $row["task_date"],
+                    "task_time" => $row["task_time"], 
+                    "task_volunteer" => $row["task_volunteer"]
+                    
+                );
+            }
+
+    
+            // Encode $data1 array to JSON
+            $json_data = json_encode($data3);
+
+            // Specify the path to store the JSON file
+            $json_file = 'data3.json';
+
+            // Write JSON data to file
+            if (file_put_contents($json_file, $json_data)) {
+                return "JSON data successfully written to $json_file";
+            } else {
+                return "Unable to write JSON data to $json_file";
+            }
+
+            // Close the result set
+            $sqlmyrequest->close();
+
+            // Store $data3 in a session variable
+            $_SESSION['data3'] = $data3;
+        } else {
+            die("Error executing the SQL query: " . $conn->error);
+        }
+    }
+    // Check if this request is to update the JSON file
+    if (isset($_GET['update_json3'])) {
+        echo fetchMyRequests($conn, $defaultUsername);
+        exit();
+    } else {
+        fetchMyRequests($conn, $defaultUsername);
+    }
+
+    function fetchMyOffers($conn,$defaultUsername){
+        $myoffers = "SELECT offer.*,civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
+                        SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                        SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
+                        task.*
+                        FROM
+                        offer
+                        JOIN
+                        civilian ON offer.offer_civilian = civilian.civilian_username
+                        JOIN
+                        task ON offer.offer_id = task.task_offer_id
+                        WHERE
+                        offer.offer_id IN (
+                            SELECT task_offer_id
+                            FROM task
+                            WHERE task_volunteer = '$defaultUsername')";
+
+        $data4 = array();
+
+        $sqlmyoffers = $conn->query($myoffers);
+
+        if ($sqlmyoffers) {
+            while ($row = $sqlmyoffers->fetch_assoc()) {
+                $number = $row["civilian_number"];
+                $first_name = $row["civilian_first_name"];
+                $last_name = $row["civilian_last_name"];
+
+                $data4[] = array(
+                    "offer_id" => $row["offer_id"],
+                    "offer_civilian" => $row["offer_civilian"],
+                    "offer_category" => $row["offer_category"],
+                    "offer_product_name" => $row["offer_product_name"],
+                    "offer_quantity" => $row["offer_quantity"],
+                    "offer_date_posted" => $row["offer_date_posted"],
+                    "offer_time_posted" => $row["offer_time_posted"],
+                    "offer_status" => $row["offer_status"],
+                    "number" => $number,
+                    "first_name" => $first_name,
+                    "last_name" => $last_name,
+                    "latitude" => $row["latitude"], 
+                    "longitude" => $row["longitude"],
+                    "task_date" => $row["task_date"],
+                    "task_time" => $row["task_time"], 
+                    "task_volunteer" => $row["task_volunteer"]
+                    
+                );
+            }
+            
+            // Encode $data1 array to JSON
+            $json_data = json_encode($data4);
+
+            // Specify the path to store the JSON file
+            $json_file = 'data4.json';
+
+            // Write JSON data to file
+            if (file_put_contents($json_file, $json_data)) {
+                return "JSON data successfully written to $json_file";
+            } else {
+                return "Unable to write JSON data to $json_file";
+            }
+
+            // Close the result set
+            $sqlmyoffers->close();
+            // Store $data3 in a session variable
+            $_SESSION['data4'] = $data4;
+
+        } else {
+            die("Error executing the SQL query: " . $conn->error);
+        }
+    }
+    // Check if this request is to update the JSON file
+    if (isset($_GET['update_json4'])) {
+        echo fetchMyOffers($conn,$defaultUsername);
+        exit();
+    } else {
+        fetchMyOffers($conn,$defaultUsername);
+    }
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username = $_POST['username'];
@@ -524,7 +617,7 @@
         </div>
 
         <div class="thirdsection">
-            <h2 class="with-hr" id="B">Map</h2>
+            <h2 class="with-hr" id="B" style="text-align: center;">Map</h2>
             <hr>
             <form class="filters">
                 <input type="radio" id="layer1" name="mapLayer" onchange="toggleLayer('layer1')" checked>
@@ -544,10 +637,20 @@
 
 
         <div class="forthection">
-          <h2 class="with-hr" id="C">My tasks</h2>
+          <h2 class="with-hr" id="C" style="text-align: center;">My tasks</h2>
           <hr>
-          <!-- Add a div to display the user requests -->
-        <div id="userRequests"></div>
+          <div class="row">
+                <div class="col-sm-6">
+                <h2 class="with-hr" style="text-align: center;">Requests</h2>
+                    <div id="myRequests"></div>
+                    <br>
+                </div>
+                <div class="col-sm-6">
+                <h2 class="with-hr" style="text-align: center;">Offers</h2>
+                    <div id="myOffers"></div>
+                    <br>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -579,10 +682,6 @@
         </div>
     </div>
 
-  <script> var data1 = <?php echo json_encode($data1); ?>;</script>
-  <script> var data2 = <?php echo json_encode($data2); ?>;</script>
-  <script> var data3 = <?php echo json_encode($data3); ?>;</script>
-  <script> var data4 = <?php echo json_encode($data4); ?>;</script>
   <script src="volunteer.js"></script>
   <script>
     function hideForm(formId) {
@@ -611,42 +710,78 @@
         showRequests(defaultUsername);
     });
 
+    // JavaScript functions
     function handle_requests(requestId) {
-        var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
-        var url = "addrequest_volunteer.php";
+            var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
+            var url = "addrequest_volunteer.php";
 
-        // Create a FormData object and append the data you want to send
-        var formData = new FormData();
-        formData.append("requestId", requestId);
-        formData.append("username", username);
+            // Create a FormData object and append the data you want to send
+            var formData = new FormData();
+            formData.append("requestId", requestId);
+            formData.append("username", username);
 
-        // Create the XMLHttpRequest object
-        var xhr = new XMLHttpRequest();
+            // Create the XMLHttpRequest object
+            var xhr = new XMLHttpRequest();
 
-        // Setup the AJAX request
-        xhr.open("POST", url, true);
+            // Setup the AJAX request
+            xhr.open("POST", url, true);
 
-        // Set up the onload and onerror functions
-        xhr.onload = function () {
-            if (xhr.status == 200) {
-                // Handle the success response
-                console.log(xhr.responseText);
-                // You can update the UI or perform other actions if needed
-                location.reload();
-            } else {
-                // Handle the error response
-                console.error("Error: " + xhr.statusText);
-            }
-        };
+            // Set up the onload and onerror functions
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    // Handle the success response
+                    console.log(xhr.responseText);
+                    // You can update the UI or perform other actions if needed
+                    location.reload();
+                    // After handling the request, update the JSON file
+                    updateRequests();
+                    updateMyRequests();
+                } else {
+                    // Handle the error response
+                    console.error("Error: " + xhr.statusText);
+                }
+            };
 
-        xhr.onerror = function () {
-            // Handle the network error
-            console.error("Network error");
-        };
+            xhr.onerror = function () {
+                // Handle the network error
+                console.error("Network error");
+            };
 
-        // Send the AJAX request with the form data
-        xhr.send(formData);
-    } 
+            // Send the AJAX request with the form data
+            xhr.send(formData);
+        }
+
+        function updateRequests() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?update_json1=true", true);
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    console.log("JSON file updated successfully");
+                } else {
+                    console.error("Failed to update JSON file: " + xhr.statusText);
+                }
+            };
+            xhr.onerror = function () {
+                console.error("Network error while updating JSON file");
+            };
+            xhr.send();
+        }
+
+        function updateMyRequests() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?update_json3=true", true);
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    console.log("JSON file updated successfully");
+                } else {
+                    console.error("Failed to update JSON file: " + xhr.statusText);
+                }
+            };
+            xhr.onerror = function () {
+                console.error("Network error while updating JSON file");
+            };
+            xhr.send();
+        }
 
     function handle_offers(offerId) {
         var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
@@ -670,6 +805,9 @@
                 console.log(xhr.responseText);
                 // You can update the UI or perform other actions if needed
                 location.reload();
+                // After handling the request, update the JSON file
+                updateOffers();
+                updateMyOffers();
             } else {
                 // Handle the error response
                 console.error("Error: " + xhr.statusText);
@@ -684,6 +822,39 @@
         // Send the AJAX request with the form data
         xhr.send(formData);
     }
+
+    function updateOffers() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?update_json2=true", true);
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    console.log("JSON file updated successfully");
+                } else {
+                    console.error("Failed to update JSON file: " + xhr.statusText);
+                }
+            };
+            xhr.onerror = function () {
+                console.error("Network error while updating JSON file");
+            };
+            xhr.send();
+        }
+
+    function updateMyOffers() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?update_json4=true", true);
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    console.log("JSON file updated successfully");
+                } else {
+                    console.error("Failed to update JSON file: " + xhr.statusText);
+                }
+            };
+            xhr.onerror = function () {
+                console.error("Network error while updating JSON file");
+            };
+            xhr.send();
+        }
+
 
     // Παράδωση Request
     function deliver_requests(requestId) {
@@ -800,6 +971,44 @@
         // Send the AJAX request with the form data
         xhr.send(formData);
     }
+
+    function showRequests(username) {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("myRequests").innerHTML = this.responseText;
+                }
+            };
+            xmlhttp.open("GET", "load_myRequests.php?q=" + username, true);
+            xmlhttp.send();
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get the default username value
+            var defaultUsername = document.getElementById("txtUsername").value;
+
+            // Call showRequests to fetch and display user requests
+            showRequests(defaultUsername);
+        });
+
+    function showOffers(username) {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("myOffers").innerHTML = this.responseText;
+                }
+            };
+            xmlhttp.open("GET", "load_myOffers.php?q=" + username, true);
+            xmlhttp.send();
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get the default username value
+            var defaultUsername = document.getElementById("txtUsername").value;
+
+            // Call showRequests to fetch and display user requests
+            showOffers(defaultUsername);
+        });
   </script>
 
 </body>

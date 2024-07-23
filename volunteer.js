@@ -138,48 +138,83 @@ function calculateDistance(pointA, pointB) {
     return distance;
   }
 
+// Define global variables for layers
 var waitingRequestsLayer;
 var waitingOffersLayer;
 var myRequestsLayer;
 var myOffersLayer;
+var data1 = [];
+var data2 = [];
+var data3 = [];
+var data4 = [];
+
+
+// Fetch the JSON data from the file
+fetch('data1.json')
+.then(response => response.json())
+.then(data => {
+    data1 = data;
+})
+.catch(error => console.error('Error fetching the JSON data:', error));
+
+fetch('data2.json')
+.then(response => response.json())
+.then(data => {
+    data2 = data;
+})
+.catch(error => console.error('Error fetching the JSON data:', error));
+
+fetch('data3.json')
+.then(response => response.json())
+.then(data => {
+    data3 = data;
+})
+.catch(error => console.error('Error fetching the JSON data:', error));
+
+fetch('data4.json')
+.then(response => response.json())
+.then(data => {
+    data4 = data;
+})
+.catch(error => console.error('Error fetching the JSON data:', error));
 
 
 // Function to toggle layers
-function toggleLayer(layer) {
-  // Remove previously added layers
-  if (map.hasLayer(waitingRequestsLayer)) {
-      map.removeLayer(waitingRequestsLayer);
-  }
-  if (map.hasLayer(waitingOffersLayer)) {
-      map.removeLayer(waitingOffersLayer);
-  }
-  if (map.hasLayer(myRequestsLayer)) {
-      map.removeLayer(myRequestsLayer);
-  }
-  if (map.hasLayer(myOffersLayer)) {
-      map.removeLayer(myOffersLayer);
-  } 
+function toggleLayer(layer, data) {
+    // Remove previously added layers
+    if (map.hasLayer(waitingRequestsLayer)) {
+        map.removeLayer(waitingRequestsLayer);
+    }
+    if (map.hasLayer(waitingOffersLayer)) {
+        map.removeLayer(waitingOffersLayer);
+    }
+    if (map.hasLayer(myRequestsLayer)) {
+        map.removeLayer(myRequestsLayer);
+    }
+    if (map.hasLayer(myOffersLayer)) {
+        map.removeLayer(myOffersLayer);
+    }
 
-  // Check which layer is selected and add the corresponding layer
-  if (layer === 'layer1') {
-      Waiting_requests_markers(data1);
-  } else if (layer === 'layer2') {
-      Waiting_offers_markers(data2);
-  } else if (layer === 'layer3') {
-      On_way_requests_markers(data3);
-  } else if (layer === 'layer4') {
-      On_way_Offers_markers(data4);
-} 
+    // Check which layer is selected and add the corresponding layer
+    if (layer === 'layer1') {
+        Waiting_requests_markers(data1);
+    } else if (layer === 'layer2') {
+        Waiting_offers_markers(data2); // Assuming data2 is another dataset
+    } else if (layer === 'layer3') {
+        On_way_requests_markers(data3); // Assuming data3 is another dataset
+    } else if (layer === 'layer4') {
+        On_way_Offers_markers(data4); // Assuming data4 is another dataset
+    }
 }
 
-// Function to initialize markers
+// Function to initialize markers for waiting requests
 function Waiting_requests_markers(data) {
-  // Create a new marker cluster group for waiting requests
-  waitingRequestsLayer = L.markerClusterGroup();
+    // Create a new marker cluster group for waiting requests
+    waitingRequestsLayer = L.markerClusterGroup();
 
     // Loop through the data and create markers
     for (var i = 0; i < data.length; i++) {
-        var location1 = new L.LatLng(data[i].latitude, data[i].longitude);
+        var location = new L.LatLng(data[i].latitude, data[i].longitude);
 
         var request_id = data[i].id_request;
         var category = data[i].request_category;
@@ -194,12 +229,12 @@ function Waiting_requests_markers(data) {
 
         var buttonHtml = '<button class="Acceptbut" onclick="handle_requests(' + request_id + ')">Accept</button>';
 
-        var message1 = '<strong>' + first_name + ' ' + last_name + ' requested:</strong><br>' + '<strong>From ' + category + '</strong>: ' + product + '<br><strong>For</strong>: ' 
+        var message = '<strong>' + first_name + ' ' + last_name + ' requested:</strong><br>' + '<strong>From ' + category + '</strong>: ' + product + '<br><strong>For</strong>: ' 
             + persons + ' persons' + '<br><strong>Date posted</strong>: ' + dateposted + '<br><strong>Time posted</strong>: ' + timeposted + '<br><strong>Number:+30</strong> ' 
             + number + '<br><strong>State:</strong> ' + state +'<br>' + buttonHtml;  // Include the button HTML in the message
 
         // Create a new marker with custom icon
-        var marker1 = L.marker(location1, {
+        var marker = L.marker(location, {
             icon: L.icon({
                 iconUrl: 'pin1.png', // Path to your custom icon image
                 iconSize: [32, 32], // Size of the icon
@@ -209,19 +244,14 @@ function Waiting_requests_markers(data) {
         });
 
         // Bind popup content to the marker
-        marker1.bindPopup(message1);
-
+        marker.bindPopup(message);
         // Add marker to the marker cluster group
-        waitingRequestsLayer.addLayer(marker1);
+        waitingRequestsLayer.addLayer(marker);
     }
 
-  // Add the marker cluster group to the map
-  map.addLayer(waitingRequestsLayer);
-
+    // Add the marker cluster group to the map
+    map.addLayer(waitingRequestsLayer);
 }
-// Call the initializeMarkers function to initialize markers
-Waiting_requests_markers(data1);
-
 
 // Function to initialize waiting offers markers
 function Waiting_offers_markers(data) {
@@ -294,12 +324,13 @@ function On_way_requests_markers(data) {
         var first_name = data[i].first_name;
         var last_name = data[i].last_name;
 
-        var delivery_button = '<button class="Delivery" onclick="deliver_requests(' + request_id + ')">Deliver</button>';
-        var delete_button = '<button class="Delete" onclick="delete_request(' + request_id + ')">Delete</button>';
+        //var delivery_button = '<button class="Delivery" onclick="deliver_requests(' + request_id + ')">Deliver</button>';
+        //var delete_button = '<button class="Delete" onclick="delete_request(' + request_id + ')">Delete</button>';
+
         var message3 = 'Hello <strong>'+ task_volunteer + '</strong> you request is !'+ '<br><br><strong>'+first_name + ' ' + last_name + ' Requests:</strong><br>' + '<strong>From ' + request_category + '</strong>: ' + request_product_name + '<br><strong>For</strong>: ' 
             + persons + ' persons.' + '<br><strong>Date posted</strong>: ' + request_date_posted + '<br><strong>Time posted</strong>: ' + request_time_posted + '<br><strong>Number:+30</strong> ' 
             + number + '<br><strong>Date accepted</strong>: ' + task_date + '<br><strong>Time posted</strong>: ' + task_time + '<br><strong>State:</strong> ' + state +
-            '<br>' + delivery_button + delete_button;  // Include the button HTML in the message
+            '<br>';  // Include the button HTML in the message
 
         // Create a new marker with custom icon
         var marker3 = L.marker(location3, { 
@@ -344,13 +375,13 @@ function On_way_Offers_markers(data) {
         var task_time = data[i].task_time;
         var task_volunteer = data[i].task_volunteer;
   
-        var delivery_button = '<button class="Delivery" onclick="handle_offers(' + offer_id + ')">Take</button>';
-        var delete_button = '<button class="Delete" onclick="delete_offer(' + offer_id + ')">Delete</button>';
+        //var delivery_button = '<button class="Delivery" onclick="handle_offers(' + offer_id + ')">Take</button>';
+        //var delete_button = '<button class="Delete" onclick="delete_offer(' + offer_id + ')">Delete</button>';
 
         var message4 = 'Hello <strong>'+ task_volunteer + '</strong> you request is !'+ '<br><br><strong>'+first_name + ' ' + last_name + ' Requests:</strong><br>' + '<strong>From ' + offer_category + '</strong>: ' + offer_product_name + '<br><strong>For</strong>: ' 
             + offer_quantity + ' persons.' + '<br><strong>Date posted</strong>: ' + offer_date_posted + '<br><strong>Time posted</strong>: ' + offer_time_posted + '<br><strong>Number:+30</strong> ' 
             + number + '<br><strong>Date accepted</strong>: ' + task_date + '<br><strong>Time posted</strong>: ' + task_time + '<br><strong>State:</strong> ' + offer_status +
-            '<br>' + delivery_button + delete_button;  // Include the button HTML in the message
+            '<br>';  // Include the button HTML in the message
 
         // Create a new marker with custom icon
         var marker4 = L.marker(location4, { 
