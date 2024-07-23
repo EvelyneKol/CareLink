@@ -1,33 +1,21 @@
 <?php
 // Σύνδεση στη βάση δεδομένων
 $servername = "localhost";
-$username = "evelina";
-$password = "Evel1084599!";
+$username = "root";
+$password = "karagiannis";
 $dbname = "carelink";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
-
-// Έλεγχος σύνδεσης
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 
 session_start();
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'admin') {
     header('Location: sign_in.php');
     exit();
 }
-
-/* // Επιλογή των συντεταγμένων της βάσης από τη βάση δεδομένων
-$base = "SELECT base_location FROM base WHERE base_id = 1"; // Υποθέτουμε ότι η βάση έχει μόνο ένα στοιχείο με αναγνωριστικό 1
-$location = $conn->query($base);
-
-if ($location->num_rows > 0) {
-    $row = $location->fetch_assoc();
-    $base_location = $row["base_location"];
-} else {
-    echo "Base location not found";
-} */
+// Έλεγχος σύνδεσης
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 // Function to fetch data and write to JSON file
 function fetchRequests($conn) {
@@ -63,7 +51,7 @@ function fetchRequests($conn) {
         $json_data = json_encode($data1);
 
         // Specify the path to store the JSON file
-        $json_file = 'data1.json';
+        $json_file = 'data.json';
 
         // Write JSON data to file
         if (file_put_contents($json_file, $json_data)) {
@@ -107,6 +95,18 @@ $conn->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <!-- Leaflet Routing Machine JavaScript -->
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 </head>
 
 <body>
