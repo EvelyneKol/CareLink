@@ -17,7 +17,6 @@ $dbname = "carelink";
     if ($conn->connect_error) {
         die("Failed to connect to MySQL: " . $conn->connect_error);
     }
-
     // Check if the username is set in cookies
     if(isset($_COOKIE['username'])){
         $defaultUsername = $_COOKIE['username'];
@@ -319,10 +318,7 @@ $dbname = "carelink";
             $stmt2 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock - ?, quantity_on_truck = quantity_on_truck + ? WHERE category_name = ? AND products = ?");
             $stmt2->bind_param("iiss", $Quantity1, $Quantity1, $Category1, $Product1);
 
-            $stmt3 = $conn->prepare("UPDATE vehicle SET vehicle_location = ? WHERE driver = ? ");
-            $stmt3->bind_param("ss", $location1, $defaultUsername);
-
-            if ($stmt1->execute() && $stmt2->execute() && $stmt3->execute()) {
+            if ($stmt1->execute() && $stmt2->execute()) {
                 // Redirect to a different page after successful form submission
                 header("Location: volunteer.php");
                 exit();
