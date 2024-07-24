@@ -1,8 +1,8 @@
 <?php
 // Σύνδεση στη βάση δεδομένων
 $servername = "localhost";
-$username = "root";
-$password = "karagiannis";
+$username = "evelina";
+$password = "Evel1084599!";
 $dbname = "carelink";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -17,13 +17,15 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Function to fetch data and write to JSON file
-function fetchRequests($conn) {
-    $request = "SELECT request.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
-                SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
-                SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
-                FROM request 
-                JOIN civilian ON request.request_civilian = civilian.civilian_username ";
+//οχήματα που περιμένουν 
+function waitingVehicles($conn) {
+    // The query to select vehicle names from vehicle table that do not exist in vehiclesOnAction table
+    $request = "SELECT v.vehicle_name,
+                       SUBSTRING_INDEX(v.vehicle_location, ',', 1) AS latitude,
+                       SUBSTRING_INDEX(v.vehicle_location, ',', -1) AS longitude
+                FROM vehicle v
+                LEFT JOIN vehiclesOnAction va ON v.vehicle_name = va.v_name
+                WHERE va.v_name IS NULL";
 
     $data1 = array();
     $sqlrequest = $conn->query($request);
@@ -31,6 +33,56 @@ function fetchRequests($conn) {
     if ($sqlrequest) {
         while ($row = $sqlrequest->fetch_assoc()) {
             $data1[] = array(
+                "vehicle_name" => $row["vehicle_name"],
+                "latitude" => $row["latitude"],
+                "longitude" => $row["longitude"]
+            );
+        }
+
+        // Encode $data1 array to JSON
+        $json_data = json_encode($data1);
+
+        // Specify the path to store the JSON file
+        $json_file = 'waiting_vehicles.json';
+
+        // Write JSON data to file
+        if (file_put_contents($json_file, $json_data)) {
+            return "JSON data successfully written to $json_file";
+        } else {
+            return "Unable to write JSON data to $json_file";
+        }
+
+        $sqlrequest->close();
+    } else {
+        return "Error executing the SQL query: " . $conn->error;
+    }
+}
+
+
+// ελεγξε αν τα request ανενεωθηκαν στο JSON file
+if (isset($_GET['update_json1'])) {
+    echo waitingVehicles($conn);
+    exit();
+} else {
+    waitingVehicles($conn);
+}
+
+
+
+// Αιτήματα
+function fetchWaitingRequests($conn) {
+    $request = "SELECT request.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
+                SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
+                FROM request 
+                JOIN civilian ON request.request_civilian = civilian.civilian_username ";
+
+    $data4 = array();
+    $sqlrequest = $conn->query($request);
+
+    if ($sqlrequest) {
+        while ($row = $sqlrequest->fetch_assoc()) {
+            $data4[] = array(
                 "id_request" => $row["id_request"],
                 "request_civilian" => $row["request_civilian"],
                 "request_category" => $row["request_category"],
@@ -47,11 +99,11 @@ function fetchRequests($conn) {
             );
         }
 
-        // Encode $data1 array to JSON
-        $json_data = json_encode($data1);
+        // Encode $data4 array to JSON
+        $json_data = json_encode($data4);
 
         // Specify the path to store the JSON file
-        $json_file = 'data.json';
+        $json_file = 'data4.json';
 
         // Write JSON data to file
         if (file_put_contents($json_file, $json_data)) {
@@ -66,12 +118,74 @@ function fetchRequests($conn) {
     }
 }
 
-// Check if this request is to update the JSON file
-if (isset($_GET['update_json1'])) {
-    echo fetchRequests($conn);
+// ελεγξε αν τα request ανενεωθηκαν στο JSON file
+if (isset($_GET['update_json5'])) {
+    echo fetchWaitingRequests($conn);
     exit();
 } else {
-    fetchRequests($conn);
+    fetchWaitingRequests($conn);
+}
+
+function fetchOffers($conn) {
+    $offers = "SELECT offer.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
+                SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
+                FROM offer 
+                JOIN civilian ON offer.offer_civilian = civilian.civilian_username
+                WHERE offer.offer_status='WAITING'";
+
+    $data3 = array();
+    $sqloffers = $conn->query($offers);
+
+    if ($sqloffers) {
+        while ($row = $sqloffers->fetch_assoc()) {
+            $number = $row["civilian_number"];
+            $first_name = $row["civilian_first_name"];
+            $last_name = $row["civilian_last_name"];
+
+            $data3[] = array(
+                "offer_id" => $row["offer_id"],
+                "offer_civilian" => $row["offer_civilian"],
+                "offer_category" => $row["offer_category"],
+                "offer_product_name" => $row["offer_product_name"],
+                "offer_quantity" => $row["offer_quantity"],
+                "offer_date_posted" => $row["offer_date_posted"],
+                "offer_time_posted" => $row["offer_time_posted"],
+                "offer_status" => $row["offer_status"],
+                "number" => $number,
+                "first_name" => $first_name,
+                "last_name" => $last_name,
+                "latitude" => $row["latitude"], 
+                "longitude" => $row["longitude"]
+            );
+        }
+
+        // Encode $data3 array to JSON
+        $json_data = json_encode($data3);
+
+        // path για αποθηκευση JSON file
+        $json_file = 'data3.json';
+
+        // Write JSON data to file
+        if (file_put_contents($json_file, $json_data)) {
+            return "JSON data successfully written to $json_file";
+        } else {
+            return "Unable to write JSON data to $json_file";
+        }
+
+        // Close the result set
+        $sqloffers->close();
+    } else {
+        die("Error executing the SQL query: " . $conn->error);
+    }
+}
+
+// ελεγξε αν τα offers ανενεωθηκαν στο JSON file
+if (isset($_GET['update_json3'])) {
+    echo fetchOffers($conn);
+    exit();
+} else {
+    fetchOffers($conn);
 }
 
 // Κλείσιμο σύνδεσης με τη βάση δεδομένων
@@ -129,23 +243,26 @@ $conn->close();
     </div>
 
     <div class="Firstsection">
-        <h2> Maps </h2>
+        <h2> Map </h2>
         <br>
         <form class="filters">
-                <input type="radio" id="layer1" name="mapLayer" onchange="toggleLayer('layer1')" checked>
-                <label for="layer1">Requests</label>
+                <input type="radio" id="layer1" name="mapLayer" onchange="toggleLayer('layer1')">
+                <label for="layer1">Vehicles Waiting</label>
 
                 <input type="radio" id="layer2" name="mapLayer" onchange="toggleLayer('layer2')">
-                <label for="layer2">Offers</label>
+                <label for="layer2">Vehicles On The Way</label>
 
                 <input type="radio" id="layer3" name="mapLayer" onchange="toggleLayer('layer3')">
-                <label for="layer3">Lines</label>
+                <label for="layer3">Offers</label>
 
                 <input type="radio" id="layer4" name="mapLayer" onchange="toggleLayer('layer4')">
-                <label for="layer4">Vehicles on Action</label>
+                <label for="layer4">Waiting Requests</label>
 
                 <input type="radio" id="layer5" name="mapLayer" onchange="toggleLayer('layer5')">
-                <label for="layer5">Vehicles without tasks</label>
+                <label for="layer5">On their way Requests</label>
+
+                <input type="radio" id="layer6" name="mapLayer" onchange="toggleLayer('layer6')">
+                <label for="layer5">Lines</label>
             </form>
             <div id='map'></div>
    </div>

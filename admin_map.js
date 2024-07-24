@@ -4,6 +4,15 @@
       '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
   }).addTo(map);
   
+  var layerGroups = {
+    layer1: L.markerClusterGroup(),
+    layer2: L.markerClusterGroup(),
+    layer3: L.markerClusterGroup(),
+    layer4: L.markerClusterGroup(),
+    layer5: L.markerClusterGroup()
+};
+
+
   var baseMarker = L.marker([38.2904558214517, 21.79578903224108], { draggable: true });
   var popup1 = baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
   
@@ -34,7 +43,7 @@
   }
   function initializeBaseMarker(userLat, userLng) {
     var redIcon = L.icon({
-      iconUrl: 'images/pin.png',
+      iconUrl: 'images/base.png',
       iconSize: [41, 41],
       iconAnchor: [20, 41],
       popupAnchor: [1, -34]
@@ -43,71 +52,155 @@
     baseMarker = L.marker([38.290399042463136, 21.79564239581478], { draggable: true }).addTo(map).setIcon(redIcon);
     baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
   
-    circle = L.circle([38.290399042463136, 21.79564239581478], {
-      color: 'blue',
-      fillColor: 'blue',
-      fillOpacity: 0.5,
-      radius: 100
-    }).addTo(map);
-  
     baseMarker.on('dragend', function (event) {
       var position = baseMarker.getLatLng();
       baseMarker.setLatLng(position);
       baseMarker.getPopup().setContent('BASE, new Position: ' + position.toString()).update();
       $("#Latitude").val(position.lat);
       $("#Longitude").val(position.lng).keyup();
-      circle.setLatLng(position);
     });
   }
   
   // Define global variables for layers
-  var waitingRequestsLayer;
-  var waitingOffersLayer;
-  var myRequestsLayer;
-  var myOffersLayer;
+  var vehiclesWaiting;
+  var vehiclesOnAction;
+  var offers;
+  var onTheWayRequests;
+  var WaitingRequests;
+  var Lines;
   var data1 = [];
+  var data2 = [];
+  var data3 = [];
+  var data4 = [];
+  var data5 = [];
+  var data6 = [];
+
 
   // Fetch the JSON data from the file
-  fetch('data.json')
+  fetch('data1.json')
   .then(response => response.json())
   .then(data => {
       data1 = data;
   })
   .catch(error => console.error('Error fetching the JSON data:', error));
   
+  fetch('data2.json')
+  .then(response => response.json())
+  .then(data => {
+      data2 = data;
+  })
+  .catch(error => console.error('Error fetching the JSON data:', error));
+
+  fetch('data3.json')
+  .then(response => response.json())
+  .then(data => {
+      data3 = data;
+  })
+  .catch(error => console.error('Error fetching the JSON data:', error));
+
+  fetch('data4.json')
+  .then(response => response.json())
+  .then(data => {
+      data4 = data;
+  })
+  .catch(error => console.error('Error fetching the JSON data:', error));
+
+  fetch('data5.json')
+  .then(response => response.json())
+  .then(data => {
+      data4 = data;
+  })
+  .catch(error => console.error('Error fetching the JSON data:', error));
+
+  fetch('data6.json')
+  .then(response => response.json())
+  .then(data => {
+      data4 = data;
+  })
+  .catch(error => console.error('Error fetching the JSON data:', error));
+
 
   // Function to toggle layers
   function toggleLayer(layer, data) {
       // Remove previously added layers
-      if (map.hasLayer(waitingRequestsLayer)) {
-          map.removeLayer(waitingRequestsLayer);
+      if (map.hasLayer(vehiclesWaiting)) {
+          map.removeLayer(vehiclesWaiting);
       }
-      if (map.hasLayer(waitingOffersLayer)) {
-          map.removeLayer(waitingOffersLayer);
+      if (map.hasLayer(vehiclesOnAction)) {
+          map.removeLayer(vehiclesOnAction);
       }
-      if (map.hasLayer(myRequestsLayer)) {
-          map.removeLayer(myRequestsLayer);
+      if (map.hasLayer(offers)) {
+          map.removeLayer(offers);
       }
-      if (map.hasLayer(myOffersLayer)) {
-          map.removeLayer(myOffersLayer);
+      if (map.hasLayer(WaitingRequests)) {
+        map.removeLayer(WaitingRequests);
       }
-  
-      // Check which layer is selected and add the corresponding layer
+      if (map.hasLayer(onTheWayRequests)) {
+        map.removeLayer(onTheWayRequests);
+      }
+      if (map.hasLayer(Lines)) {
+        map.removeLayer(Lines);
+    }
+    
+      // ανάλογα το κουμπί που πατήθηκε, εμφανίζονται οι κατάλληλοι markers
       if (layer === 'layer1') {
-          Waiting_requests_markers(data1);
+          Waiting_vehicles_markers(data1);
       } else if (layer === 'layer2') {
-          Waiting_offers_markers(data2); // Assuming data2 is another dataset
+          on_the_way_vehicles_markers(data2);
       } else if (layer === 'layer3') {
-          On_way_requests_markers(data3); // Assuming data3 is another dataset
+          offers_markers(data3); 
       } else if (layer === 'layer4') {
-          On_way_Offers_markers(data4); // Assuming data4 is another dataset
+        Waiting_requests_markers(data4); 
+      }
+      else if (layer === 'layer5') {
+        on_the_way_requests_markers(data5); 
+      }
+      else if (layer === 'layer6') {
+        lines(data6); 
       }
   }
+
+    // Function to initialize markers for waiting requests
+    function Waiting_vehicles_markers(data) {
+      // Create a new marker cluster group for waiting requests
+      vehiclesWaiting = L.markerClusterGroup();
   
+      // Loop through the data and create markers
+      for (var i = 0; i < data.length; i++) {
+          var location = new L.LatLng(data[i].latitude, data[i].longitude);
+
+        var vehicle_name = data[i].vehicle_name;
+
+        var message = '<strong>Vehicle:</strong> ' + vehicle_name;
+  
+          // Create a new marker with custom icon
+          var marker = L.marker(location, {
+              icon: L.icon({
+                  iconUrl: 'trucker.png', // Path to your custom icon image
+                  iconSize: [32, 32], // Size of the icon
+                  iconAnchor: [16, 32], // Anchor point of the icon, usually the center bottom
+                  popupAnchor: [0, -32] // Popup anchor relative to the icon
+              })
+          });
+  
+          // Bind popup content to the marker
+          marker.bindPopup(message);
+          // Add marker to the marker cluster group
+          vehiclesWaiting.addLayer(marker);
+      }
+  
+      // Add the marker cluster group to the map
+      map.addLayer(vehiclesWaiting);
+  }
+
+
+
+
+
   // Function to initialize markers for waiting requests
   function Waiting_requests_markers(data) {
       // Create a new marker cluster group for waiting requests
-      waitingRequestsLayer = L.markerClusterGroup();
+      WaitingRequests = L.markerClusterGroup();
   
       // Loop through the data and create markers
       for (var i = 0; i < data.length; i++) {
@@ -141,9 +234,58 @@
           // Bind popup content to the marker
           marker.bindPopup(message);
           // Add marker to the marker cluster group
-          waitingRequestsLayer.addLayer(marker);
+          WaitingRequests.addLayer(marker);
       }
   
       // Add the marker cluster group to the map
-      map.addLayer(waitingRequestsLayer);
+      map.addLayer(WaitingRequests);
   }
+
+
+
+   // Function to initialize markers for waiting requests
+   function on_the_way_requests_markers(data) {
+    // Create a new marker cluster group for waiting requests
+    onTheWayRequests = L.markerClusterGroup();
+
+    // Loop through the data and create markers
+    for (var i = 0; i < data.length; i++) {
+        var location = new L.LatLng(data[i].latitude, data[i].longitude);
+
+        var request_id = data[i].id_request;
+        var category = data[i].request_category;
+        var product = data[i].request_product_name;
+        var persons = data[i].persons;
+        var dateposted = data[i].request_date_posted;
+        var timeposted = data[i].request_time_posted;
+        var state = data[i].state;
+        var number = data[i].number;
+        var first_name = data[i].first_name;
+        var last_name = data[i].last_name;
+
+        var message = '<strong>' + first_name + ' ' + last_name + ' requested:</strong><br>' + '<strong>From ' + category + '</strong>: ' + product + '<br><strong>For</strong>: ' 
+            + persons + ' persons' + '<br><strong>Date posted</strong>: ' + dateposted + '<br><strong>Time posted</strong>: ' + timeposted + '<br><strong>Number:+30</strong> ' 
+            + number + '<br><strong>State:</strong> ' + state +'<br>';  // Include the button HTML in the message
+
+        // Create a new marker with custom icon
+        var marker = L.marker(location, {
+            icon: L.icon({
+                iconUrl: 'pin1.png', // Path to your custom icon image
+                iconSize: [32, 32], // Size of the icon
+                iconAnchor: [16, 32], // Anchor point of the icon, usually the center bottom
+                popupAnchor: [0, -32] // Popup anchor relative to the icon
+            })
+        });
+
+        // Bind popup content to the marker
+        marker.bindPopup(message);
+        // Add marker to the marker cluster group
+        onTheWayRequests.addLayer(marker);
+    }
+
+    // Add the marker cluster group to the map
+    map.addLayer(onTheWayRequests);
+}
+
+
+
