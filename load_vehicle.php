@@ -10,15 +10,13 @@
         margin: auto;
         justify-content: center;
     }
-    table{
+    table {
         margin-top: 15px;
         width: 100%;
     }
-   
 </style>
 </head>
 <body>
-
 <?php
     $servername = "localhost";
     $username = "root";
@@ -34,19 +32,16 @@
     if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $username = $_GET['q'];
 
-        $sql = "SELECT * FROM vehicle WHERE driver = ?";
+        $sql = "SELECT driver, products, quantity, vehicle_location FROM vehicle WHERE driver = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $username);
 
         $result = $stmt->execute();
-
-        if (!$result) {
-            die("Error: " . $stmt->error);
+    if (!$result) {
+         die("Error: " . $stmt->error);
         }
+        $stmt->bind_result($driver, $products, $quantity, $vehicle_location);
 
-        $stmt->bind_result($vehicle_ids, $driver, $products, $quantity, $vehicle_location);
-
-        // Check if any records are found
         if ($stmt->fetch()) {
             echo '<div class="row">';
             echo '<div class="col-sm-4"></div>';
@@ -62,10 +57,10 @@
             // Loop through all records
             do {
                 echo '<tr>';
-                echo '<td>' . $driver . '</td>';
-                echo '<td>' . $products . '</td>';
-                echo '<td>' . $quantity . '</td>';
-                echo '<td>' . $vehicle_location . '</td>';
+                echo '<td>' . htmlspecialchars($driver) . '</td>';
+                echo '<td>' . htmlspecialchars($products) . '</td>';
+                echo '<td>' . htmlspecialchars($quantity) . '</td>';
+                echo '<td>' . htmlspecialchars($vehicle_location) . '</td>';
                 echo '</tr>';
             } while ($stmt->fetch());
 
@@ -81,7 +76,6 @@
     }
 
     $conn->close();
-
-    ?>
+?>
 </body>
 </html>
