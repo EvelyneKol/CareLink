@@ -68,19 +68,19 @@
   var onTheWayRequests;
   var WaitingRequests;
   var Lines;
-  var data1 = [];
+  var waiting_vehicles = [];
   var data2 = [];
   var data3 = [];
-  var data4 = [];
-  var data5 = [];
+  var WaitingRequests = [];
+  var OnWayRequests = [];
   var data6 = [];
 
 
   // Fetch the JSON data from the file
-  fetch('data1.json')
+  fetch('waiting_vehicles.json')
   .then(response => response.json())
   .then(data => {
-      data1 = data;
+    waiting_vehicles = data;
   })
   .catch(error => console.error('Error fetching the JSON data:', error));
   
@@ -97,18 +97,18 @@
       data3 = data;
   })
   .catch(error => console.error('Error fetching the JSON data:', error));
-
-  fetch('data4.json')
+ 
+  fetch('waitingRequests.json')
   .then(response => response.json())
   .then(data => {
-      data4 = data;
+    waitingRequests = data;
   })
   .catch(error => console.error('Error fetching the JSON data:', error));
 
-  fetch('data5.json')
+  fetch('OnWayRequests.json')
   .then(response => response.json())
   .then(data => {
-      data4 = data;
+    OnWayRequests = data;
   })
   .catch(error => console.error('Error fetching the JSON data:', error));
 
@@ -144,21 +144,25 @@
     
       // ανάλογα το κουμπί που πατήθηκε, εμφανίζονται οι κατάλληλοι markers
       if (layer === 'layer1') {
-          Waiting_vehicles_markers(data1);
+          Waiting_vehicles_markers(waiting_vehicles);
       } else if (layer === 'layer2') {
           on_the_way_vehicles_markers(data2);
       } else if (layer === 'layer3') {
           offers_markers(data3); 
       } else if (layer === 'layer4') {
-        Waiting_requests_markers(data4); 
+        Waiting_requests_markers(waitingRequests); 
       }
       else if (layer === 'layer5') {
-        on_the_way_requests_markers(data5); 
+        on_the_way_requests_markers(OnWayRequests); 
       }
       else if (layer === 'layer6') {
         lines(data6); 
       }
   }
+
+
+/*==================================================================================================================*/
+
 
     // Function to initialize markers for waiting requests
     function Waiting_vehicles_markers(data) {
@@ -194,7 +198,7 @@
   }
 
 
-
+/* ================================================================================================================== */
 
 
   // Function to initialize markers for waiting requests
@@ -202,10 +206,10 @@
       // Create a new marker cluster group for waiting requests
       WaitingRequests = L.markerClusterGroup();
   
-      // Loop through the data and create markers
-      for (var i = 0; i < data.length; i++) {
+          // Loop through the data and create markers
+        for (var i = 0; i < data.length; i++) {
           var location = new L.LatLng(data[i].latitude, data[i].longitude);
-  
+      
           var request_id = data[i].id_request;
           var category = data[i].request_category;
           var product = data[i].request_product_name;
@@ -216,19 +220,21 @@
           var number = data[i].number;
           var first_name = data[i].first_name;
           var last_name = data[i].last_name;
-  
-          var message = '<strong>' + first_name + ' ' + last_name + ' requested:</strong><br>' + '<strong>From ' + category + '</strong>: ' + product + '<br><strong>For</strong>: ' 
-              + persons + ' persons' + '<br><strong>Date posted</strong>: ' + dateposted + '<br><strong>Time posted</strong>: ' + timeposted + '<br><strong>Number:+30</strong> ' 
-              + number + '<br><strong>State:</strong> ' + state +'<br>';  // Include the button HTML in the message
-  
+      
+          var buttonHtml = '<button class="Acceptbut" onclick="handle_requests(' + request_id + ')">Accept</button>';
+      
+          var message = '<strong>' + first_name + ' ' + last_name + ' requested:</strong><br>' + '<strong>From ' + category + '</strong>: ' + product + '<br><strong>For</strong>: ' +
+            persons + ' persons' + '<br><strong>Date posted</strong>: ' + dateposted + '<br><strong>Time posted</strong>: ' + timeposted + '<br><strong>Number:+30</strong> ' +
+            number + '<br><strong>State:</strong> ' + state + '<br>' + buttonHtml;  // Include the button HTML in the message
+      
           // Create a new marker with custom icon
           var marker = L.marker(location, {
-              icon: L.icon({
-                  iconUrl: 'pin1.png', // Path to your custom icon image
-                  iconSize: [32, 32], // Size of the icon
-                  iconAnchor: [16, 32], // Anchor point of the icon, usually the center bottom
-                  popupAnchor: [0, -32] // Popup anchor relative to the icon
-              })
+            icon: L.icon({
+              iconUrl: 'pin1.png', // Path to your custom icon image
+              iconSize: [32, 32], // Size of the icon
+              iconAnchor: [16, 32], // Anchor point of the icon, usually the center bottom
+              popupAnchor: [0, -32] // Popup anchor relative to the icon
+            })
           });
   
           // Bind popup content to the marker
@@ -242,49 +248,58 @@
   }
 
 
+/* ================================================================================================================== */
 
-   // Function to initialize markers for waiting requests
-   function on_the_way_requests_markers(data) {
-    // Create a new marker cluster group for waiting requests
-    onTheWayRequests = L.markerClusterGroup();
 
-    // Loop through the data and create markers
-    for (var i = 0; i < data.length; i++) {
-        var location = new L.LatLng(data[i].latitude, data[i].longitude);
+function on_the_way_requests_markers(data) {
+  // Create a new marker cluster group for waiting offers
+  onTheWayRequests = L.markerClusterGroup();
 
-        var request_id = data[i].id_request;
-        var category = data[i].request_category;
-        var product = data[i].request_product_name;
-        var persons = data[i].persons;
-        var dateposted = data[i].request_date_posted;
-        var timeposted = data[i].request_time_posted;
-        var state = data[i].state;
-        var number = data[i].number;
-        var first_name = data[i].first_name;
-        var last_name = data[i].last_name;
 
-        var message = '<strong>' + first_name + ' ' + last_name + ' requested:</strong><br>' + '<strong>From ' + category + '</strong>: ' + product + '<br><strong>For</strong>: ' 
-            + persons + ' persons' + '<br><strong>Date posted</strong>: ' + dateposted + '<br><strong>Time posted</strong>: ' + timeposted + '<br><strong>Number:+30</strong> ' 
-            + number + '<br><strong>State:</strong> ' + state +'<br>';  // Include the button HTML in the message
+  // Loop through the data and create markers
+  for (var i = 0; i < data.length; i++) {
+      var location3 = new L.LatLng(data[i].latitude, data[i].longitude);
 
-        // Create a new marker with custom icon
-        var marker = L.marker(location, {
-            icon: L.icon({
-                iconUrl: 'pin1.png', // Path to your custom icon image
-                iconSize: [32, 32], // Size of the icon
-                iconAnchor: [16, 32], // Anchor point of the icon, usually the center bottom
-                popupAnchor: [0, -32] // Popup anchor relative to the icon
-            })
-        });
+      var request_id = data[i].id_request;
+      var request_category = data[i].request_category;
+      var request_product_name = data[i].request_product_name;
+      var persons = data[i].persons;
+      var request_date_posted = data[i].request_date_posted;
+      var request_time_posted = data[i].request_time_posted;
+      var state = data[i].state;
+      var number = data[i].number;
+      var task_date = data[i].task_date;
+      var task_time = data[i].task_time;
+      var task_volunteer = data[i].task_volunteer;
+      var first_name = data[i].first_name;
+      var last_name = data[i].last_name;
 
-        // Bind popup content to the marker
-        marker.bindPopup(message);
-        // Add marker to the marker cluster group
-        onTheWayRequests.addLayer(marker);
-    }
+      //var delivery_button = '<button class="Delivery" onclick="deliver_requests(' + request_id + ')">Deliver</button>';
+      //var delete_button = '<button class="Delete" onclick="delete_request(' + request_id + ')">Delete</button>';
 
-    // Add the marker cluster group to the map
-    map.addLayer(onTheWayRequests);
+      var message3 = 'Hello <strong>'+ task_volunteer + '</strong> you request is !'+ '<br><br><strong>'+first_name + ' ' + last_name + ' Requests:</strong><br>' + '<strong>From ' + request_category + '</strong>: ' + request_product_name + '<br><strong>For</strong>: ' 
+          + persons + ' persons.' + '<br><strong>Date posted</strong>: ' + request_date_posted + '<br><strong>Time posted</strong>: ' + request_time_posted + '<br><strong>Number:+30</strong> ' 
+          + number + '<br><strong>Date accepted</strong>: ' + task_date + '<br><strong>Time posted</strong>: ' + task_time + '<br><strong>State:</strong> ' + state +
+          '<br>';  // Include the button HTML in the message
+
+      // Create a new marker with custom icon
+      var marker3 = L.marker(location3, { 
+          icon: L.icon({
+              iconUrl: 'pin1.png', // Path to your custom icon image
+              iconSize: [32, 32], // Size of the icon
+              iconAnchor: [16, 32], // Anchor point of the icon, usually the center bottom
+              popupAnchor: [0, -32] // Popup anchor relative to the icon
+          })
+      });
+      
+      // Bind popup content to the marker
+      marker3.bindPopup(message3);
+      onTheWayRequests.addLayer(marker3); // Add marker to the marker cluster grou
+  }
+
+  // Add the marker cluster group to the map
+  map.addLayer(onTheWayRequests);
+
 }
 
 

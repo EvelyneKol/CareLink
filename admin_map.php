@@ -1,8 +1,8 @@
 <?php
 // Σύνδεση στη βάση δεδομένων
 $servername = "localhost";
-$username = "evelina";
-$password = "Evel1084599!";
+$username = "root";
+$password = "karagiannis";
 $dbname = "carelink";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -72,38 +72,39 @@ if (isset($_GET['update_json1'])) {
 // Αιτήματα
 function fetchWaitingRequests($conn) {
     $request = "SELECT request.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
-                SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
-                SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
-                FROM request 
-                JOIN civilian ON request.request_civilian = civilian.civilian_username ";
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
+                    FROM request 
+                    JOIN civilian ON request.request_civilian = civilian.civilian_username 
+                    WHERE request.state='WAITING'";
 
-    $data4 = array();
-    $sqlrequest = $conn->query($request);
+        $data1 = array();
+        $sqlrequest = $conn->query($request);
 
-    if ($sqlrequest) {
-        while ($row = $sqlrequest->fetch_assoc()) {
-            $data4[] = array(
-                "id_request" => $row["id_request"],
-                "request_civilian" => $row["request_civilian"],
-                "request_category" => $row["request_category"],
-                "request_product_name" => $row["request_product_name"],
-                "persons" => $row["persons"],
-                "request_date_posted" => $row["request_date_posted"],
-                "request_time_posted" => $row["request_time_posted"], 
-                "state" => $row["state"],
-                "number" => $row["civilian_number"],
-                "first_name" => $row["civilian_first_name"],
-                "last_name" => $row["civilian_last_name"],
-                "latitude" => $row["latitude"], 
-                "longitude" => $row["longitude"]
-            );
-        }
+        if ($sqlrequest) {
+            while ($row = $sqlrequest->fetch_assoc()) {
+                $data1[] = array(
+                    "id_request" => $row["id_request"],
+                    "request_civilian" => $row["request_civilian"],
+                    "request_category" => $row["request_category"],
+                    "request_product_name" => $row["request_product_name"],
+                    "persons" => $row["persons"],
+                    "request_date_posted" => $row["request_date_posted"],
+                    "request_time_posted" => $row["request_time_posted"], 
+                    "state" => $row["state"],
+                    "number" => $row["civilian_number"],
+                    "first_name" => $row["civilian_first_name"],
+                    "last_name" => $row["civilian_last_name"],
+                    "latitude" => $row["latitude"], 
+                    "longitude" => $row["longitude"]
+                );
+            }
 
         // Encode $data4 array to JSON
-        $json_data = json_encode($data4);
+        $json_data = json_encode($data1);
 
         // Specify the path to store the JSON file
-        $json_file = 'data4.json';
+        $json_file = 'waitingRequests.json';
 
         // Write JSON data to file
         if (file_put_contents($json_file, $json_data)) {
@@ -126,45 +127,61 @@ if (isset($_GET['update_json5'])) {
     fetchWaitingRequests($conn);
 }
 
-function fetchOffers($conn) {
-    $offers = "SELECT offer.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
-                SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
-                SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
-                FROM offer 
-                JOIN civilian ON offer.offer_civilian = civilian.civilian_username
-                WHERE offer.offer_status='WAITING'";
+
+
+
+function fetchOnWayRequests($conn){
+    $myrequest = "SELECT request.*,civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
+                    task.*
+                    FROM
+                    request
+                    JOIN
+                    civilian ON request.request_civilian = civilian.civilian_username
+                    JOIN
+                    task ON request.id_request = task.task_request_id
+                    WHERE
+                    request.id_request IN (
+                        SELECT task_request_id
+                        FROM task) AND request.state = 'ON THE WAY'";
 
     $data3 = array();
-    $sqloffers = $conn->query($offers);
 
-    if ($sqloffers) {
-        while ($row = $sqloffers->fetch_assoc()) {
+    $sqlmyrequest = $conn->query($myrequest);
+
+    if ($sqlmyrequest) {
+        while ($row = $sqlmyrequest->fetch_assoc()) {
             $number = $row["civilian_number"];
             $first_name = $row["civilian_first_name"];
             $last_name = $row["civilian_last_name"];
 
             $data3[] = array(
-                "offer_id" => $row["offer_id"],
-                "offer_civilian" => $row["offer_civilian"],
-                "offer_category" => $row["offer_category"],
-                "offer_product_name" => $row["offer_product_name"],
-                "offer_quantity" => $row["offer_quantity"],
-                "offer_date_posted" => $row["offer_date_posted"],
-                "offer_time_posted" => $row["offer_time_posted"],
-                "offer_status" => $row["offer_status"],
+                "id_request" => $row["id_request"],
+                "request_civilian" => $row["request_civilian"],
+                "request_category" => $row["request_category"],
+                "request_product_name" => $row["request_product_name"],
+                "persons" => $row["persons"],
+                "request_date_posted" => $row["request_date_posted"],
+                "request_time_posted" => $row["request_time_posted"], 
+                "state" => $row["state"],
                 "number" => $number,
                 "first_name" => $first_name,
                 "last_name" => $last_name,
                 "latitude" => $row["latitude"], 
-                "longitude" => $row["longitude"]
+                "longitude" => $row["longitude"], 
+                "task_date" => $row["task_date"],
+                "task_time" => $row["task_time"], 
+                "task_volunteer" => $row["task_volunteer"]
+                
             );
         }
-
-        // Encode $data3 array to JSON
+       
+        // Encode $data1 array to JSON
         $json_data = json_encode($data3);
 
-        // path για αποθηκευση JSON file
-        $json_file = 'data3.json';
+        // Specify the path to store the JSON file
+        $json_file = 'OnWayRequests.json';
 
         // Write JSON data to file
         if (file_put_contents($json_file, $json_data)) {
@@ -172,20 +189,18 @@ function fetchOffers($conn) {
         } else {
             return "Unable to write JSON data to $json_file";
         }
-
         // Close the result set
-        $sqloffers->close();
+        $sqlmyrequest->close();
     } else {
         die("Error executing the SQL query: " . $conn->error);
     }
 }
-
-// ελεγξε αν τα offers ανενεωθηκαν στο JSON file
+// Check if this request is to update the JSON file
 if (isset($_GET['update_json3'])) {
-    echo fetchOffers($conn);
+    echo fetchOnWayRequests($conn);
     exit();
 } else {
-    fetchOffers($conn);
+    fetchOnWayRequests($conn);
 }
 
 // Κλείσιμο σύνδεσης με τη βάση δεδομένων
