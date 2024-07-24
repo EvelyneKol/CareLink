@@ -17,55 +17,67 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-//οχήματα που περιμένουν 
-function waitingVehicles($conn) {
-    // The query to select vehicle names from vehicle table that do not exist in vehiclesOnAction table
-    $request = "SELECT v.vehicle_name,
-                       SUBSTRING_INDEX(v.vehicle_location, ',', 1) AS latitude,
-                       SUBSTRING_INDEX(v.vehicle_location, ',', -1) AS longitude
-                FROM vehicle v
-                LEFT JOIN vehiclesOnAction va ON v.vehicle_name = va.v_name
-                WHERE va.v_name IS NULL";
 
-    $data1 = array();
-    $sqlrequest = $conn->query($request);
+//οχηματα
+$vehicles = "
+    SELECT 
+        vehicle.vehicle_name,
+        SUBSTRING_INDEX(vehicle.vehicle_location, ',', 1) AS latitude,
+	    SUBSTRING_INDEX(vehicle.vehicle_location, ',', -1) AS longitude,
+        COALESCE(vehiclesOnAction.quantity, 0) AS quantity,
+        COALESCE(vehiclesOnAction.products, 'No products') AS products,
+        COUNT(task.task_id) AS task_count
+    FROM 
+        vehicle
+    LEFT JOIN 
+        vehiclesOnAction ON vehicle.vehicle_name = vehiclesOnAction.v_name
+    LEFT JOIN 
+        task ON vehiclesOnAction.driver = task.task_volunteer
+    GROUP BY 
+        vehicle.vehicle_name, 
+        vehiclesOnAction.quantity, 
+        vehiclesOnAction.products
+    ";
 
-    if ($sqlrequest) {
-        while ($row = $sqlrequest->fetch_assoc()) {
-            $data1[] = array(
+    $data2 = array();
+    $sqlVehicle = $conn->query($vehicles);
+    
+    if ($sqlVehicle) {
+        // Initialize an empty array to hold the data
+        $data2 = array();
+    
+        while ($row = $sqlVehicle->fetch_assoc()) {        
+            // Populate the $data2 array with data from the query
+            $data2[] = array(
                 "vehicle_name" => $row["vehicle_name"],
-                "latitude" => $row["latitude"],
+                "quantity" => $row["quantity"],
+                "products" => $row["products"],
+                "task_count" => $row["task_count"],
+                "latitude" => $row["latitude"], 
                 "longitude" => $row["longitude"]
             );
         }
-
-        // Encode $data1 array to JSON
-        $json_data = json_encode($data1);
-
+       
+        // Encode $data3 array to JSON
+        $json_data = json_encode($data2);
+    
         // Specify the path to store the JSON file
-        $json_file = 'waiting_vehicles.json';
-
+        $json_file = 'vehicles.json';
+    
         // Write JSON data to file
         if (file_put_contents($json_file, $json_data)) {
-            return "JSON data successfully written to $json_file";
+           
         } else {
-            return "Unable to write JSON data to $json_file";
+            echo "Unable to write JSON data to $json_file";
         }
-
-        $sqlrequest->close();
+        
+        // Close the result set
+        $sqlVehicle->close();
     } else {
-        return "Error executing the SQL query: " . $conn->error;
+        die("Error executing the SQL query: " . $conn->error);
     }
-}
 
-
-// ελεγξε αν τα request ανενεωθηκαν στο JSON file
-if (isset($_GET['update_json1'])) {
-    echo waitingVehicles($conn);
-    exit();
-} else {
-    waitingVehicles($conn);
-}
+    
 
 
 
@@ -195,7 +207,6 @@ if ($sqlmyrequest) {
 } else {
     die("Error executing the SQL query: " . $conn->error);
 }
-
 
 
 function fetchOnWayRequests($conn){

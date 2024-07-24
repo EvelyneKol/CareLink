@@ -59,8 +59,7 @@
   var onTheWayRequests;
   var WaitingRequests;
   var Lines;
-  var waiting_vehicles = [];
-  var onTheWayVihicles = [];
+  var vehicles = [];
   var offers_response = [];
   var WaitingRequests = [];
   var OnWayRequests = [];
@@ -68,17 +67,10 @@
 
 
   // Fetch the JSON data from the file
-  fetch('waiting_vehicles.json')
+  fetch('vehicles.json')
   .then(response => response.json())
   .then(data => {
-    waiting_vehicles = data;
-  })
-  .catch(error => console.error('Error fetching the JSON data:', error));
-  
-  fetch('onTheWayVihicles.json')
-  .then(response => response.json())
-  .then(data => {
-      data2 = data;
+    vehicles = data;
   })
   .catch(error => console.error('Error fetching the JSON data:', error));
 
@@ -135,9 +127,9 @@
     
       // ανάλογα το κουμπί που πατήθηκε, εμφανίζονται οι κατάλληλοι markers
       if (layer === 'layer1') {
-          Waiting_vehicles_markers(waiting_vehicles);
+          Waiting_vehicles_markers(vehicles);
       } else if (layer === 'layer2') {
-          on_the_way_vehicles_markers(data2);
+          on_the_way_vehicles_markers(vehicles);
       } else if (layer === 'layer3') {
           offers_markers(offers_response); 
       } else if (layer === 'layer4') {
@@ -153,8 +145,6 @@
 
 
 /*==================================================================================================================*/
-
-
     // Function to initialize markers for waiting requests
     function Waiting_vehicles_markers(data) {
       // Create a new marker cluster group for waiting requests
@@ -162,16 +152,23 @@
   
       // Loop through the data and create markers
       for (var i = 0; i < data.length; i++) {
-          var location = new L.LatLng(data[i].latitude, data[i].longitude);
+        var location = new L.LatLng(data[i].latitude, data[i].longitude);
 
         var vehicle_name = data[i].vehicle_name;
+        var quantity = data[i].quantity;
+        var products = data[i].products;
+        var task_count = data[i].task_count;
 
-        var message = '<strong>Vehicle:</strong> ' + vehicle_name;
+        if (task_count == 0) {
+
+          var message = '<strong>Vehicle:</strong> ' + vehicle_name + ' ' +
+        '<strong>Quantity:</strong> ' + ' ' +quantity + '<strong>Products:</strong> ' +
+         + ' ' + products + '<strong>No of Active Tasks: </strong> ' + task_count;
   
           // Create a new marker with custom icon
           var marker = L.marker(location, {
               icon: L.icon({
-                  iconUrl: 'trucker.png', // Path to your custom icon image
+                  iconUrl: 'truck.png', // Path to your custom icon image
                   iconSize: [32, 32], // Size of the icon
                   iconAnchor: [16, 32], // Anchor point of the icon, usually the center bottom
                   popupAnchor: [0, -32] // Popup anchor relative to the icon
@@ -182,16 +179,63 @@
           marker.bindPopup(message);
           // Add marker to the marker cluster group
           vehiclesWaiting.addLayer(marker);
-      }
-  
-      // Add the marker cluster group to the map
-      map.addLayer(vehiclesWaiting);
+        }
+    
+        // Add the marker cluster group to the map
+        map.addLayer(vehiclesWaiting);
+
+        }
+
+        
   }
 
-
 /* ================================================================================================================== */
+ // Function to initialize markers for waiting requests
+ function on_the_way_vehicles_markers(data) {
+  // Create a new marker cluster group for waiting requests
+  vehiclesOnAction = L.markerClusterGroup();
+
+  // Loop through the data and create markers
+  for (var i = 0; i < data.length; i++) {
+    var location = new L.LatLng(data[i].latitude, data[i].longitude);
+
+    var vehicle_name = data[i].vehicle_name;
+    var quantity = data[i].quantity;
+    var products = data[i].products;
+    var task_count = data[i].task_count;
+
+    if (task_count > 0) {
+
+      var message = '<strong>Vehicle:</strong> ' + vehicle_name + ' ' +
+    '<strong>Quantity:</strong> ' + ' ' +quantity + '<strong>Products:</strong> ' +
+     + ' ' + products + '<strong>No of Active Tasks: </strong> ' + task_count;
+
+      // Create a new marker with custom icon
+      var marker = L.marker(location, {
+          icon: L.icon({
+              iconUrl: 'truck.png', // Path to your custom icon image
+              iconSize: [32, 32], // Size of the icon
+              iconAnchor: [16, 32], // Anchor point of the icon, usually the center bottom
+              popupAnchor: [0, -32] // Popup anchor relative to the icon
+          })
+      });
+
+      // Bind popup content to the marker
+      marker.bindPopup(message);
+      // Add marker to the marker cluster group
+      vehiclesOnAction.addLayer(marker);
+    }
+
+    // Add the marker cluster group to the map
+    map.addLayer(vehiclesOnAction);
+
+    }
+
+}
 
 
+
+/* ======================================================================================== */
   // Function to initialize markers for waiting requests
   function Waiting_requests_markers(data) {
       // Create a new marker cluster group for waiting requests
