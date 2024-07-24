@@ -13,42 +13,10 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION
     exit();
 }
 
-/* // Initial counts for the all-time data
-$waitingRequests = 0;
-$completedRequests = 0;
-$waitingOffers = 0;
-$completedOffers = 0;
+// Fetch unique category names
+$sql = "SELECT DISTINCT category_name FROM categories";
+$result = $conn->query($sql);
 
-// Fetch initial counts (all-time data)
-$sqlWaitingRequests = "SELECT COUNT(*) AS WaitingRequests FROM request WHERE state = 'WAITING'";
-$resultWaitingRequests = $conn->query($sqlWaitingRequests);
-if ($resultWaitingRequests) {
-    $row = $resultWaitingRequests->fetch_assoc();
-    $waitingRequests = $row['WaitingRequests'];
-}
-
-$sqlCompletedRequests = "SELECT COUNT(*) AS CompletedRequests FROM request WHERE state = 'COMPLETED'";
-$resultCompletedRequests = $conn->query($sqlCompletedRequests);
-if ($resultCompletedRequests) {
-    $row = $resultCompletedRequests->fetch_assoc();
-    $completedRequests = $row['CompletedRequests'];
-}
-
-$sqlWaitingOffers = "SELECT COUNT(*) AS WaitingOffers FROM offer WHERE offer_status = 'WAITING'";
-$resultWaitingOffers = $conn->query($sqlWaitingOffers);
-if ($resultWaitingOffers) {
-    $row = $resultWaitingOffers->fetch_assoc();
-    $waitingOffers = $row['WaitingOffers'];
-}
-
-$sqlCompletedOffers = "SELECT COUNT(*) AS CompletedOffers FROM offer WHERE offer_status = 'COMPLETED'";
-$resultCompletedOffers = $conn->query($sqlCompletedOffers);
-if ($resultCompletedOffers) {
-    $row = $resultCompletedOffers->fetch_assoc();
-    $completedOffers = $row['CompletedOffers'];
-} */
-
-$conn->close();
 ?>
 
 <!DOCTYPE html>
