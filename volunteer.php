@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
-$username = "evelina";
-$password = "Evel1084599!";
+$username = "root";
+$password = "karagiannis";
 $dbname = "carelink";
 
     // Create connection
@@ -192,7 +192,8 @@ $dbname = "carelink";
                     
                 );
             }
-
+            // Store $data3 in a session variable
+            $_SESSION['data3'] = $data3;
     
             // Encode $data1 array to JSON
             $json_data = json_encode($data3);
@@ -239,7 +240,7 @@ $dbname = "carelink";
                         offer.offer_id IN (
                             SELECT task_offer_id
                             FROM task
-                            WHERE task_volunteer = '$defaultUsername')";
+                            WHERE task_volunteer = '$defaultUsername') AND offer.offer_status='ON THE WAY'";
 
         $data4 = array();
 
@@ -271,7 +272,9 @@ $dbname = "carelink";
                     
                 );
             }
-            
+            // Store $data3 in a session variable
+            $_SESSION['data4'] = $data4;
+
             // Encode $data1 array to JSON
             $json_data = json_encode($data4);
 
@@ -287,8 +290,6 @@ $dbname = "carelink";
 
             // Close the result set
             $sqlmyoffers->close();
-            // Store $data3 in a session variable
-            $_SESSION['data4'] = $data4;
 
         } else {
             die("Error executing the SQL query: " . $conn->error);
@@ -380,6 +381,8 @@ $dbname = "carelink";
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="volunteer.css">
+
+  
   <style>
         .thirdsection .Acceptbut,.Delivery {
             background-color: rgb(3, 129, 178);
@@ -417,6 +420,7 @@ $dbname = "carelink";
             background-color: rgba(178, 29, 3, 0.678);
             color: rgb(217, 217, 217);
             }
+
     </style>
 </head>
 
@@ -432,7 +436,6 @@ $dbname = "carelink";
 
     <div class="Main container-fluid">
         <div class="Firstsection">
-            <h2> Volunteer</h2>
             <div class="container mt-5">
                 <div class="row">
                     <div class="col-sm-4">
@@ -614,6 +617,7 @@ $dbname = "carelink";
                 <summary>Status of my Truck</summary>
                 <div id="vehiclestatus"></div>
             </details>
+            
         </div>
 
         <div class="thirdsection">
@@ -641,12 +645,12 @@ $dbname = "carelink";
           <hr>
           <div class="row">
                 <div class="col-sm-6">
-                <h2 class="with-hr" style="text-align: center;">Requests</h2>
+                <h2 class="with-hr" style="text-align: center;">You have requests for:</h2>
                     <div id="myRequests"></div>
                     <br>
                 </div>
                 <div class="col-sm-6">
-                <h2 class="with-hr" style="text-align: center;">Offers</h2>
+                <h2 class="with-hr" style="text-align: center;">You have Offers from:</h2>
                     <div id="myOffers"></div>
                     <br>
                 </div>
@@ -691,25 +695,6 @@ $dbname = "carelink";
   </script>
 
   <script>
-    function showRequests(username) {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                document.getElementById("vehiclestatus").innerHTML = this.responseText;
-            }
-        };
-        xmlhttp.open("GET", "load_vehicle.php?q=" + username, true);
-        xmlhttp.send();
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        // Get the default username value
-        var defaultUsername = document.getElementById("txtUsername").value;
-
-        // Call showRequests to fetch and display user requests
-        showRequests(defaultUsername);
-    });
-
     // JavaScript functions
     function handle_requests(requestId) {
             var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
@@ -972,7 +957,7 @@ $dbname = "carelink";
         xhr.send(formData);
     }
 
-    function showRequests(username) {
+    function showMyRequests(username) {
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
@@ -987,11 +972,11 @@ $dbname = "carelink";
             // Get the default username value
             var defaultUsername = document.getElementById("txtUsername").value;
 
-            // Call showRequests to fetch and display user requests
-            showRequests(defaultUsername);
+            // Call showMyRequests to fetch and display user requests
+            showMyRequests(defaultUsername);
         });
 
-    function showOffers(username) {
+    function showMyOffers(username) {
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
@@ -1006,10 +991,28 @@ $dbname = "carelink";
             // Get the default username value
             var defaultUsername = document.getElementById("txtUsername").value;
 
-            // Call showRequests to fetch and display user requests
-            showOffers(defaultUsername);
+            // Call showMyOffers to fetch and display user offers
+            showMyOffers(defaultUsername);
         });
-  </script>
 
+    function LoadVehicle(username) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("vehiclestatus").innerHTML = this.responseText;
+            }
+        };
+        xmlhttp.open("GET", "load_vehicle.php?q=" + username, true);
+        xmlhttp.send();
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get the default username value
+        var defaultUsername = document.getElementById("txtUsername").value;
+
+        // Call LoadVehicle to fetch and display user requests
+        LoadVehicle(defaultUsername);
+    });
+  </script>
 </body>
 </html>

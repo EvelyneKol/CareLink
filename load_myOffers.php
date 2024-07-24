@@ -27,7 +27,7 @@
   padding-left: 20px;
 }
 
-h4, .h4 {
+h3, .h3 {
   text-align:center;
   font-size: 1.5em;
   font-weight: 600;
@@ -46,7 +46,7 @@ h4, .h4 {
   float:right;
 }
 
-.delete {
+.DeleteOffer {
   margin-top: 20px;
   padding: 5px 14px;
   border-radius: 4px;
@@ -56,9 +56,26 @@ h4, .h4 {
   transition-duration: 0.4s;
 }
 
-.delete:active,
-.delete:hover {
-  background-color: rgb(0, 146, 195);
+.DeleteOffer:active,
+.DeleteOffer:hover {
+  background-color: rgb(195, 0, 0);
+  color: rgb(255, 255, 255);
+}
+
+.AcceptOffer {
+  margin-top: 20px;
+  margin-right: 20px;
+  padding: 5px 14px;
+  border-radius: 4px;
+  background-color: rgba(221, 221, 221, 0.662);
+  color: black;
+  border: none;
+  transition-duration: 0.4s;
+}
+
+.AcceptOffer:active,
+.AcceptOffer:hover {
+  background-color: rgb(33, 195, 0);
   color: rgb(255, 255, 255);
 }
 
@@ -80,16 +97,15 @@ $data4 = isset($_SESSION['data4']) ? $_SESSION['data4'] : [];
 foreach ($data4 as $row) {
     echo '<div class="card">';
     echo '<div class="content">';
-    echo '<h4 class="title"> Your request from ' . htmlspecialchars($row["offer_category"]) . '</h4>';
+    echo '<h3 class="title">'.htmlspecialchars($row["first_name"]).' '.htmlspecialchars($row["last_name"]).' </h3>';
+    echo '<p class="description"> Category: ' . htmlspecialchars($row["offer_category"]) . '</p>';
     echo '<p class="description"> Product: ' . htmlspecialchars($row["offer_product_name"]) . '</p>';
     echo '<p class="description"> Num of People: ' . htmlspecialchars($row["offer_quantity"]) . '</p>';
     echo '<p class="description"> Date Posted: ' . htmlspecialchars($row["offer_date_posted"]) . '</p>';
-    echo '<p class="description"> Time Posted: ' . htmlspecialchars($row["offer_time_posted"]) . '</p>';
-    if($row["offer_status"] == "WAITING") {
-        echo '<p class="description"> State: ' . htmlspecialchars($row["offer_status"]) . '</p>';
-    } else {
-        echo '<p class="description"> State: ' . htmlspecialchars($row["offer_status"]) . '</p>';
-    }
+    echo '<p class="description"> Phone: +30 ' . htmlspecialchars($row["number"]) . '</p>';
+    echo '<p class="description"> State: ' . htmlspecialchars($row["offer_status"]) . '</p>';
+    echo '<button class="DeleteOffer" onclick="deleteRequest(' . htmlspecialchars($row["offer_id"]) . ')">Delete</button>';
+    echo '<button class="AcceptOffer">Accept</button>';
     echo '</div>';
     echo '</div>';
 }
