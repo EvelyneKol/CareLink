@@ -3,15 +3,6 @@
     attribution:
       '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
   }).addTo(map);
-  
-  var layerGroups = {
-    layer1: L.markerClusterGroup(),
-    layer2: L.markerClusterGroup(),
-    layer3: L.markerClusterGroup(),
-    layer4: L.markerClusterGroup(),
-    layer5: L.markerClusterGroup()
-};
-
 
   var baseMarker = L.marker([38.2904558214517, 21.79578903224108], { draggable: true });
   var popup1 = baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
@@ -64,13 +55,13 @@
   // Define global variables for layers
   var vehiclesWaiting;
   var vehiclesOnAction;
-  var offers;
+  var offers_response;
   var onTheWayRequests;
   var WaitingRequests;
   var Lines;
   var waiting_vehicles = [];
-  var data2 = [];
-  var data3 = [];
+  var onTheWayVihicles = [];
+  var offers_response = [];
   var WaitingRequests = [];
   var OnWayRequests = [];
   var data6 = [];
@@ -84,17 +75,17 @@
   })
   .catch(error => console.error('Error fetching the JSON data:', error));
   
-  fetch('data2.json')
+  fetch('onTheWayVihicles.json')
   .then(response => response.json())
   .then(data => {
       data2 = data;
   })
   .catch(error => console.error('Error fetching the JSON data:', error));
 
-  fetch('data3.json')
+  fetch('offers_response.json')
   .then(response => response.json())
   .then(data => {
-      data3 = data;
+    offers_response = data;
   })
   .catch(error => console.error('Error fetching the JSON data:', error));
  
@@ -129,8 +120,8 @@
       if (map.hasLayer(vehiclesOnAction)) {
           map.removeLayer(vehiclesOnAction);
       }
-      if (map.hasLayer(offers)) {
-          map.removeLayer(offers);
+      if (map.hasLayer(offers_response)) {
+          map.removeLayer(offers_response);
       }
       if (map.hasLayer(WaitingRequests)) {
         map.removeLayer(WaitingRequests);
@@ -148,7 +139,7 @@
       } else if (layer === 'layer2') {
           on_the_way_vehicles_markers(data2);
       } else if (layer === 'layer3') {
-          offers_markers(data3); 
+          offers_markers(offers_response); 
       } else if (layer === 'layer4') {
         Waiting_requests_markers(waitingRequests); 
       }
@@ -302,5 +293,50 @@ function on_the_way_requests_markers(data) {
 
 }
 
+/*============================προσφορές===================================== */
+// Function to initialize markers for waiting requests
+function offers_markers(data) {
+  // Create a new marker cluster group for waiting requests
+  offers_response = L.markerClusterGroup();
+
+  // Loop through the data and create markers
+  for (var i = 0; i < data.length; i++) {
+      var location = new L.LatLng(data[i].latitude, data[i].longitude);
+      
+      var civilian_username = data[i].civilian_username;
+      var civilian_number = data[i].civilian_number;
+      var offer_date_posted = data[i].offer_date_posted;
+      var offer_category = data[i].offer_category;
+      var offer_status = data[i].offer_status;
+      var offer_product_name = data[i].offer_product_name;
+      var offer_quantity = data[i].offer_quantity;
+      var vehicle_name = data[i].vehicle_name;
+
+      var message = '<strong>'+civilian_username + ' ' + civilian_number + 
+      ' Οffers:</strong><br>' + '<strong>From ' + offer_date_posted + '</strong>: ' + 
+      offer_product_name + '<br><strong>For</strong>: ' 
+      + offer_quantity + ' persons.' + '<br><strong>Date posted</strong>: ' + offer_date_posted + 
+      '<br><strong>Time posted</strong>: ' + vehicle_name + '<br><strong>Number:+30</strong> ' 
+      + offer_category + '<br><strong>State:</strong> ' + offer_status; 
+
+      // Create a new marker with custom icon
+      var marker = L.marker(location, {
+          icon: L.icon({
+              iconUrl: 'pin1.png', // Path to your custom icon image
+              iconSize: [32, 32], // Size of the icon
+              iconAnchor: [16, 32], // Anchor point of the icon, usually the center bottom
+              popupAnchor: [0, -32] // Popup anchor relative to the icon
+          })
+      });
+
+      // Bind popup content to the marker
+      marker.bindPopup(message);
+      // Add marker to the marker cluster group
+      offers_response.addLayer(marker);
+  }
+
+  // Add the marker cluster group to the map
+  map.addLayer(offers_response);
+}
 
 

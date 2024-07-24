@@ -1,8 +1,8 @@
 <?php
 // Σύνδεση στη βάση δεδομένων
 $servername = "localhost";
-$username = "root";
-$password = "karagiannis";
+$username = "evelina";
+$password = "Evel1084599!";
 $dbname = "carelink";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -127,6 +127,74 @@ if (isset($_GET['update_json5'])) {
     fetchWaitingRequests($conn);
 }
 
+$offers = "SELECT 
+        civilian.civilian_username,
+        civilian.civilian_number,
+        SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+        SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
+        offer.offer_date_posted,
+        offer.offer_category,
+        offer.offer_status,
+        offer.offer_product_name,
+        offer.offer_quantity,
+        vehicle.vehicle_name
+        FROM 
+        offer
+        JOIN 
+        civilian ON offer.offer_civilian = civilian.civilian_username
+        LEFT JOIN 
+        task ON offer.offer_id = task.task_offer_id
+        LEFT JOIN 
+        vehiclesOnAction ON task.task_volunteer = vehiclesOnAction.driver
+        LEFT JOIN 
+        vehicle ON vehiclesOnAction.v_name = vehicle.vehicle_name
+        WHERE 
+        offer.offer_status NOT IN ('CANCELED', 'COMPLETED');
+        ";
+
+$data3 = array();
+$sqlmyrequest = $conn->query($offers);
+
+if ($sqlmyrequest) {
+    // Initialize an empty array to hold the data
+    $data3 = array();
+
+    while ($row = $sqlmyrequest->fetch_assoc()) {
+        $number = $row["civilian_number"];
+    
+        // Populate the $data3 array with data from the query
+        $data3[] = array(
+            "civilian_username" => $row["civilian_username"],
+            "civilian_number" => $number,
+            "offer_date_posted" => $row["offer_date_posted"],
+            "offer_category" => $row["offer_category"],
+            "offer_status" => $row["offer_status"],
+            "offer_product_name" => $row["offer_product_name"],
+            "offer_quantity" => $row["offer_quantity"], 
+            "vehicle_name" => $row["vehicle_name"],
+            "latitude" => $row["latitude"], 
+            "longitude" => $row["longitude"]
+        );
+    }
+   
+    // Encode $data3 array to JSON
+    $json_data = json_encode($data3);
+
+    // Specify the path to store the JSON file
+    $json_file = 'offers_response.json';
+
+    // Write JSON data to file
+    if (file_put_contents($json_file, $json_data)) {
+       
+    } else {
+        echo "Unable to write JSON data to $json_file";
+    }
+    
+    // Close the result set
+    $sqlmyrequest->close();
+} else {
+    die("Error executing the SQL query: " . $conn->error);
+}
 
 
 
