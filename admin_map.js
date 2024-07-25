@@ -255,8 +255,26 @@ function on_the_way_requests_markers(data) {
   // Loop through the data and create markers
   for (let i = 0; i < data.length; i++) {
     const location = new L.LatLng(data[i].latitude, data[i].longitude);
-    const message = `Hello <strong>${data[i].request_category}</strong> `;
+    var civilian_first_name = data[i].civilian_first_name;
+          var civilian_last_name = data[i].civilian_last_name;
+          var civilian_number = data[i].civilian_number;
+          var request_date_posted = data[i].request_date_posted;
+          var request_category = data[i].request_category;
+          var state = data[i].state;
+          var request_product_name = data[i].request_product_name;
+          var persons = data[i].persons;
+          var task_date = data[i].task_date;
+          var vehicle_name = data[i].vehicle_name;
 
+    const message = '<strong>' + civilian_first_name + ' ' + civilian_last_name + 
+                ' requests: </strong><br>' + '<strong> ' + 
+                request_category + '</strong>: ' + request_product_name + '<br><strong>For</strong>: ' +
+                persons + ' persons' + '<br><strong>Date posted</strong>: ' + 
+                request_date_posted + '<br><strong>Number: </strong> ' + '+30'+ civilian_number +
+                '<br><strong>Vehicle</strong> ' + vehicle_name +
+                '<br><strong>Date Accepted </strong> ' + task_date + 
+                '<br><strong>State:</strong> ' + state ;
+                 
     // Create a new marker with a custom icon
     const marker = L.marker(location, {
       icon: L.icon({

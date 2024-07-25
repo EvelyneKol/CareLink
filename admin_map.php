@@ -1,8 +1,8 @@
 <?php
 // Σύνδεση στη βάση δεδομένων
 $servername = "localhost";
-$username = "evelina";
-$password = "Evel1084599!";
+$username = "root";
+$password = "karagiannis";
 $dbname = "carelink";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -205,77 +205,72 @@ if ($sqloffers) {
 }
 
 
-function fetchOnWayRequests($conn){
-    $myrequest = "SELECT request.*,civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
-                    SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
-                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
-                    task.*
-                    FROM
-                    request
-                    JOIN
-                    civilian ON request.request_civilian = civilian.civilian_username
-                    JOIN
-                    task ON request.id_request = task.task_request_id
-                    WHERE
-                    request.id_request IN (
-                        SELECT task_request_id
-                        FROM task) AND request.state = 'ON THE WAY'";
 
-    $data3 = array();
+//on the way requests
+$onTheWayRequests = "SELECT 
+                civilian.civilian_first_name,
+                civilian.civilian_last_name,
+                civilian.civilian_number,
+                SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
+                request.request_date_posted,
+                request.request_category,
+                request.state,
+                request.request_product_name,
+                request.persons,
+                task.task_date,
+	            vehicle.vehicle_name
+                FROM 
+                request
+                JOIN 
+                civilian ON request.request_civilian = civilian.civilian_username
+                LEFT JOIN 
+                task ON request.id_request = task.task_offer_id
+                LEFT JOIN 
+                vehiclesOnAction ON task.task_volunteer = vehiclesOnAction.driver
+                LEFT JOIN 
+                vehicle ON vehiclesOnAction.v_name = vehicle.vehicle_name
+                WHERE  request.state = 'ON THE WAY'";
 
-    $sqlmyrequest = $conn->query($myrequest);
+$onTheWayRequestData = array();
 
-    if ($sqlmyrequest) {
-        while ($row = $sqlmyrequest->fetch_assoc()) {
-            $number = $row["civilian_number"];
-            $first_name = $row["civilian_first_name"];
-            $last_name = $row["civilian_last_name"];
+$sqlOnTheWayRequest = $conn->query($onTheWayRequests);
 
-            $data3[] = array(
-                "id_request" => $row["id_request"],
-                "request_civilian" => $row["request_civilian"],
-                "request_category" => $row["request_category"],
-                "request_product_name" => $row["request_product_name"],
-                "persons" => $row["persons"],
-                "request_date_posted" => $row["request_date_posted"],
-                "request_time_posted" => $row["request_time_posted"], 
-                "state" => $row["state"],
-                "number" => $number,
-                "first_name" => $first_name,
-                "last_name" => $last_name,
-                "latitude" => $row["latitude"], 
-                "longitude" => $row["longitude"], 
-                "task_date" => $row["task_date"],
-                "task_time" => $row["task_time"], 
-                "task_volunteer" => $row["task_volunteer"]
-                
-            );
-        }
+if ($sqlOnTheWayRequest) {
+    while ($row = $sqlOnTheWayRequest->fetch_assoc()) {
        
-        // Encode $data1 array to JSON
-        $json_data = json_encode($data3);
-
-        // Specify the path to store the JSON file
-        $json_file = 'OnWayRequests.json';
-
-        // Write JSON data to file
-        if (file_put_contents($json_file, $json_data)) {
-            return "JSON data successfully written to $json_file";
-        } else {
-            return "Unable to write JSON data to $json_file";
-        }
-        // Close the result set
-        $sqlmyrequest->close();
-    } else {
-        die("Error executing the SQL query: " . $conn->error);
+        $onTheWayRequestData[] = array(
+            "civilian_first_name" => $row["civilian_first_name"],
+            "civilian_last_name" => $row["civilian_last_name"],
+            "civilian_number" => $row["civilian_number"],
+            "request_date_posted" => $row["request_date_posted"],
+            "request_category" => $row["request_category"],
+            "state" => $row["state"],
+            "request_product_name" => $row["request_product_name"],
+            "persons" => $row["persons"], 
+            "vehicle_name" => $row["vehicle_name"],
+            "task_date" => $row["task_date"],
+            "latitude" => $row["latitude"], 
+            "longitude" => $row["longitude"]
+            
+        );
     }
-}
-// Check if this request is to update the JSON file
-if (isset($_GET['update_json3'])) {
-    echo fetchOnWayRequests($conn);
-    exit();
+    
+    // Encode $data1 array to JSON
+    $json_data = json_encode($onTheWayRequestData);
+
+    // Specify the path to store the JSON file
+    $json_file = 'OnWayRequests.json';
+
+    // Write JSON data to file
+    if (file_put_contents($json_file, $json_data)) {
+    } else {
+        return "Unable to write JSON data to $json_file";
+    }
+    // Close the result set
+    $sqlOnTheWayRequest->close();
 } else {
-    fetchOnWayRequests($conn);
+    die("Error executing the SQL query: " . $conn->error);
 }
 
 // Κλείσιμο σύνδεσης με τη βάση δεδομένων
