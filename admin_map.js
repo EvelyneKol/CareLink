@@ -102,8 +102,6 @@ fetch('data6.json')
 })
 .catch(error => console.error('Error fetching the JSON data:', error));
 
-
-// Function to toggle layers
 // Store active layers
 const activeLayers = {};
 
@@ -366,14 +364,40 @@ function offers_markers(data) {
 }
 
 
+//linessss
+
+function drawLinesBetweenLayers() {
+  // Clear existing lines
+  layerLines.forEach(line => map.removeLayer(line));
+  layerLines = [];
+
+  if (activeLayers.layer2 && activeLayers.layer3) {
+    layerMarkers.layer2.forEach(vehicleMarker => {
+      const vehicleName = vehicleMarker.getPopup().getContent().match(/<strong>Vehicle:<\/strong> (.+?)<br>/)[1];
+      layerMarkers.layer3.forEach(requestMarker => {
+        const requestVehicleName = requestMarker.getPopup().getContent().match(/<strong>Vehicle<\/strong> (.+?)<br>/)[1];
+        if (vehicleName === requestVehicleName) {
+          const vehicleLatLng = vehicleMarker.getLatLng();
+          const requestLatLng = requestMarker.getLatLng();
+          const polyline = L.polyline([vehicleLatLng, requestLatLng], {color: 'black'}).addTo(map);
+          layerLines.push(polyline);
+        }
+      });
+    });
+  }
+}
+let layerLines = [];
+
+
 // Function to toggle layers
 function toggleLayer(layer) {
+
   if (activeLayers[layer]) {
-    // Remove the layer if it is active
-    activeLayers[layer] = false;
+      // Remove the layer if it is active
+      activeLayers[layer] = false;
   } else {
-    // Add the layer if it is not active
-    activeLayers[layer] = true;
+      // Add the layer if it is not active
+      activeLayers[layer] = true;
 
     // Initialize markers for the layer if not already done
     if (layer === 'layer1' && layerMarkers.layer1.length === 0) {
@@ -387,10 +411,16 @@ function toggleLayer(layer) {
     } else if (layer === 'layer5' && layerMarkers.layer5.length === 0) {
       on_the_way_requests_markers(OnWayRequests);
     }
+    else if (layer === 'layer6' && layerMarkers.layer6.length === 0) {
+      drawLinesBetweenLayers();
+    }
+
   }
 
   // Update the marker cluster group
   updateClusterGroup();
+
+  document.getElementById('layer6').disabled = !activeLayers['layer2'];
 }
 
 // Function to update the marker cluster group based on active layers
@@ -405,4 +435,3 @@ function updateClusterGroup() {
     }
   }
 }
-

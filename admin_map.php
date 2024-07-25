@@ -346,8 +346,9 @@ $conn->close();
         <input type="checkbox" id="layer5" name="mapLayer" onchange="toggleLayer('layer5')">
         <label for="layer5">On their way Requests</label>
 
-        <input type="checkbox" id="layer6" name="mapLayer" onchange="toggleLayer('layer6')">
+        <input type="checkbox" id="layer6" name="mapLayer" onchange="toggleLayer('layer6')" disabled>
         <label for="layer6">Lines</label>
+
     </form>
     <div id='map'></div>
 </div>
