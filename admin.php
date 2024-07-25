@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
-$username = "evelina";
-$password = "Evel1084599!";
+$username = "root";
+$password = "karagiannis";
 $dbname = "carelink";
 
 // Create connection

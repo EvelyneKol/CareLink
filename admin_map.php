@@ -1,10 +1,9 @@
 <?php
 // Σύνδεση στη βάση δεδομένων
 $servername = "localhost";
-$username = "evelina";
-$password = "Evel1084599!";
+$username = "root";
+$password = "karagiannis";
 $dbname = "carelink";
-
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 session_start();
@@ -19,8 +18,7 @@ if ($conn->connect_error) {
 
 
 //οχηματα
-$vehicles = "
-    SELECT 
+$vehicles = "SELECT 
         vehicle.vehicle_name,
         SUBSTRING_INDEX(vehicle.vehicle_location, ',', 1) AS latitude,
 	    SUBSTRING_INDEX(vehicle.vehicle_location, ',', -1) AS longitude,
@@ -36,8 +34,7 @@ $vehicles = "
     GROUP BY 
         vehicle.vehicle_name, 
         vehiclesOnAction.quantity, 
-        vehiclesOnAction.products
-    ";
+        vehiclesOnAction.products";
 
     $data2 = array();
     $sqlVehicle = $conn->query($vehicles);
@@ -131,79 +128,69 @@ function fetchWaitingRequests($conn) {
     }
 }
 
-// ελεγξε αν τα request ανενεωθηκαν στο JSON file
-if (isset($_GET['update_json5'])) {
-    echo fetchWaitingRequests($conn);
-    exit();
-} else {
-    fetchWaitingRequests($conn);
-}
-
 $offers = "SELECT 
-        civilian.civilian_username,
-        civilian.civilian_number,
-        SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
-        SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
-        offer.offer_date_posted,
-        offer.offer_category,
-        offer.offer_status,
-        offer.offer_product_name,
-        offer.offer_quantity,
-        vehicle.vehicle_name
-        FROM 
-        offer
-        JOIN 
-        civilian ON offer.offer_civilian = civilian.civilian_username
-        LEFT JOIN 
-        task ON offer.offer_id = task.task_offer_id
-        LEFT JOIN 
-        vehiclesOnAction ON task.task_volunteer = vehiclesOnAction.driver
-        LEFT JOIN 
-        vehicle ON vehiclesOnAction.v_name = vehicle.vehicle_name
-        WHERE 
-        offer.offer_status NOT IN ('CANCELED', 'COMPLETED');
-        ";
+            civilian.civilian_first_name,
+            civilian.civilian_last_name,
+            civilian.civilian_number,
+            SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+            SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
+            offer.offer_date_posted,
+            offer.offer_category,
+            offer.offer_status,
+            offer.offer_product_name,
+            offer.offer_quantity,
+            task.task_date,
+            vehicle.vehicle_name
+            FROM 
+            offer
+            JOIN 
+            civilian ON offer.offer_civilian = civilian.civilian_username
+            LEFT JOIN 
+            task ON offer.offer_id = task.task_offer_id
+            LEFT JOIN 
+            vehiclesOnAction ON task.task_volunteer = vehiclesOnAction.driver
+            LEFT JOIN 
+            vehicle ON vehiclesOnAction.v_name = vehicle.vehicle_name
+            WHERE 
+            offer.offer_status NOT IN ('CANCELED', 'COMPLETED')";
 
-$data3 = array();
-$sqlmyrequest = $conn->query($offers);
+$data = array();
+$sqloffers = $conn->query($offers);
 
-if ($sqlmyrequest) {
-    // Initialize an empty array to hold the data
-    $data3 = array();
-
-    while ($row = $sqlmyrequest->fetch_assoc()) {
-        $number = $row["civilian_number"];
-    
-        // Populate the $data3 array with data from the query
-        $data3[] = array(
-            "civilian_username" => $row["civilian_username"],
-            "civilian_number" => $number,
+if ($sqloffers) {
+    while ($row = $sqloffers->fetch_assoc()) {
+        // Populate the $data array with data from the query
+        $data[] = array(
+            "civilian_first_name" => $row["civilian_first_name"],
+            "civilian_last_name" => $row["civilian_last_name"],
+            "civilian_number" => $row["civilian_number"],
             "offer_date_posted" => $row["offer_date_posted"],
             "offer_category" => $row["offer_category"],
             "offer_status" => $row["offer_status"],
             "offer_product_name" => $row["offer_product_name"],
             "offer_quantity" => $row["offer_quantity"], 
             "vehicle_name" => $row["vehicle_name"],
+            "task_date" => $row["task_date"],
             "latitude" => $row["latitude"], 
             "longitude" => $row["longitude"]
         );
     }
-   
+
     // Encode $data3 array to JSON
-    $json_data = json_encode($data3);
+    $json_data = json_encode($data);
 
     // Specify the path to store the JSON file
-    $json_file = 'offers_response.json';
+    $json_file = 'Offers.json';
 
     // Write JSON data to file
     if (file_put_contents($json_file, $json_data)) {
-       
+    
     } else {
         echo "Unable to write JSON data to $json_file";
     }
     
     // Close the result set
-    $sqlmyrequest->close();
+    $sqloffers->close();
 } else {
     die("Error executing the SQL query: " . $conn->error);
 }
@@ -337,29 +324,29 @@ $conn->close();
     </div>
 
     <div class="Firstsection">
-        <h2> Map </h2>
-        <br>
-        <form class="filters">
-                <input type="radio" id="layer1" name="mapLayer" onchange="toggleLayer('layer1')">
-                <label for="layer1">Vehicles Waiting</label>
+    <h2> Map </h2>
+    <br>
+    <form class="filters">
+        <input type="checkbox" id="layer1" name="mapLayer" onchange="toggleLayer('layer1')">
+        <label for="layer1">Vehicles Waiting</label>
 
-                <input type="radio" id="layer2" name="mapLayer" onchange="toggleLayer('layer2')">
-                <label for="layer2">Vehicles On The Way</label>
+        <input type="checkbox" id="layer2" name="mapLayer" onchange="toggleLayer('layer2')">
+        <label for="layer2">Vehicles On The Way</label>
 
-                <input type="radio" id="layer3" name="mapLayer" onchange="toggleLayer('layer3')">
-                <label for="layer3">Offers</label>
+        <input type="checkbox" id="layer3" name="mapLayer" onchange="toggleLayer('layer3')">
+        <label for="layer3">Offers</label>
 
-                <input type="radio" id="layer4" name="mapLayer" onchange="toggleLayer('layer4')">
-                <label for="layer4">Waiting Requests</label>
+        <input type="checkbox" id="layer4" name="mapLayer" onchange="toggleLayer('layer4')">
+        <label for="layer4">Waiting Requests</label>
 
-                <input type="radio" id="layer5" name="mapLayer" onchange="toggleLayer('layer5')">
-                <label for="layer5">On their way Requests</label>
+        <input type="checkbox" id="layer5" name="mapLayer" onchange="toggleLayer('layer5')">
+        <label for="layer5">On their way Requests</label>
 
-                <input type="radio" id="layer6" name="mapLayer" onchange="toggleLayer('layer6')">
-                <label for="layer5">Lines</label>
-            </form>
-            <div id='map'></div>
-   </div>
+        <input type="checkbox" id="layer6" name="mapLayer" onchange="toggleLayer('layer6')">
+        <label for="layer6">Lines</label>
+    </form>
+    <div id='map'></div>
+</div>
     
     <div class="Footer container-fluid">
         <div class="row">
