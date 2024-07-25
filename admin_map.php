@@ -1,9 +1,10 @@
 <?php
 // Σύνδεση στη βάση δεδομένων
 $servername = "localhost";
-$username = "root";
-$password = "karagiannis";
+$username = "evelina";
+$password = "Evel1084599!";
 $dbname = "carelink";
+
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 session_start();
@@ -78,55 +79,63 @@ $vehicles = "SELECT
 
 
 
-// Αιτήματα
-function fetchWaitingRequests($conn) {
-    $request = "SELECT request.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
-                    SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
-                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
-                    FROM request 
-                    JOIN civilian ON request.request_civilian = civilian.civilian_username 
-                    WHERE request.state='WAITING'";
+// Αιτήματα που περιμένουν
+$waitingRequest = "SELECT 
+            civilian.civilian_first_name,
+            civilian.civilian_last_name,
+            civilian.civilian_number,
+            SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+            SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
+            request.request_date_posted,
+            request.request_category,
+            request.state,
+            request.request_product_name,
+            request.persons
+            FROM 
+            request
+            JOIN 
+            civilian ON request.request_civilian = civilian.civilian_username
+            LEFT JOIN 
+            task ON request.id_request = task.task_offer_id
+            LEFT JOIN 
+            vehiclesOnAction ON task.task_volunteer = vehiclesOnAction.driver
+            LEFT JOIN 
+            vehicle ON vehiclesOnAction.v_name = vehicle.vehicle_name
+            WHERE  request.state = 'WAITING'";
 
-        $data1 = array();
-        $sqlrequest = $conn->query($request);
+$waitingRequestdata = array();
+$sqlwaitingRequest = $conn->query($waitingRequest);
 
-        if ($sqlrequest) {
-            while ($row = $sqlrequest->fetch_assoc()) {
-                $data1[] = array(
-                    "id_request" => $row["id_request"],
-                    "request_civilian" => $row["request_civilian"],
-                    "request_category" => $row["request_category"],
-                    "request_product_name" => $row["request_product_name"],
-                    "persons" => $row["persons"],
-                    "request_date_posted" => $row["request_date_posted"],
-                    "request_time_posted" => $row["request_time_posted"], 
-                    "state" => $row["state"],
-                    "number" => $row["civilian_number"],
-                    "first_name" => $row["civilian_first_name"],
-                    "last_name" => $row["civilian_last_name"],
-                    "latitude" => $row["latitude"], 
-                    "longitude" => $row["longitude"]
-                );
-            }
-
-        // Encode $data4 array to JSON
-        $json_data = json_encode($data1);
-
-        // Specify the path to store the JSON file
-        $json_file = 'waitingRequests.json';
-
-        // Write JSON data to file
-        if (file_put_contents($json_file, $json_data)) {
-            return "JSON data successfully written to $json_file";
-        } else {
-            return "Unable to write JSON data to $json_file";
-        }
-
-        $sqlrequest->close();
-    } else {
-        return "Error executing the SQL query: " . $conn->error;
+if ($sqlwaitingRequest) {
+    while ($row = $sqlwaitingRequest->fetch_assoc()) {
+        $waitingRequestdata[] = array(
+            "civilian_first_name" => $row["civilian_first_name"],
+            "civilian_last_name" => $row["civilian_last_name"],
+            "civilian_number" => $row["civilian_number"],
+            "request_date_posted" => $row["request_date_posted"],
+            "request_category" => $row["request_category"],
+            "state" => $row["state"],
+            "request_product_name" => $row["request_product_name"], 
+            "persons" => $row["persons"],
+            "latitude" => $row["latitude"], 
+            "longitude" => $row["longitude"]
+        );
     }
+
+// Encode $data4 array to JSON
+$json_data = json_encode($waitingRequestdata);
+
+// Specify the path to store the JSON file
+$json_file = 'waitingRequests.json';
+
+// Write JSON data to file
+file_put_contents($json_file, $json_data);
+
+$sqlwaitingRequest->close();
+} else {
+return "Error executing the SQL query: " . $conn->error;
 }
+
 
 $offers = "SELECT 
             civilian.civilian_first_name,

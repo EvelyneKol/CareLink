@@ -211,22 +211,22 @@ function Waiting_requests_markers(data) {
   for (let i = 0; i < data.length; i++) {
     const location = new L.LatLng(data[i].latitude, data[i].longitude);
 
-          var request_id = data[i].id_request;
-          var category = data[i].request_category;
-          var product = data[i].request_product_name;
-          var persons = data[i].persons;
-          var dateposted = data[i].request_date_posted;
-          var timeposted = data[i].request_time_posted;
+          var civilian_first_name = data[i].civilian_first_name;
+          var civilian_last_name = data[i].civilian_last_name;
+          var civilian_number = data[i].civilian_number;
+          var request_date_posted = data[i].request_date_posted;
+          var request_category = data[i].request_category;
           var state = data[i].state;
-          var number = data[i].number;
-          var first_name = data[i].first_name;
-          var last_name = data[i].last_name;
+          var request_product_name = data[i].request_product_name;
+          var persons = data[i].persons;
 
-    const message = '<strong>' + first_name + ' ' + last_name + ' requested: </strong><br>' + '<strong>From ' + 
-                    category + '</strong>: ' + product + '<br><strong>For</strong>: ' +
-                    persons + ' persons' + '<br><strong>Date posted</strong>: ' + 
-                    dateposted + '<br><strong>Number:+30 </strong> ' + number + '<br><strong>State:</strong> ' + state ;
-
+    const message = '<strong>' + civilian_first_name + ' ' + civilian_last_name + 
+                ' requests: </strong><br>' + '<strong> ' + 
+                request_category + '</strong>: ' + request_product_name + '<br><strong>For</strong>: ' +
+                persons + ' persons' + '<br><strong>Date posted</strong>: ' + 
+                request_date_posted + '<br><strong>Number: </strong> ' + '+30'+ civilian_number + 
+                '<br><strong>State:</strong> ' + state ;
+                 
     // Create a new marker with a custom icon
     const marker = L.marker(location, {
       icon: L.icon({
