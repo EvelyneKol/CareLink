@@ -364,8 +364,9 @@ function offers_markers(data) {
 }
 
 
-//linessss
+let layerLines = [];
 
+// Function to draw lines between layers
 function drawLinesBetweenLayers() {
   // Clear existing lines
   layerLines.forEach(line => map.removeLayer(line));
@@ -374,30 +375,74 @@ function drawLinesBetweenLayers() {
   if (activeLayers.layer2 && activeLayers.layer3) {
     layerMarkers.layer2.forEach(vehicleMarker => {
       const vehicleName = vehicleMarker.getPopup().getContent().match(/<strong>Vehicle:<\/strong> (.+?)<br>/)[1];
-      layerMarkers.layer3.forEach(requestMarker => {
-        const requestVehicleName = requestMarker.getPopup().getContent().match(/<strong>Vehicle<\/strong> (.+?)<br>/)[1];
-        if (vehicleName === requestVehicleName) {
-          const vehicleLatLng = vehicleMarker.getLatLng();
-          const requestLatLng = requestMarker.getLatLng();
-          const polyline = L.polyline([vehicleLatLng, requestLatLng], {color: 'black'}).addTo(map);
+      const vehicleLatLng = vehicleMarker.getLatLng();
+      layerMarkers.layer3.forEach(offerMarker => {
+        const offerVehicleName = offerMarker.getPopup().getContent().match(/<strong>Vehicle<\/strong> (.+?)<br>/)[1];
+        if (vehicleName === offerVehicleName) {
+          const offerLatLng = offerMarker.getLatLng();
+          const polyline = L.polyline([vehicleLatLng, offerLatLng], {color: 'black'}).addTo(map);
           layerLines.push(polyline);
         }
       });
     });
   }
-}
-let layerLines = [];
 
+  if (activeLayers.layer2 && activeLayers.layer5) {
+    layerMarkers.layer2.forEach(vehicleMarker => {
+      const vehicleName = vehicleMarker.getPopup().getContent().match(/<strong>Vehicle:<\/strong> (.+?)<br>/)[1];
+      const vehicleLatLng = vehicleMarker.getLatLng();
+      layerMarkers.layer5.forEach(requestMarker => {
+        const requestVehicleName = requestMarker.getPopup().getContent().match(/<strong>Vehicle<\/strong> (.+?)<br>/)[1];
+        if (vehicleName === requestVehicleName) {
+          const requestLatLng = requestMarker.getLatLng();
+          const polyline = L.polyline([vehicleLatLng, requestLatLng], {color: 'red'}).addTo(map);
+          layerLines.push(polyline);
+        }
+      });
+    });
+  }
+
+  if (activeLayers.layer2 && activeLayers.layer3 && activeLayers.layer5) {
+    layerMarkers.layer2.forEach(vehicleMarker => {
+      const vehicleName = vehicleMarker.getPopup().getContent().match(/<strong>Vehicle:<\/strong> (.+?)<br>/)[1];
+      const vehicleLatLng = vehicleMarker.getLatLng();
+      layerMarkers.layer3.forEach(offerMarker => {
+        const offerVehicleName = offerMarker.getPopup().getContent().match(/<strong>Vehicle<\/strong> (.+?)<br>/)[1];
+        if (vehicleName === offerVehicleName) {
+          const offerLatLng = offerMarker.getLatLng();
+          layerMarkers.layer5.forEach(requestMarker => {
+            const requestVehicleName = requestMarker.getPopup().getContent().match(/<strong>Vehicle<\/strong> (.+?)<br>/)[1];
+            if (vehicleName === requestVehicleName) {
+              const requestLatLng = requestMarker.getLatLng();
+              const polyline = L.polyline([vehicleLatLng, offerLatLng], {color: 'black'}).addTo(map);
+              const polyline1 = L.polyline([vehicleLatLng, requestLatLng], {color: 'red'}).addTo(map);
+              layerLines.push(polyline);
+              layerLines.push(polyline1);
+            }
+          });
+        }
+      });
+    });
+  }
+}
+
+// Function to clear lines between layers
+function clearLinesBetweenLayers() {
+  layerLines.forEach(line => map.removeLayer(line));
+  layerLines = [];
+}
 
 // Function to toggle layers
 function toggleLayer(layer) {
-
   if (activeLayers[layer]) {
-      // Remove the layer if it is active
-      activeLayers[layer] = false;
+    // Remove the layer if it is active
+    activeLayers[layer] = false;
+    if (layer === 'layer6') {
+      clearLinesBetweenLayers();
+    }
   } else {
-      // Add the layer if it is not active
-      activeLayers[layer] = true;
+    // Add the layer if it is not active
+    activeLayers[layer] = true;
 
     // Initialize markers for the layer if not already done
     if (layer === 'layer1' && layerMarkers.layer1.length === 0) {
@@ -411,16 +456,18 @@ function toggleLayer(layer) {
     } else if (layer === 'layer5' && layerMarkers.layer5.length === 0) {
       on_the_way_requests_markers(OnWayRequests);
     }
-    else if (layer === 'layer6' && layerMarkers.layer6.length === 0) {
+
+    // Draw lines if layer 6 is being enabled
+    if (layer === 'layer6') {
       drawLinesBetweenLayers();
     }
-
   }
 
   // Update the marker cluster group
   updateClusterGroup();
 
-  document.getElementById('layer6').disabled = !activeLayers['layer2'];
+  // Enable/disable the layer6 toggle button based on the state of layer2 and layer3
+  document.getElementById('layer6').disabled = !(activeLayers['layer2'] && (activeLayers['layer3'] || activeLayers['layer5']));
 }
 
 // Function to update the marker cluster group based on active layers
