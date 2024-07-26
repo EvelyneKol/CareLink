@@ -1,8 +1,8 @@
 <?php
 // Σύνδεση στη βάση δεδομένων
 $servername = "localhost";
-$username = "root";
-$password = "karagiannis";
+$username = "evelina";
+$password = "Evel1084599!";
 $dbname = "carelink";
 
 $conn = new mysqli($servername, $username, $password, $dbname);

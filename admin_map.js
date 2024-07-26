@@ -7,40 +7,29 @@ L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbX
 var baseMarker = L.marker([38.2904558214517, 21.79578903224108], { draggable: true });
 var popup1 = baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
 
-if ('geolocation' in navigator) {
+ if ('geolocation' in navigator) {
   navigator.geolocation.getCurrentPosition(function (position) {
     var userLat = position.coords.latitude;
     var userLng = position.coords.longitude;
-    var geolocation = userLat + ", " + userLng;
 
     map.setView([userLat, userLng], 13);
 
     initializeBaseMarker(userLat, userLng);
-    initializeUserLocationMarker(userLat, userLng);
-
-    updateLine();
-
-    // Calculate distance between user's location and baseMarker's initial position
-    var initialDistance = calculateDistance(userLocationMarker.getLatLng(), baseMarker.getLatLng());
-    userLocationMarker.bindPopup(`Your Location - Distance: ${initialDistance.toFixed(2)} kilometers`).openPopup();
-    // Update the value of the address input field
-    document.getElementById("address1").value = geolocation;
-    document.getElementById("address1").value = geolocation;
-
 
   });
 } else {
   console.log('Geolocation is not supported by your browser.');
-}
+} 
+
 function initializeBaseMarker(userLat, userLng) {
-  var redIcon = L.icon({
+  var baseIcon = L.icon({
     iconUrl: 'images/base.png',
     iconSize: [41, 41],
     iconAnchor: [20, 41],
     popupAnchor: [1, -34]
   });
 
-  baseMarker = L.marker([38.290399042463136, 21.79564239581478], { draggable: true }).addTo(map).setIcon(redIcon);
+  baseMarker = L.marker([38.290399042463136, 21.79564239581478], { draggable: true }).addTo(map).setIcon(baseIcon);
   baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
 
   baseMarker.on('dragend', function (event) {
@@ -53,17 +42,10 @@ function initializeBaseMarker(userLat, userLng) {
 }
 
 // Define global variables for layers
-var vehiclesWaiting;
-var vehiclesOnAction;
-var offers_layer;
-var onTheWayRequestslayer;
-var WaitingRequestslayer;
-var Lines;
 var vehicles = [];
 var Offers = [];
 var WaitingRequests = [];
 var OnWayRequests = [];
-var data6 = [];
 
 
 // Fetch the JSON data from the file
@@ -95,14 +77,7 @@ fetch('OnWayRequests.json')
 })
 .catch(error => console.error('Error fetching the JSON data:', error));
 
-fetch('data6.json')
-.then(response => response.json())
-.then(data => {
-    data4 = data;
-})
-.catch(error => console.error('Error fetching the JSON data:', error));
-
-// Store active layers
+// active layers
 const activeLayers = {};
 
 // Create a global marker cluster group
@@ -140,7 +115,7 @@ function Waiting_vehicles_markers(data) {
     // Create a new marker with a custom icon
     const marker = L.marker(location, {
       icon: L.icon({
-        iconUrl: 'truck.png',
+        iconUrl: 'images/truck.png',
         iconSize: [32, 32],
         iconAnchor: [16, 32],
         popupAnchor: [0, -32]
@@ -439,7 +414,7 @@ function toggleLayer(layer) {
   if (activeLayers[layer]) {
     // Remove the layer if it is active
     activeLayers[layer] = false;
-    if (layer === 'layer6') {
+    if (layer === 'layer6' || layer === 'layer2' || layer === 'layer3' || layer === 'layer5') {
       clearLinesBetweenLayers();
     }
   } else {

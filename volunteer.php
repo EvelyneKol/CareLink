@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
-$username = "root";
-$password = "karagiannis";
+$username = "evelina";
+$password = "Evel1084599!";
 $dbname = "carelink";
 
     // Create connection
@@ -24,185 +24,228 @@ $dbname = "carelink";
         $defaultUsername = "";
     }
 
-    // Function to fetch data and write to JSON file
+    //-----------------συνάρτηση για fetch waiting requests------------------------
     function fetchRequests($conn) {
-        $request = "SELECT request.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
-                    SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
-                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
-                    FROM request 
-                    JOIN civilian ON request.request_civilian = civilian.civilian_username 
-                    WHERE request.state='WAITING'";
+        $waitingRequest = "SELECT 
+            civilian.civilian_first_name,
+            civilian.civilian_last_name,
+            civilian.civilian_number,
+            SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+            SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
+            request.request_date_posted,
+            request.id_request,
+            request.request_category,
+            request.state,
+            request.request_product_name,
+            request.persons
+            FROM 
+            request
+            JOIN 
+            civilian ON request.request_civilian = civilian.civilian_username
+            LEFT JOIN 
+            task ON request.id_request = task.task_offer_id
+            LEFT JOIN 
+            vehiclesOnAction ON task.task_volunteer = vehiclesOnAction.driver
+            LEFT JOIN 
+            vehicle ON vehiclesOnAction.v_name = vehicle.vehicle_name
+            WHERE  request.state = 'WAITING'";
 
-        $data1 = array();
-        $sqlrequest = $conn->query($request);
+        $waitingRequestdata = array();
+        $sqlwaitingRequest = $conn->query($waitingRequest);
 
-        if ($sqlrequest) {
-            while ($row = $sqlrequest->fetch_assoc()) {
-                $data1[] = array(
-                    "id_request" => $row["id_request"],
-                    "request_civilian" => $row["request_civilian"],
-                    "request_category" => $row["request_category"],
-                    "request_product_name" => $row["request_product_name"],
-                    "persons" => $row["persons"],
+        if ($sqlwaitingRequest) {
+            while ($row = $sqlwaitingRequest->fetch_assoc()) {
+                $waitingRequestdata[] = array(
+                    "civilian_first_name" => $row["civilian_first_name"],
+                    "civilian_last_name" => $row["civilian_last_name"],
+                    "civilian_number" => $row["civilian_number"],
                     "request_date_posted" => $row["request_date_posted"],
-                    "request_time_posted" => $row["request_time_posted"], 
+                    "request_id" => $row["id_request"],
+                    "request_category" => $row["request_category"],
                     "state" => $row["state"],
-                    "number" => $row["civilian_number"],
-                    "first_name" => $row["civilian_first_name"],
-                    "last_name" => $row["civilian_last_name"],
+                    "request_product_name" => $row["request_product_name"], 
+                    "persons" => $row["persons"],
                     "latitude" => $row["latitude"], 
                     "longitude" => $row["longitude"]
                 );
             }
 
-            // Encode $data1 array to JSON
-            $json_data = json_encode($data1);
+        // Encode $data4 array to JSON
+        $json_data = json_encode($waitingRequestdata);
 
-            // Specify the path to store the JSON file
-            $json_file = 'data1.json';
+        // Specify the path to store the JSON file
+        $json_file = 'volWaitingRequests.json';
 
-            // Write JSON data to file
-            if (file_put_contents($json_file, $json_data)) {
-                return "JSON data successfully written to $json_file";
-            } else {
-                return "Unable to write JSON data to $json_file";
-            }
+        // Write JSON data to file
+        file_put_contents($json_file, $json_data);
 
-            $sqlrequest->close();
+        $sqlwaitingRequest->close();
         } else {
-            return "Error executing the SQL query: " . $conn->error;
+        return "Error executing the SQL query: " . $conn->error;
         }
+
     }
 
     // Check if this request is to update the JSON file
-    if (isset($_GET['update_json1'])) {
+    if (isset($_GET['volWaitingRequests'])) {
         echo fetchRequests($conn);
         exit();
     } else {
         fetchRequests($conn);
     }
 
-    function fetchOffers($conn) {
-        $offers = "SELECT offer.*, civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
-                    SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
-                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude
-                    FROM offer 
-                    JOIN civilian ON offer.offer_civilian = civilian.civilian_username
-                    WHERE offer.offer_status='WAITING'";
 
-        $data2 = array();
+    //----------------------συνάρτηση για waiting offer (προσφορές)-------------------
+    function fetchOffers($conn) {
+        $offers = "SELECT 
+                    civilian.civilian_first_name,
+                    civilian.civilian_last_name,
+                    civilian.civilian_number,
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
+                    offer.offer_date_posted,
+                    offer.offer_category,
+                    offer.offer_status,
+                    offer.offer_product_name,
+                    offer.offer_id,
+                    offer.offer_quantity,
+                    task.task_date,
+                    vehicle.vehicle_name
+                    FROM 
+                    offer
+                    JOIN 
+                    civilian ON offer.offer_civilian = civilian.civilian_username
+                    LEFT JOIN 
+                    task ON offer.offer_id = task.task_offer_id
+                    LEFT JOIN 
+                    vehiclesOnAction ON task.task_volunteer = vehiclesOnAction.driver
+                    LEFT JOIN 
+                    vehicle ON vehiclesOnAction.v_name = vehicle.vehicle_name
+                    WHERE 
+                    offer.offer_status = 'WAITING'";
+
+        $waitingOffersData = array();
         $sqloffers = $conn->query($offers);
 
         if ($sqloffers) {
             while ($row = $sqloffers->fetch_assoc()) {
-                $number = $row["civilian_number"];
-                $first_name = $row["civilian_first_name"];
-                $last_name = $row["civilian_last_name"];
-
-                $data2[] = array(
-                    "offer_id" => $row["offer_id"],
-                    "offer_civilian" => $row["offer_civilian"],
-                    "offer_category" => $row["offer_category"],
-                    "offer_product_name" => $row["offer_product_name"],
-                    "offer_quantity" => $row["offer_quantity"],
+                // Populate the $data array with data from the query
+                $waitingOffersData[] = array(
+                    "civilian_first_name" => $row["civilian_first_name"],
+                    "civilian_last_name" => $row["civilian_last_name"],
+                    "civilian_number" => $row["civilian_number"],
                     "offer_date_posted" => $row["offer_date_posted"],
-                    "offer_time_posted" => $row["offer_time_posted"],
+                    "offer_category" => $row["offer_category"],
                     "offer_status" => $row["offer_status"],
-                    "number" => $number,
-                    "first_name" => $first_name,
-                    "last_name" => $last_name,
+                    "offer_product_name" => $row["offer_product_name"],
+                    "offer_id" => $row["offer_id"],
+                    "offer_quantity" => $row["offer_quantity"], 
+                    "vehicle_name" => $row["vehicle_name"],
+                    "task_date" => $row["task_date"],
                     "latitude" => $row["latitude"], 
                     "longitude" => $row["longitude"]
                 );
             }
 
-            // Encode $data1 array to JSON
-            $json_data = json_encode($data2);
+            // Encode $data3 array to JSON
+            $json_data = json_encode($waitingOffersData);
 
             // Specify the path to store the JSON file
-            $json_file = 'data2.json';
+            $json_file = 'volWaitingOffers.json';
 
             // Write JSON data to file
             if (file_put_contents($json_file, $json_data)) {
-                return "JSON data successfully written to $json_file";
+            
             } else {
-                return "Unable to write JSON data to $json_file";
+                echo "Unable to write JSON data to $json_file";
             }
-
+            
             // Close the result set
             $sqloffers->close();
         } else {
             die("Error executing the SQL query: " . $conn->error);
         }
+
+
     }
 
-    // Check if this request is to update the JSON file
-    if (isset($_GET['update_json2'])) {
+    // Check if this offer is to update the JSON file
+    if (isset($_GET['volWaitingOffers'])) {
         echo fetchOffers($conn);
         exit();
     } else {
         fetchOffers($conn);
     }
 
-    function fetchMyRequests($conn, $defaultUsername){
-        $myrequest = "SELECT request.*,civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
-                        SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
-                        SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
-                        task.*
-                        FROM
-                        request
-                        JOIN
-                        civilian ON request.request_civilian = civilian.civilian_username
-                        JOIN
-                        task ON request.id_request = task.task_request_id
-                        WHERE
-                        request.id_request IN (
-                            SELECT task_request_id
-                            FROM task
-                            WHERE task_volunteer = '$defaultUsername') AND request.state = 'ON THE WAY'";
 
-        $data3 = array();
+
+    //-----------------------------fetch my Requests data--------------------------------------
+    function fetchMyRequests($conn, $defaultUsername){
+        $myrequest = "SELECT 
+                    civilian.civilian_first_name,
+                    civilian.civilian_last_name,
+                    civilian.civilian_number,
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
+                    vehicle.vehicle_name,
+                    task.task_date,
+                    request.request_date_posted,
+                    request.id_request,
+                    request.request_category,
+                    request.state,
+                    request.request_product_name,
+                    request.persons
+                    FROM 
+                    request
+                    JOIN 
+                    civilian ON request.request_civilian = civilian.civilian_username
+                    LEFT JOIN 
+                    task ON request.id_request = task.task_offer_id
+                    LEFT JOIN 
+                    vehiclesOnAction ON task.task_volunteer = vehiclesOnAction.driver
+                    LEFT JOIN 
+                    vehicle ON vehiclesOnAction.v_name = vehicle.vehicle_name
+                    WHERE
+                                request.id_request IN (
+                                    SELECT task_request_id
+                                    FROM task
+                                    WHERE task_volunteer = '$defaultUsername') AND request.state = 'ON THE WAY'";
+
+        $myRequestData = array();
 
         $sqlmyrequest = $conn->query($myrequest);
 
         if ($sqlmyrequest) {
             while ($row = $sqlmyrequest->fetch_assoc()) {
-                $number = $row["civilian_number"];
-                $first_name = $row["civilian_first_name"];
-                $last_name = $row["civilian_last_name"];
 
-                $data3[] = array(
-                    "id_request" => $row["id_request"],
-                    "request_civilian" => $row["request_civilian"],
-                    "request_category" => $row["request_category"],
-                    "request_product_name" => $row["request_product_name"],
-                    "persons" => $row["persons"],
-                    "request_date_posted" => $row["request_date_posted"],
-                    "request_time_posted" => $row["request_time_posted"], 
-                    "state" => $row["state"],
-                    "number" => $number,
-                    "first_name" => $first_name,
-                    "last_name" => $last_name,
-                    "latitude" => $row["latitude"], 
-                    "longitude" => $row["longitude"], 
+                $myRequestData[] = array(
+                    "civilian_first_name" => $row["civilian_first_name"],
+                    "civilian_last_name" => $row["civilian_last_name"],
+                    "civilian_number" => $row["civilian_number"],
+                    "vehicle_name" => $row["vehicle_name"],
                     "task_date" => $row["task_date"],
-                    "task_time" => $row["task_time"], 
-                    "task_volunteer" => $row["task_volunteer"]
-                    
+                    "id_request" => $row["id_request"], 
+                    "request_date_posted" => $row["request_date_posted"],
+                    "request_category" => $row["request_category"],
+                    "state" =>  $row["state"],
+                    "request_product_name" =>  $row["request_product_name"],
+                    "persons" => $row["persons"],
+                    "latitude" => $row["latitude"], 
+                    "longitude" => $row["longitude"]
                 );
             }
-            // Store $data3 in a session variable
-            $_SESSION['data3'] = $data3;
+            // Store  in a session variable
+            $_SESSION['myRequests'] = $myRequestData;
     
             // Encode $data1 array to JSON
-            $json_data = json_encode($data3);
+            $json_data = json_encode($myRequestData);
 
             // Specify the path to store the JSON file
-            $json_file = 'data3.json';
+            $json_file = 'myRequests.json';
 
             // Write JSON data to file
             if (file_put_contents($json_file, $json_data)) {
-                return "JSON data successfully written to $json_file";
+                
             } else {
                 return "Unable to write JSON data to $json_file";
             }
@@ -211,7 +254,7 @@ $dbname = "carelink";
             $sqlmyrequest->close();
 
             // Store $data3 in a session variable
-            $_SESSION['data3'] = $data3;
+            $_SESSION['myRequests'] = $myRequestData;
         } else {
             die("Error executing the SQL query: " . $conn->error);
         }
@@ -224,65 +267,75 @@ $dbname = "carelink";
         fetchMyRequests($conn, $defaultUsername);
     }
 
+
+
+//____________function to fetch volunteer's offerss_____________________________________
     function fetchMyOffers($conn,$defaultUsername){
-        $myoffers = "SELECT offer.*,civilian.civilian_number, civilian.civilian_first_name, civilian.civilian_last_name,
-                        SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
-                        SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
-                        task.*
-                        FROM
-                        offer
-                        JOIN
-                        civilian ON offer.offer_civilian = civilian.civilian_username
-                        JOIN
-                        task ON offer.offer_id = task.task_offer_id
-                        WHERE
+        $myoffers = "SELECT 
+                    civilian.civilian_first_name,
+                    civilian.civilian_last_name,
+                    civilian.civilian_number,
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', 1) AS latitude,
+                    SUBSTRING_INDEX(civilian.civilian_location, ',', -1) AS longitude,
+                    offer.offer_date_posted,
+                    offer.offer_category,
+                    offer.offer_status,
+                    offer.offer_product_name,
+                    offer.offer_id,
+                    offer.offer_quantity,
+                    task.task_date,
+                    vehicle.vehicle_name
+                    FROM 
+                    offer
+                    JOIN 
+                    civilian ON offer.offer_civilian = civilian.civilian_username
+                    LEFT JOIN 
+                    task ON offer.offer_id = task.task_offer_id
+                    LEFT JOIN 
+                    vehiclesOnAction ON task.task_volunteer = vehiclesOnAction.driver
+                    LEFT JOIN 
+                    vehicle ON vehiclesOnAction.v_name = vehicle.vehicle_name
+                     WHERE
                         offer.offer_id IN (
                             SELECT task_offer_id
                             FROM task
                             WHERE task_volunteer = '$defaultUsername') AND offer.offer_status='ON THE WAY'";
 
-        $data4 = array();
+        $myOffersData = array();
 
         $sqlmyoffers = $conn->query($myoffers);
 
         if ($sqlmyoffers) {
             while ($row = $sqlmyoffers->fetch_assoc()) {
-                $number = $row["civilian_number"];
-                $first_name = $row["civilian_first_name"];
-                $last_name = $row["civilian_last_name"];
-
-                $data4[] = array(
-                    "offer_id" => $row["offer_id"],
-                    "offer_civilian" => $row["offer_civilian"],
-                    "offer_category" => $row["offer_category"],
-                    "offer_product_name" => $row["offer_product_name"],
-                    "offer_quantity" => $row["offer_quantity"],
+        
+                $myOffersData[] = array(
+                    "civilian_first_name" => $row["civilian_first_name"],
+                    "civilian_last_name" => $row["civilian_last_name"],
+                    "civilian_number" => $row["civilian_number"],
                     "offer_date_posted" => $row["offer_date_posted"],
-                    "offer_time_posted" => $row["offer_time_posted"],
+                    "offer_category" => $row["offer_category"],
                     "offer_status" => $row["offer_status"],
-                    "number" => $number,
-                    "first_name" => $first_name,
-                    "last_name" => $last_name,
+                    "offer_product_name" => $row["offer_product_name"],
+                    "offer_id" => $row["offer_id"],
                     "latitude" => $row["latitude"], 
                     "longitude" => $row["longitude"],
-                    "task_date" => $row["task_date"],
-                    "task_time" => $row["task_time"], 
-                    "task_volunteer" => $row["task_volunteer"]
-                    
+                    "offer_quantity" => $row["offer_quantity"],
+                    "task_date" => $row["task_date"], 
+                    "vehicle_name" => $row["vehicle_name"]                   
                 );
             }
             // Store $data3 in a session variable
-            $_SESSION['data4'] = $data4;
+            $_SESSION['myOffers'] = $myOffersData;
 
             // Encode $data1 array to JSON
-            $json_data = json_encode($data4);
+            $json_data = json_encode($myOffersData);
 
             // Specify the path to store the JSON file
-            $json_file = 'data4.json';
+            $json_file = 'myOffers.json';
 
             // Write JSON data to file
             if (file_put_contents($json_file, $json_data)) {
-                return "JSON data successfully written to $json_file";
+                
             } else {
                 return "Unable to write JSON data to $json_file";
             }
@@ -301,6 +354,7 @@ $dbname = "carelink";
     } else {
         fetchMyOffers($conn,$defaultUsername);
     }
+
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username = $_POST['username'];
@@ -623,17 +677,18 @@ $dbname = "carelink";
             <h2 class="with-hr" id="B" style="text-align: center;">Map</h2>
             <hr>
             <form class="filters">
-                <input type="radio" id="layer1" name="mapLayer" onchange="toggleLayer('layer1')" checked>
+                <input type="checkbox" id="layer1" name="mapLayer" onchange="toggleLayer('layer1')">
                 <label for="layer1">Requests</label>
 
-                <input type="radio" id="layer2" name="mapLayer" onchange="toggleLayer('layer2')">
+                <input type="checkbox" id="layer2" name="mapLayer" onchange="toggleLayer('layer2')">
                 <label for="layer2">Offers</label>
 
-                <input type="radio" id="layer3" name="mapLayer" onchange="toggleLayer('layer3')">
+                <input type="checkbox" id="layer3" name="mapLayer" onchange="toggleLayer('layer3')">
                 <label for="layer3">My-Requests</label>
 
-                <input type="radio" id="layer4" name="mapLayer" onchange="toggleLayer('layer4')">
+                <input type="checkbox" id="layer4" name="mapLayer" onchange="toggleLayer('layer4')">
                 <label for="layer4">My-Offers</label>
+                
             </form>
             <div id='map'></div>
         </div>
