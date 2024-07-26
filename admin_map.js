@@ -394,13 +394,6 @@ function drawLinesforOffersandRequest() {
       });
     });
   }
-}
-
-// Function to draw lines between layers
-function drawLinesforOffersorRequest() {
-  // Clear existing lines
-  layerLines.forEach(line => map.removeLayer(line));
-  layerLines = [];
 
   if (activeLayers.layer2 && activeLayers.layer3) {
     layerMarkers.layer2.forEach(vehicleMarker => {
@@ -468,8 +461,8 @@ function toggleLayer(layer) {
 
     // Draw lines if layer 6 is being enabled
     if (layer === 'layer6') {
+      //drawLinesforOffersandRequest();
       drawLinesforOffersandRequest();
-      drawLinesforOffersorRequest();
     }
   }
 
