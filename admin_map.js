@@ -269,7 +269,7 @@ function on_the_way_requests_markers(data) {
                 request_category + '</strong>: ' + request_product_name + '<br><strong>For</strong>: ' +
                 persons + ' persons' + '<br><strong>Date posted</strong>: ' + 
                 request_date_posted + '<br><strong>Number: </strong> ' + '+30'+ civilian_number +
-                '<br><strong>Vehicle</strong> ' + vehicle_name +
+                '<br><strong>Vehicle:</strong> ' + vehicle_name +
                 '<br><strong>Date Accepted </strong> ' + task_date + 
                 '<br><strong>State:</strong> ' + state ;
                  
@@ -337,7 +337,7 @@ function offers_markers(data) {
                   offer_category + '</strong>: ' + offer_product_name + '<br><strong>For</strong>: ' +
                   offer_quantity + ' persons' + '<br><strong>Date posted</strong>: ' + 
                   offer_date_posted + '<br><strong>Number:+30 </strong> ' + civilian_number +
-                  '<br><strong>Vehicle</strong> ' + vehicle_name +
+                  '<br><strong>Vehicle:</strong> ' + vehicle_name +
                   '<br><strong>Date Accepted </strong> ' + task_date + 
                   '<br><strong>State:</strong> ' + offer_status ;
 
@@ -367,7 +367,37 @@ function offers_markers(data) {
 let layerLines = [];
 
 // Function to draw lines between layers
-function drawLinesBetweenLayers() {
+function drawLinesforOffersandRequest() {
+  // Clear existing lines
+  layerLines.forEach(line => map.removeLayer(line));
+  layerLines = [];
+
+  if (activeLayers.layer2 && activeLayers.layer3 && activeLayers.layer5) {
+    layerMarkers.layer2.forEach(vehicleMarker => {
+      const vehicleName = vehicleMarker.getPopup().getContent().match(/<strong>Vehicle:<\/strong> (.+?)<br>/)[1];
+      const vehicleLatLng = vehicleMarker.getLatLng();
+      layerMarkers.layer3.forEach(offerMarker => {
+        const offerVehicleName = offerMarker.getPopup().getContent().match(/<strong>Vehicle:<\/strong> (.+?)<br>/)[1];
+        if (vehicleName === offerVehicleName) {
+          const offerLatLng = offerMarker.getLatLng();
+          layerMarkers.layer5.forEach(requestMarker => {
+            const requestVehicleName = requestMarker.getPopup().getContent().match(/<strong>Vehicle:<\/strong> (.+?)<br>/)[1];
+            if (vehicleName === requestVehicleName) {
+              const requestLatLng = requestMarker.getLatLng();
+              const polyline = L.polyline([vehicleLatLng, offerLatLng], {color: 'green'}).addTo(map);
+              const polyline1 = L.polyline([vehicleLatLng, requestLatLng], {color: 'red'}).addTo(map);
+              layerLines.push(polyline);
+              layerLines.push(polyline1);
+            }
+          });
+        }
+      });
+    });
+  }
+}
+
+// Function to draw lines between layers
+function drawLinesforOffersorRequest() {
   // Clear existing lines
   layerLines.forEach(line => map.removeLayer(line));
   layerLines = [];
@@ -377,10 +407,10 @@ function drawLinesBetweenLayers() {
       const vehicleName = vehicleMarker.getPopup().getContent().match(/<strong>Vehicle:<\/strong> (.+?)<br>/)[1];
       const vehicleLatLng = vehicleMarker.getLatLng();
       layerMarkers.layer3.forEach(offerMarker => {
-        const offerVehicleName = offerMarker.getPopup().getContent().match(/<strong>Vehicle<\/strong> (.+?)<br>/)[1];
+        const offerVehicleName = offerMarker.getPopup().getContent().match(/<strong>Vehicle:<\/strong> (.+?)<br>/)[1];
         if (vehicleName === offerVehicleName) {
           const offerLatLng = offerMarker.getLatLng();
-          const polyline = L.polyline([vehicleLatLng, offerLatLng], {color: 'black'}).addTo(map);
+          const polyline = L.polyline([vehicleLatLng, offerLatLng], {color: 'green'}).addTo(map);
           layerLines.push(polyline);
         }
       });
@@ -392,7 +422,7 @@ function drawLinesBetweenLayers() {
       const vehicleName = vehicleMarker.getPopup().getContent().match(/<strong>Vehicle:<\/strong> (.+?)<br>/)[1];
       const vehicleLatLng = vehicleMarker.getLatLng();
       layerMarkers.layer5.forEach(requestMarker => {
-        const requestVehicleName = requestMarker.getPopup().getContent().match(/<strong>Vehicle<\/strong> (.+?)<br>/)[1];
+        const requestVehicleName = requestMarker.getPopup().getContent().match(/<strong>Vehicle:<\/strong> (.+?)<br>/)[1];
         if (vehicleName === requestVehicleName) {
           const requestLatLng = requestMarker.getLatLng();
           const polyline = L.polyline([vehicleLatLng, requestLatLng], {color: 'red'}).addTo(map);
@@ -400,30 +430,9 @@ function drawLinesBetweenLayers() {
         }
       });
     });
-  }
+  } 
 
-  if (activeLayers.layer2 && activeLayers.layer3 && activeLayers.layer5) {
-    layerMarkers.layer2.forEach(vehicleMarker => {
-      const vehicleName = vehicleMarker.getPopup().getContent().match(/<strong>Vehicle:<\/strong> (.+?)<br>/)[1];
-      const vehicleLatLng = vehicleMarker.getLatLng();
-      layerMarkers.layer3.forEach(offerMarker => {
-        const offerVehicleName = offerMarker.getPopup().getContent().match(/<strong>Vehicle<\/strong> (.+?)<br>/)[1];
-        if (vehicleName === offerVehicleName) {
-          const offerLatLng = offerMarker.getLatLng();
-          layerMarkers.layer5.forEach(requestMarker => {
-            const requestVehicleName = requestMarker.getPopup().getContent().match(/<strong>Vehicle<\/strong> (.+?)<br>/)[1];
-            if (vehicleName === requestVehicleName) {
-              const requestLatLng = requestMarker.getLatLng();
-              const polyline = L.polyline([vehicleLatLng, offerLatLng], {color: 'black'}).addTo(map);
-              const polyline1 = L.polyline([vehicleLatLng, requestLatLng], {color: 'red'}).addTo(map);
-              layerLines.push(polyline);
-              layerLines.push(polyline1);
-            }
-          });
-        }
-      });
-    });
-  }
+  
 }
 
 // Function to clear lines between layers
@@ -459,7 +468,8 @@ function toggleLayer(layer) {
 
     // Draw lines if layer 6 is being enabled
     if (layer === 'layer6') {
-      drawLinesBetweenLayers();
+      drawLinesforOffersandRequest();
+      drawLinesforOffersorRequest();
     }
   }
 
@@ -467,7 +477,7 @@ function toggleLayer(layer) {
   updateClusterGroup();
 
   // Enable/disable the layer6 toggle button based on the state of layer2 and layer3
-  document.getElementById('layer6').disabled = !(activeLayers['layer2'] && (activeLayers['layer3'] || activeLayers['layer5']));
+  document.getElementById('layer6').disabled = !(activeLayers['layer2']);
 }
 
 // Function to update the marker cluster group based on active layers
