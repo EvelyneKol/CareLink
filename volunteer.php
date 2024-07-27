@@ -411,6 +411,10 @@ $dbname = "carelink";
         }
     }
 
+    $sql = "SELECT DISTINCT category_name FROM categories";
+    $result = $conn->query($sql);
+
+
     // Close the database connection
     $conn->close();
 ?>
@@ -552,28 +556,27 @@ $dbname = "carelink";
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-6">
-                            <label for="Cateload" class="form-label">Category</label>
-                            <select id="Cateload" class="form-control p-2" name="Cateload">
-                                <option value="Food" selected>Food</option>
-                                <option value="Food">Food</option>
-                                <option value="Food">Food</option>
-                                <option value="Food">Food</option>
-                                <option value="Food">Food</option>
-                                <option value="Food">Food</option>
-                            </select>
+                        <div class="col-sm-6">
+                                <label for="Cateload" class="form-label">Category</label>
+                                <select id="Cateload" class="form-control p-2" name="Cateload">
+                                    <?php
+                                    // Check if there are results
+                                    if ($result->num_rows > 0) {
+                                        // Output data of each row
+                                        while($row = $result->fetch_assoc()) {
+                                            echo '<option value="' . htmlspecialchars($row["category_name"]) . '">' . htmlspecialchars($row["category_name"]) . '</option>';
+                                        }
+                                    } else {
+                                        echo '<option value="">No categories available</option>';
+                                    }
+                                    ?>
+                                </select>
                             </div>
                             
                             <div class="col-sm-6">
-                            <label for="Prodload" class="form-label">Product</label>
-                            <select id="Prodload" class="form-control p-2" name="Prodload">
-                                <option value="Oil" selected>Oil</option>
-                                <option value="Oil">Oil</option>
-                                <option value="Oil">Oil</option>
-                                <option value="Oil">Oil</option>
-                                <option value="Oil">Oil</option>
-                                <option value="Oil">Oil</option>
-                            </select>
+                                <label for="Prodload" class="form-label">Product</label>
+                                <select id="Prodload" class="form-control p-2" name="Prodload">
+                                </select>
                             </div>
                         </div>
                         <br>
@@ -752,6 +755,27 @@ $dbname = "carelink";
         form.style.display = 'none';
         }
   </script>
+
+    <script>
+            $(document).ready(function() {
+                $('#Cateload').change(function() {
+                    var category_name = $(this).val();
+                    $.ajax({
+                        type: 'POST',
+                        url: 'fetch_products.php',
+                        data: {category_name: category_name},
+                        dataType: 'json',
+                        success: function(data) {
+                            $('#Prodload').empty();
+                            $('#Prodload').append('<option value="">Select Product</option>');
+                            $.each(data, function(index, value) {
+                                $('#Prodload').append('<option value="'+ value +'">'+ value +'</option>');
+                            });
+                        }
+                    });
+                });
+            });
+        </script>
 
   <script>
     // JavaScript functions
