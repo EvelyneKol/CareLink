@@ -32,7 +32,7 @@
     if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $username = $_GET['q'];
 
-        $sql = "SELECT driver, products, quantity, vehicle_location FROM vehicle WHERE driver = ?";
+        $sql = "SELECT products, quantity FROM vehiclesOnAction WHERE driver = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $username);
 
@@ -40,7 +40,7 @@
     if (!$result) {
          die("Error: " . $stmt->error);
         }
-        $stmt->bind_result($driver, $products, $quantity, $vehicle_location);
+        $stmt->bind_result($products, $quantity);
 
         if ($stmt->fetch()) {
             echo '<div class="row">';
@@ -48,19 +48,15 @@
             echo '<div class="col-sm-4">';
             echo '<table>';
             echo '<tr>';
-            echo '<th>Driver</th>';
             echo '<th>Product</th>';
             echo '<th>Quantity</th>';
-            echo '<th>Location</th>';
             echo '</tr>';
 
             // Loop through all records
             do {
                 echo '<tr>';
-                echo '<td>' . htmlspecialchars($driver) . '</td>';
                 echo '<td>' . htmlspecialchars($products) . '</td>';
                 echo '<td>' . htmlspecialchars($quantity) . '</td>';
-                echo '<td>' . htmlspecialchars($vehicle_location) . '</td>';
                 echo '</tr>';
             } while ($stmt->fetch());
 

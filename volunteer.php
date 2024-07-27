@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
-$username = "evelina";
-$password = "Evel1084599!";
+$username = "root";
+$password = "karagiannis";
 $dbname = "carelink";
 
     // Create connection
@@ -181,7 +181,7 @@ $dbname = "carelink";
 
     //-----------------------------fetch my Requests data--------------------------------------
     function fetchMyRequests($conn, $defaultUsername){
-        $myrequest = "SELECT 
+        $myrequest = "SELECT DISTINCT
                     civilian.civilian_first_name,
                     civilian.civilian_last_name,
                     civilian.civilian_number,
@@ -271,7 +271,7 @@ $dbname = "carelink";
 
 //____________function to fetch volunteer's offerss_____________________________________
     function fetchMyOffers($conn,$defaultUsername){
-        $myoffers = "SELECT 
+        $myoffers = "SELECT DISTINCT
                     civilian.civilian_first_name,
                     civilian.civilian_last_name,
                     civilian.civilian_number,
@@ -360,18 +360,19 @@ $dbname = "carelink";
         $username = $_POST['username'];
 
         // For the load form
-        if (isset($_POST['Cateload']) && isset($_POST['Prodload']) && isset($_POST['Quantload'])&& isset($_POST['address1'])) {
+        if (isset($_POST['Cateload']) && isset($_POST['Prodload']) && isset($_POST['Quantload'])&& isset($_POST['address1'])&& isset($_POST['Vehicle_name'])) {
             $Category1 = $_POST['Cateload'];
             $Product1 = $_POST['Prodload'];
             $Quantity1 = (int)$_POST['Quantload'];
             $location1 = $_POST['address1'];
+            $v_name = $_POST['Vehicle_name'];
 
-            $stmt1 = $conn->prepare("INSERT INTO vehicle (driver, products, quantity, vehicle_location) VALUES (?, ?, ?, ?)");
-            $stmt1->bind_param("ssis", $defaultUsername, $Product1, $Quantity1, $location1);
+            $stmt1 = $conn->prepare("INSERT INTO vehiclesOnAction (v_name, driver, products, quantity, vehicle_location) VALUES (?, ?, ?, ?, ?)");
+            $stmt1->bind_param("sssis",$v_name, $defaultUsername, $Product1, $Quantity1, $location1);
 
             $stmt2 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock - ?, quantity_on_truck = quantity_on_truck + ? WHERE category_name = ? AND products = ?");
             $stmt2->bind_param("iiss", $Quantity1, $Quantity1, $Category1, $Product1);
-
+            
             if ($stmt1->execute() && $stmt2->execute()) {
                 // Redirect to a different page after successful form submission
                 header("Location: volunteer.php");
@@ -540,10 +541,14 @@ $dbname = "carelink";
                                 <input type="text" class="form-control p-2" id="txtUsername" name="username"
                                 placeholder="Write your Username..." autocomplete="on" required value="<?php echo $defaultUsername; ?>" readonly>
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-3">
                                 <label for="address1">Vehicle-Location</label>
                                 <input type="text" class="form-control p-2" placeholder="Enter Your Address" id="address1" name="address1" autocomplete="on"
                                 spellcheck="false" required readonly>
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="Vehicle_name">Vehicle-Name</label>
+                                <input type="text" class="form-control p-2" placeholder="Enter Your Vehicle name" id="Vehicle_name" name="Vehicle_name" spellcheck="false" required>
                             </div>
                         </div>
                         <div class="row">
@@ -688,7 +693,7 @@ $dbname = "carelink";
 
                 <input type="checkbox" id="layer4" name="mapLayer" onchange="toggleLayer('layer4')">
                 <label for="layer4">My-Offers</label>
-                
+               
             </form>
             <div id='map'></div>
         </div>
