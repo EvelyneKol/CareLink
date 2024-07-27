@@ -71,12 +71,7 @@ h4, .h4 {
 <div class="album-container">
 
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "karagiannis";
-$dbname = "carelink";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
+include 'Connection.php';
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);

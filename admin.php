@@ -1,11 +1,5 @@
 <?php
-$servername = "localhost";
-$username = "evelina";
-$password = "Evel1084599!";
-$dbname = "carelink";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+include 'Connection.php';
 
 session_start();
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'admin') {

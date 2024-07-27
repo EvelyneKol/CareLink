@@ -1,10 +1,5 @@
 <?php
-$servername = "localhost";
-$username = "evelina";
-$password = "Evel1084599!";
-$dbname = "carelink";
-
- $conn = new mysqli($servername, $username, $password, $dbname);
+include 'Connection.php';
 
 // Check connection
 if ($conn->connect_error) {

@@ -1,11 +1,6 @@
 <?php
 // Σύνδεση στη βάση δεδομένων
-$servername = "localhost";
-$username = "evelina";
-$password = "Evel1084599!";
-$dbname = "carelink";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
+include 'Connection.php';
 
 session_start();
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'admin') {
