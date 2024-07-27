@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
-$username = "root";
-$password = "karagiannis";
+$username = "evelina";
+$password = "Evel1084599!";
 $dbname = "carelink";
 
     // Create connection
@@ -356,68 +356,74 @@ $dbname = "carelink";
     }
 
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $username = $_POST['username'];
+//________________________________queries for load and unload_________________________________________
 
-        // For the load form
-        if (isset($_POST['Cateload']) && isset($_POST['Prodload']) && isset($_POST['Quantload'])&& isset($_POST['address1'])&& isset($_POST['Vehicle_name'])) {
-            $Category1 = $_POST['Cateload'];
-            $Product1 = $_POST['Prodload'];
-            $Quantity1 = (int)$_POST['Quantload'];
-            $location1 = $_POST['address1'];
-            $v_name = $_POST['Vehicle_name'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST['username'];
 
-            $stmt1 = $conn->prepare("INSERT INTO vehiclesOnAction (v_name, driver, products, quantity, vehicle_location) VALUES (?, ?, ?, ?, ?)");
-            $stmt1->bind_param("sssis",$v_name, $defaultUsername, $Product1, $Quantity1, $location1);
+    // For the load form
+    if (isset($_POST['Cateload']) && isset($_POST['Prodload']) && isset($_POST['Quantload'])&& isset($_POST['address1'])&& isset($_POST['Vehicle_name'])) {
+        $Category1 = $_POST['Cateload'];
+        $Product1 = $_POST['Prodload'];
+        $Quantity1 = (int)$_POST['Quantload'];
+        $location1 = $_POST['address1'];
+        $v_name = $_POST['Vehicle_name'];
 
-            $stmt2 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock - ?, quantity_on_truck = quantity_on_truck + ? WHERE category_name = ? AND products = ?");
-            $stmt2->bind_param("iiss", $Quantity1, $Quantity1, $Category1, $Product1);
-            
-            if ($stmt1->execute() && $stmt2->execute()) {
-                // Redirect to a different page after successful form submission
-                header("Location: volunteer.php");
-                exit();
-            } else {
-                echo "Error: " . $stmt1->error . " " . $stmt2->error;
-            }
+        $stmt1 = $conn->prepare("INSERT INTO vehiclesOnAction (v_name, driver, products, quantity, vehicle_location) VALUES (?, ?, ?, ?, ?)");
+        $stmt1->bind_param("sssis",$v_name, $defaultUsername, $Product1, $Quantity1, $location1);
 
-            $stmt1->close();
-            $stmt2->close();
+        $stmt2 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock - ?, quantity_on_truck = quantity_on_truck + ? WHERE category_name = ? AND products = ?");
+        $stmt2->bind_param("iiss", $Quantity1, $Quantity1, $Category1, $Product1);
+        
+        if ($stmt1->execute() && $stmt2->execute()) {
+            // Redirect to a different page after successful form submission
+            header("Location: volunteer.php");
+            exit();
+        } else {
+            echo "Error: " . $stmt1->error . " " . $stmt2->error;
         }
 
-        // For the unload form
-        if (isset($_POST['Cateunload']) && isset($_POST['Produnload']) && isset($_POST['Quantunload'])&& isset($_POST['address2'])) {
-            $CategoryUnload = $_POST['Cateunload'];
-            $ProductUnload = $_POST['Produnload'];
-            $QuantityUnload = (int)$_POST['Quantunload'];
-            $location2 = $_POST['address2'];
-
-            $stmtUnload1 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock + ?, quantity_on_truck = quantity_on_truck - ? WHERE category_name = ? AND products = ?");
-            $stmtUnload1->bind_param("iiss", $QuantityUnload, $QuantityUnload, $CategoryUnload, $ProductUnload );
-
-            $stmtUnload2 = $conn->prepare("UPDATE vehicle SET quantity = CASE WHEN (quantity - ?) < 0 THEN 0 ELSE (quantity - ?) END WHERE products = ? ");
-            $stmtUnload2->bind_param("si", $QuantityUnload, $Produnload);
-
-            if ($stmtUnload1->execute() && $stmtUnload2->execute()) {
-                // Redirect to a different page after successful form submission
-                header("Location: volunteer.php");
-                exit();
-            } else {
-                echo "Error: " . $stmtUnload1->error . " " . $stmtUnload2->error;
-            }
-
-            $stmtUnload1->close();
-            $stmtUnload2->close();
-        }
+        $stmt1->close();
+        $stmt2->close();
     }
 
-    $sql = "SELECT DISTINCT category_name FROM categories";
-    $result = $conn->query($sql);
+    // For the unload form
+    if (isset($_POST['Cateunload']) && isset($_POST['Produnload']) && isset($_POST['Quantunload'])&& isset($_POST['address2'])) {
+        $CategoryUnload = $_POST['Cateunload'];
+        $ProductUnload = $_POST['Produnload'];
+        $QuantityUnload = (int)$_POST['Quantunload'];
+        $location2 = $_POST['address2'];
+
+        $stmtUnload1 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock + ?, quantity_on_truck = quantity_on_truck - ? WHERE category_name = ? AND products = ?");
+        $stmtUnload1->bind_param("iiss", $QuantityUnload, $QuantityUnload, $CategoryUnload, $ProductUnload );
+
+        $stmtUnload2 = $conn->prepare("UPDATE vehicle SET quantity = CASE WHEN (quantity - ?) < 0 THEN 0 ELSE (quantity - ?) END WHERE products = ? ");
+        $stmtUnload2->bind_param("si", $QuantityUnload, $Produnload);
+
+        if ($stmtUnload1->execute() && $stmtUnload2->execute()) {
+            // Redirect to a different page after successful form submission
+            header("Location: volunteer.php");
+            exit();
+        } else {
+            echo "Error: " . $stmtUnload1->error . " " . $stmtUnload2->error;
+        }
+
+        $stmtUnload1->close();
+        $stmtUnload2->close();
+    }
+}
+
+$sql = "SELECT DISTINCT category_name FROM categories";
+$result = $conn->query($sql);
+
+$sqlUnload = "SELECT DISTINCT category FROM vehiclesOnAction";
+$resultUnload = $conn->query($sqlUnload);
 
 
-    // Close the database connection
-    $conn->close();
+// Close the database connection
+$conn->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="el">
 <head>
@@ -545,6 +551,7 @@ $dbname = "carelink";
                                 <input type="text" class="form-control p-2" id="txtUsername" name="username"
                                 placeholder="Write your Username..." autocomplete="on" required value="<?php echo $defaultUsername; ?>" readonly>
                             </div>
+
                             <div class="col-sm-3">
                                 <label for="address1">Vehicle-Location</label>
                                 <input type="text" class="form-control p-2" placeholder="Enter Your Address" id="address1" name="address1" autocomplete="on"
@@ -556,23 +563,24 @@ $dbname = "carelink";
                             </div>
                         </div>
                         <div class="row">
-                        <div class="col-sm-6">
-                                <label for="Cateload" class="form-label">Category</label>
-                                <select id="Cateload" class="form-control p-2" name="Cateload">
-                                    <?php
-                                    // Check if there are results
-                                    if ($result->num_rows > 0) {
-                                        // Output data of each row
-                                        while($row = $result->fetch_assoc()) {
-                                            echo '<option value="' . htmlspecialchars($row["category_name"]) . '">' . htmlspecialchars($row["category_name"]) . '</option>';
+                            <div class="col-sm-6">
+                                    <label for="Cateload" class="form-label">Category</label>
+                                    <select id="Cateload" class="form-control p-2" name="Cateload">
+                                    <option value="">Select a category</option>
+                                        <?php
+                                        // Check if there are results
+                                        if ($result->num_rows > 0) {
+                                            // Output data of each row
+                                            while($row = $result->fetch_assoc()) {
+                                                echo '<option value="' . htmlspecialchars($row["category_name"]) . '">' . htmlspecialchars($row["category_name"]) . '</option>';
+                                            }
+                                        } else {
+                                            echo '<option value="">No categories available</option>';
                                         }
-                                    } else {
-                                        echo '<option value="">No categories available</option>';
-                                    }
-                                    ?>
-                                </select>
+                                        ?>
+                                    </select>
                             </div>
-                            
+                                
                             <div class="col-sm-6">
                                 <label for="Prodload" class="form-label">Product</label>
                                 <select id="Prodload" class="form-control p-2" name="Prodload">
@@ -606,6 +614,7 @@ $dbname = "carelink";
                 </div>
             </div>
             <br>
+
             <div id="UnloadForm" style="display:none;">
                 <div class="row">
                     <div class="col-sm-3"></div>
@@ -617,6 +626,7 @@ $dbname = "carelink";
                                 <input type="text" class="form-control p-2" id="txtUsername" name="username"
                                 placeholder="Write your Username..." autocomplete="on" required value="<?php echo $defaultUsername; ?>" readonly>
                             </div>
+
                             <div class="col-sm-6">
                                 <label for="address2">Vehicle-Location</label>
                                 <input type="text" class="form-control p-2" placeholder="Enter Your Address" id="address2" name="address2" autocomplete="on"
@@ -624,28 +634,29 @@ $dbname = "carelink";
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-6">
-                            <label for="Cateunload" class="form-label">Category</label>
-                            <select id="Cateunload" class="form-control p-2" name="Cateunload">
-                                <option value="Food" selected>Food</option>
-                                <option value="Food">dairy</option>
-                                <option value="Food">Food</option>
-                                <option value="Food">Food</option>
-                                <option value="Food">Food</option>
-                                <option value="Food">Food</option>
-                            </select>
-                            </div>
-                            <div class="col-sm-6">
-                            <label for="Produnload" class="form-label">Product</label>
-                            <select id="Produnload" class="form-control p-2" name="Produnload">
-                                <option value="Oil" selected>Oil</option>
-                                <option value="Oil">Oil</option>
-                                <option value="Oil">Oil</option>
-                                <option value="Oil">Oil</option>
-                                <option value="Oil">Oil</option>
-                                <option value="Oil">Oil</option>
-                            </select>
-                            </div>
+                                <div class="col-sm-6">
+                                        <label for="CateUnload" class="form-label">Category</label>
+                                        <select id="CateUnload" class="form-control p-2" name="CateUnload">
+                                        <option value="">Select a category</option>
+                                            <?php
+                                            // Check if there are results
+                                            if ($resultUnload->num_rows > 0) {
+                                                // Output data of each row
+                                                while($row = $resultUnload->fetch_assoc()) {
+                                                    echo '<option value="' . htmlspecialchars($row["category"]) . '">' . htmlspecialchars($row["category"]) . '</option>';
+                                                }
+                                            } else {
+                                                echo '<option value="">No categories available</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                </div>
+                                    
+                                <div class="col-sm-6">
+                                    <label for="Produnload" class="form-label">Product</label>
+                                    <select id="Produnload" class="form-control p-2" name="Produnload">
+                                    </select>
+                                </div>                                                  
                         </div>
                         <br>
                         <div class="row">
@@ -748,34 +759,55 @@ $dbname = "carelink";
         </div>
     </div>
 
-  <script src="volunteer.js"></script>
-  <script>
-    function hideForm(formId) {
-        var form = document.getElementById(formId);
-        form.style.display = 'none';
-        }
-  </script>
+    <script src="volunteer.js"></script>
+    <script>
+        function hideForm(formId) {
+            var form = document.getElementById(formId);
+            form.style.display = 'none';
+            }
+    </script>
 
     <script>
-            $(document).ready(function() {
-                $('#Cateload').change(function() {
-                    var category_name = $(this).val();
-                    $.ajax({
-                        type: 'POST',
-                        url: 'fetch_products.php',
-                        data: {category_name: category_name},
-                        dataType: 'json',
-                        success: function(data) {
-                            $('#Prodload').empty();
-                            $('#Prodload').append('<option value="">Select Product</option>');
-                            $.each(data, function(index, value) {
-                                $('#Prodload').append('<option value="'+ value +'">'+ value +'</option>');
-                            });
-                        }
-                    });
+        $(document).ready(function() {
+            $('#Cateload').change(function() {
+                var category_name = $(this).val();
+                $.ajax({
+                    type: 'POST',
+                    url: 'fetch_products.php',
+                    data: {category_name: category_name},
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#Prodload').empty();
+                        $('#Prodload').append('<option value="">Select Product</option>');
+                        $.each(data, function(index, value) {
+                            $('#Prodload').append('<option value="'+ value +'">'+ value +'</option>');
+                        });
+                    }
                 });
             });
-        </script>
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#CateUnload').change(function() {
+                var category = $(this).val();
+                $.ajax({
+                    type: 'POST',
+                    url: 'fetch_unload_products.php',
+                    data: {category: category},
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#Produnload').empty();
+                        $('#Produnload').append('<option value="">Select Product</option>');
+                        $.each(data, function(index, value) {
+                            $('#Produnload').append('<option value="'+ value +'">'+ value +'</option>');
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 
   <script>
     // JavaScript functions

@@ -11,12 +11,12 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$category_name = $_POST['category_name'];
+$category = $_POST['category'];
 
 // Fetch products based on category name
-$sql = "SELECT products FROM categories WHERE category_name = ?";
+$sql = "SELECT products FROM vehiclesOnAction WHERE category = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $category_name);
+$stmt->bind_param("s", $category);
 $stmt->execute();
 $result = $stmt->get_result();
 
