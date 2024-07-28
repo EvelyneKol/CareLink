@@ -5,7 +5,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+/* if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['categorySelect']) && isset($_POST['productSelect']) && isset($_POST['quantity'])&& isset($_POST['datetime'])) {
             // Get the submitted form data
             $category = $_POST["categorySelect"];
@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Prepare and execute the SQL statement to insert data into the shortage table
                 $insert_query = "INSERT INTO shortage (shortage_category, shortage_product_name, shortage_quantity, shortage_datetime) VALUES (?, ?, ?, ?)";
                 $stmt = $conn->prepare($insert_query);
-                $stmt->bind_param("ssis", $categorySelect, $productSelect, $quantity, $datetime);
+                $stmt->bind_param("ssis", $category, $product, $quantity, $datetime);
 
                 if ($stmt->execute()) {
                     echo "Data inserted successfully.";
@@ -36,11 +36,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
             $stmt->close(); }
-}
+} */
 
-// Fetch categories from the database
-$sql = "SELECT distinct category_name FROM categories";
-$result = $conn->query($sql);
 
 
 
@@ -67,6 +64,10 @@ $offset = ($currentPage - 1) * $announcementsPerPage;
 // Fetch data from the shortage table for the current page
 $shortage = "SELECT * FROM shortage ORDER BY shortage_datetime DESC LIMIT $offset, $announcementsPerPage";
 $resultShortage = $conn->query($shortage);
+
+// Fetch categories from the database
+$sql = "SELECT distinct category_name FROM categories";
+$result = $conn->query($sql);
 
 
 ?>
@@ -121,9 +122,13 @@ $resultShortage = $conn->query($shortage);
                         </select>
                     </div>
 
+                    <div class="col-sm-6">
+                        <br>
+                        <label for="quantity" class="form-label" >Quantity </label>
+                        <input type="number" class="form-control p-2" id="quantity" name="quantity" required min="0" autocomplete="off" required ><br><br>
+                    </div>
+
                 </div>
-                <label for="quantity">Quantity:</label>
-                <input type="number" id="quantity" name="quantity" required min="0"><br><br>
 
                 <!-- datetime field will be automatically filled with current datetime -->
                 <input type="hidden" id="datetime" name="datetime" value="<?php echo date('Y-m-d\TH:i:s'); ?>">
