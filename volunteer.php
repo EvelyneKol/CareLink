@@ -352,59 +352,85 @@ include 'Connection.php';
 
 //________________________________queries for load and unload_________________________________________
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
 
-    // For the load form
-    if (isset($_POST['Cateload']) && isset($_POST['Prodload']) && isset($_POST['Quantload'])&& isset($_POST['address1'])&& isset($_POST['Vehicle_name'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['Cateload']) && isset($_POST['Prodload']) && isset($_POST['Quantload']) && isset($_POST['address1']) && isset($_POST['Vehicle_name'])) {
         $Category1 = $_POST['Cateload'];
         $Product1 = $_POST['Prodload'];
         $Quantity1 = (int)$_POST['Quantload'];
         $location1 = $_POST['address1'];
         $v_name = $_POST['Vehicle_name'];
 
-        $stmt1 = $conn->prepare("INSERT INTO vehiclesOnAction (v_name, driver, products, quantity, vehicle_location) VALUES (?, ?, ?, ?, ?)");
-        $stmt1->bind_param("sssis",$v_name, $defaultUsername, $Product1, $Quantity1, $location1);
+        $stmtCheck = $conn->prepare("SELECT quantity FROM vehiclesOnAction WHERE category = ? AND products = ? AND driver = ?");
+        $stmtCheck->bind_param("sss", $Category1, $Product1, $defaultUsername);
+        $stmtCheck->execute();
+        $stmtCheck->store_result();
+
+        if ($stmtCheck->num_rows > 0) {
+            $stmtCheck->bind_result($currentQuantity);
+            $stmtCheck->fetch();
+            $newQuantity = $currentQuantity + $Quantity1;
+
+            $stmtUpdate = $conn->prepare("UPDATE vehiclesOnAction SET quantity = ?, vehicle_location = ?, v_name = ? WHERE category = ? AND products = ? AND driver = ?");
+            $stmtUpdate->bind_param("isssss", $newQuantity, $location1, $v_name, $Category1, $Product1, $defaultUsername);
+            $stmtUpdate->execute();
+            $stmtUpdate->close();
+        } else {
+            $stmtInsert = $conn->prepare("INSERT INTO vehiclesOnAction (v_name, driver, products, quantity, category, vehicle_location) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmtInsert->bind_param("sssiss", $v_name, $defaultUsername, $Product1, $Quantity1, $Category1, $location1);
+            $stmtInsert->execute();
+            $stmtInsert->close();
+        }
+        $stmtCheck->close();
 
         $stmt2 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock - ?, quantity_on_truck = quantity_on_truck + ? WHERE category_name = ? AND products = ?");
         $stmt2->bind_param("iiss", $Quantity1, $Quantity1, $Category1, $Product1);
-        
-        if ($stmt1->execute() && $stmt2->execute()) {
-            // Redirect to a different page after successful form submission
-            header("Location: volunteer.php");
-            exit();
-        } else {
-            echo "Error: " . $stmt1->error . " " . $stmt2->error;
-        }
-
-        $stmt1->close();
+        $stmt2->execute();
         $stmt2->close();
-    }
+    } 
 
-    // For the unload form
-    if (isset($_POST['Cateunload']) && isset($_POST['Produnload']) && isset($_POST['Quantunload'])&& isset($_POST['address2'])) {
+    if (isset($_POST['Cateunload']) && isset($_POST['Produnload']) && isset($_POST['Quantunload']) && isset($_POST['Vehicle_name'])) {
         $CategoryUnload = $_POST['Cateunload'];
         $ProductUnload = $_POST['Produnload'];
         $QuantityUnload = (int)$_POST['Quantunload'];
-        $location2 = $_POST['address2'];
+        $v_name = $_POST['Vehicle_name'];
 
-        $stmtUnload1 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock + ?, quantity_on_truck = quantity_on_truck - ? WHERE category_name = ? AND products = ?");
-        $stmtUnload1->bind_param("iiss", $QuantityUnload, $QuantityUnload, $CategoryUnload, $ProductUnload );
+       
 
-        $stmtUnload2 = $conn->prepare("UPDATE vehicle SET quantity = CASE WHEN (quantity - ?) < 0 THEN 0 ELSE (quantity - ?) END WHERE products = ? ");
-        $stmtUnload2->bind_param("si", $QuantityUnload, $Produnload);
+        $stmtCheck = $conn->prepare("SELECT quantity FROM vehiclesOnAction WHERE category = ? AND products = ? AND driver = ?");
+       
+        $stmtCheck->bind_param("sss", $CategoryUnload, $ProductUnload, $defaultUsername);
+        $stmtCheck->execute();
+        $stmtCheck->bind_result($existingQuantity);
+        $stmtCheck->fetch();
 
-        if ($stmtUnload1->execute() && $stmtUnload2->execute()) {
-            // Redirect to a different page after successful form submission
-            header("Location: volunteer.php");
-            exit();
+        if ($existingQuantity >= $QuantityUnload) {
+            $newQuantity = $existingQuantity - $QuantityUnload;
+
+            if ($newQuantity != 0) {
+                $stmtUpdate = $conn->prepare("UPDATE vehiclesOnAction SET quantity = ? WHERE category = ? AND products = ? AND driver = ?");
+                
+                $stmtUpdate->bind_param("isss", $newQuantity, $CategoryUnload, $ProductUnload, $defaultUsername);
+                $stmtUpdate->execute();
+                $stmtUpdate->close();
+            } else {
+                $stmtDelete = $conn->prepare("DELETE FROM vehiclesOnAction WHERE category = ? AND products = ? AND driver = ?");
+                
+                $stmtDelete->bind_param("sss", $CategoryUnload, $ProductUnload, $defaultUsername);
+                $stmtDelete->execute();
+                $stmtDelete->close();
+            }
+
+            $stmtUnload1 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock + ?, quantity_on_truck = quantity_on_truck - ? WHERE category_name = ? AND products = ?");
+           
+            $stmtUnload1->bind_param("iiss", $QuantityUnload, $QuantityUnload, $CategoryUnload, $ProductUnload);
+            $stmtUnload1->execute();
+            $stmtUnload1->close();
         } else {
-            echo "Error: " . $stmtUnload1->error . " " . $stmtUnload2->error;
+            echo "Error: Not enough quantity to unload.";
         }
-
-        $stmtUnload1->close();
-        $stmtUnload2->close();
-    }
+        $stmtCheck->close();
+    } 
 }
 
 $sql = "SELECT DISTINCT category_name FROM categories";
@@ -478,7 +504,6 @@ $conn->close();
             background-color: rgba(178, 29, 3, 0.678);
             color: rgb(217, 217, 217);
             }
-
     </style>
 </head>
 
@@ -590,13 +615,10 @@ $conn->close();
                             </div>
                             <div class="col-sm-6">
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-6">
                                 <button class="load" type="submit">Load</button>
                                 </div>
-                                <div class="col-sm-4">
-                                <button class="reset" type="reset" onclick="resetForm()">Reset</button>
-                                </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-6">
                                 <button class="hidebutton" type="button" onclick="hideForm('loadForm')">Hide Form</button>
                                 </div>
                             </div>
@@ -607,6 +629,7 @@ $conn->close();
                     <div class="col-sm-3"></div>
                 </div>
             </div>
+
             <br>
 
             <div id="UnloadForm" style="display:none;">
@@ -622,9 +645,8 @@ $conn->close();
                             </div>
 
                             <div class="col-sm-6">
-                                <label for="address2">Vehicle-Location</label>
-                                <input type="text" class="form-control p-2" placeholder="Enter Your Address" id="address2" name="address2" autocomplete="on"
-                                spellcheck="false" required readonly>
+                                <label for="Vehicle_name">Vehicle-Name</label>
+                                <input type="text" class="form-control p-2" placeholder="Enter Your Vehicle name" id="Vehicle_name" name="Vehicle_name" spellcheck="false" required>
                             </div>
                         </div>
                         <div class="row">
@@ -661,13 +683,10 @@ $conn->close();
                             </div>
                             <div class="col-sm-6">
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-6">
                                 <button class="unload" type="submit">Unload</button>
                                 </div>
-                                <div class="col-sm-4">
-                                <button class="reset" type="reset" onclick="resetForm()">Reset</button>
-                                </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-6">
                                 <button class="hidebutton" type="button" onclick="hideForm('UnloadForm')">Hide Form</button>
                                 </div>
                             </div>
