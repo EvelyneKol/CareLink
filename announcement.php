@@ -5,7 +5,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-/* if ($_SERVER["REQUEST_METHOD"] == "POST") {
+ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['categorySelect']) && isset($_POST['productSelect']) && isset($_POST['quantity'])&& isset($_POST['datetime'])) {
             // Get the submitted form data
             $category = $_POST["categorySelect"];
@@ -31,12 +31,10 @@ if ($conn->connect_error) {
                 } else {
                     echo "Error inserting data: " . $conn->error;
                 }
-            } else {
-                echo "This entry already exists.";
-            }
+            } 
 
             $stmt->close(); }
-} */
+} 
 
 
 
@@ -63,7 +61,7 @@ $offset = ($currentPage - 1) * $announcementsPerPage;
 
 // Fetch data from the shortage table for the current page
 $shortage = "SELECT * FROM shortage ORDER BY shortage_datetime DESC LIMIT $offset, $announcementsPerPage";
-$resultShortage = $conn->query($shortage);
+$resultShortage = $conn->query($shortage); 
 
 // Fetch categories from the database
 $sql = "SELECT distinct category_name FROM categories";
@@ -82,6 +80,8 @@ $result = $conn->query($sql);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/announcement.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 </head>
 <body>
     <div class="header">
@@ -121,12 +121,17 @@ $result = $conn->query($sql);
                         <select id="productSelect" class="form-control p-2" name="productSelect">
                         </select>
                     </div>
-
-                    <div class="col-sm-6">
-                        <br>
-                        <label for="quantity" class="form-label" >Quantity </label>
-                        <input type="number" class="form-control p-2" id="quantity" name="quantity" required min="0" autocomplete="off" required ><br><br>
+                    
+                    <div class="row">
+                        <div class="col-sm-4"> </div>
+                            <div class="col-sm-4"> 
+                                <br>
+                                <label for="quantity" class="form-label" >Quantity </label>
+                                <input type="number" class="form-control p-2" id="quantity" name="quantity" required min="0" autocomplete="off" required ><br><br>
+                            </div>
+                        <div class="col-sm-4"> </div>
                     </div>
+
 
                 </div>
 
