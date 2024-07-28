@@ -20,8 +20,8 @@ if(isset($_COOKIE['username'])){
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $username = $_POST['username'];
   $people = (int)$_POST['People']; 
-  $Category = $_POST['Category'];
-  $product = $_POST['product'];
+  $Category = $_POST['categorySelect'];
+  $product = $_POST['productSelect'];
   $date = date("Y-m-d"); // Change the format to match the database column type
   date_default_timezone_set("Europe/Athens");
   $time = date("H:i:s"); // Format as "hour:minute:second
@@ -35,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   // Execute the statement
   if ($stmt->execute()) {
+      $success_message = "Request was made successfully";
       // Redirect to a different page after successful form submission
       header("Location: Civilian.php");
       exit(); // Make sure to exit to prevent further execution of the script
@@ -46,6 +47,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   // Close the statement
   $stmt->close();
 }
+
+// Fetch categories from the database
+$sql = "SELECT distinct category_name FROM categories";
+$result = $conn->query($sql);
+
+// Fetch shortage records from the database
+$shortageQuery = "SELECT * FROM shortage ORDER BY shortage_datetime DESC";
+$shortageResult = $conn->query($shortageQuery);
+
 
 // Close the database connection outside the if block
 $conn->close();
@@ -60,8 +70,9 @@ $conn->close();
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/jpg" sizes="96x96" href="images/favicon.png">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/Civilian.css">
+  <link rel="stylesheet" href="Civilian.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
@@ -70,6 +81,16 @@ $conn->close();
     <a href="home.html" class="a1"><i class="fa fa-sign-out" style="font-size:24px"></i>Log out</a>
   </div>
 
+  <div class="navbar">
+      <ul class="nav">
+          <li><a class="active" href="Home.html">Home</a></li>
+          <li><a href="admin_map.php">Map</a></li>
+      </ul>
+      <ul class="nav">            
+          <li><a href="home.html"><i class="fa fa-sign-out" style="font-size:24px" ></i> Log out</a></li>
+      </ul>
+  </div>
+  
   <div class="Main container-fluid">
     <div class="Firstsection">
       <h2> Civilian members</h2>
@@ -109,6 +130,7 @@ $conn->close();
                 <input type="text" class="form-control p-2" id="txtUsername" name="username"
                 placeholder="Write your Username..." autocomplete="on" required value="<?php echo $defaultUsername; ?>" readonly>
               </div>
+              <br>
               <div class="col-sm-6">
                 <label for="people" class="form-label">People</label>
                 <input type="text" class="form-control p-2" id="people" name="People"
@@ -117,24 +139,42 @@ $conn->close();
             </div>
             <br>
             <div>
-              <label for="Category" class="form-label">Category</label>
-              <select id="Category" class="form-control p-2" name="Category">
-                <option value="Sanitation" selected>Toilet paper</option>
-                <option value="Sanitation">Feminine supplies</option>
-                <option value="Sanitation">Paper</option>
-                <option value="Food">Oil</option>
-                <option value="Food">Rice</option>
-                <option value="Dairy">Dairy</option>
-              </select>
+                <div class="col-sm-6">
+                    <label for="categorySelect" class="form-label">Category</label>
+                    <select id="categorySelect" class="form-control p-2" name="categorySelect">
+                    <option value="">Select a category</option>
+                        <?php
+                        // Check if there are results
+                        if ($result->num_rows > 0) {
+                            // Output data of each row
+                            while($row = $result->fetch_assoc()) {
+                                echo '<option value="' . htmlspecialchars($row["category_name"]) . '">' . htmlspecialchars($row["category_name"]) . '</option>';
+                            }
+                        } else {
+                            echo '<option value="">No categories available</option>';
+                        }
+                        ?>
+                    </select>
+                    
+                    <br>
+                    
+                    <div class="col-sm-6">
+                        <label for="productSelect" class="form-label">Product</label>
+                        <select id="productSelect" class="form-control p-2" name="productSelect">
+                        <option value="">Select a category First</option>
+                        </select>
+                    </div>
+                </div>
             </div>
+            <?php
+            if (!empty($success_message)) {
+                echo "<p class='success-message'>$success_message</p>";
+            }
+            ?>
             <br>
-            <div>
-              <label for="product" class="form-label">Product</label>
-              <input type="text" class="form-control p-2" id="product" name="product"
-                placeholder="Insert your product..." autocomplete="on" required>
-            </div>
             <button class="submit" type="submit">Submit</button>
             <button class="reset" type="reset" onclick="resetForm()">Reset</button>
+           
           </form>
         </div>
         <div class="col-sm-3"></div>
@@ -148,9 +188,31 @@ $conn->close();
         <div id="userRequests"></div>
     </div>
 
+    <div class="Secondsection">
+      <h3 id="A">Shortages</h3>
+      <hr>
+      <div class="reminder-notes">
+        <?php
+        if ($shortageResult->num_rows > 0) {
+            echo '<ul>';
+            while($row = $shortageResult->fetch_assoc()) {
+                echo '<li>';       
+                echo '<h2>Category: ' . htmlspecialchars($row["shortage_category"]) . '</h2>';
+                echo '<p>Product Name: ' . htmlspecialchars($row["shortage_product_name"]) . '</p>';
+                echo '<p>Quantity: ' . htmlspecialchars($row["shortage_quantity"]) . '</p>';
+                echo '<p>Date & Time: ' . htmlspecialchars($row["shortage_datetime"]) . '</p>';              
+                echo '</li>';
+            }
+            echo '</ul>';
+        } else {
+            echo '<p>No reminders available.</p>';
+        }
+        ?>
+      </div>
+    </div>
 
     <div class="forthsection">
-        <h3>Offers</h3>
+        <h3>My Offers</h3>
         <hr>
         <!-- Add a div to display the user requests -->
         <div></div>
@@ -186,6 +248,28 @@ $conn->close();
       </div>
     </div>
   </div>
+
+  <script>
+        $(document).ready(function() {
+            $('#categorySelect').change(function() {
+                var category_name = $(this).val();
+                $.ajax({
+                    type: 'POST',
+                    url: 'fetch_products.php',
+                    data: {category_name: category_name},
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#productSelect').empty();
+                        $('#productSelect').append('<option value="">Select Product</option>');
+                        $.each(data, function(index, value) {
+                            $('#productSelect').append('<option value="'+ value +'">'+ value +'</option>');
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
   <script>
         function showRequests(username) {
             var xmlhttp = new XMLHttpRequest();

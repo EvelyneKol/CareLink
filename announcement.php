@@ -1,45 +1,43 @@
 <?php
 include 'Connection.php';
 
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
- if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['categorySelect']) && isset($_POST['productSelect']) && isset($_POST['quantity'])&& isset($_POST['datetime'])) {
-            // Get the submitted form data
-            $category = $_POST["categorySelect"];
-            $product = $_POST["productSelect"];
-            $quantity = max(0, intval($_POST["quantity"])); // Ensure quantity is non-negative
-            $datetime = $_POST["datetime"];
-
-            // Check if the same entry already exists
-            $existing_entry_query = "SELECT * FROM shortage WHERE shortage_category = ? AND shortage_product_name = ?";
-            $stmt = $conn->prepare($existing_entry_query);
-            $stmt->bind_param("ss", $category, $product);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            if ($result->num_rows == 0) { // If no duplicate entry found, insert new data
-                // Prepare and execute the SQL statement to insert data into the shortage table
-                $insert_query = "INSERT INTO shortage (shortage_category, shortage_product_name, shortage_quantity, shortage_datetime) VALUES (?, ?, ?, ?)";
-                $stmt = $conn->prepare($insert_query);
-                $stmt->bind_param("ssis", $category, $product, $quantity, $datetime);
-
-                if ($stmt->execute()) {
-                    echo "Data inserted successfully.";
-                } else {
-                    echo "Error inserting data: " . $conn->error;
-                }
-            } 
-
-            $stmt->close(); }
-} 
-
-
-
-
 date_default_timezone_set('Europe/Athens');
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if (isset($_POST['categorySelect']) && isset($_POST['productSelect']) && isset($_POST['quantity'])&& isset($_POST['datetime'])) {
+        // Get the submitted form data
+        $category = $_POST["categorySelect"];
+        $product = $_POST["productSelect"];
+        $quantity = max(0, intval($_POST["quantity"])); // Ensure quantity is non-negative
+        $datetime = $_POST["datetime"];
+
+        // Check if the same entry already exists
+        $existing_entry_query = "SELECT * FROM shortage WHERE shortage_category = ? AND shortage_product_name = ?";
+        $stmt = $conn->prepare($existing_entry_query);
+        $stmt->bind_param("ss", $category, $product);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows == 0) { // If no duplicate entry found, insert new data
+            // Prepare and execute the SQL statement to insert data into the shortage table
+            $insert_query = "INSERT INTO shortage (shortage_category, shortage_product_name, shortage_quantity, shortage_datetime) VALUES (?, ?, ?, ?)";
+            $stmt = $conn->prepare($insert_query);
+            $stmt->bind_param("ssis", $category, $product, $quantity, $datetime);
+
+            if ($stmt->execute()) {
+                
+            } else {
+                echo "Error inserting data: " . $conn->error;
+            }
+        } 
+
+        $stmt->close(); }
+} 
 
 //new page
 // Define the number of announcements per page
