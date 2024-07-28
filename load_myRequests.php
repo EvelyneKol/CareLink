@@ -93,17 +93,17 @@ h3, .h3 {
 session_start();
 
 // Retrieve data from session
-$data3 = isset($_SESSION['data3']) ? $_SESSION['data3'] : [];
+$myRequests = isset($_SESSION['myRequests']) ? $_SESSION['myRequests'] : [];
 
-foreach ($data3 as $row) {
+foreach ($myRequests as $row) {
     echo '<div class="card">';
     echo '<div class="content">';
-    echo '<h3 class="title">'.htmlspecialchars($row["first_name"]).' '.htmlspecialchars($row["last_name"]).' </h3>';
+    echo '<h3 class="title">'.htmlspecialchars($row["civilian_first_name"]).' '.htmlspecialchars($row["civilian_last_name"]).' </h3>';
     echo '<p class="description"> Category: ' . htmlspecialchars($row["request_category"]) . '</p>';
     echo '<p class="description"> Product: ' . htmlspecialchars($row["request_product_name"]) . '</p>';
     echo '<p class="description"> Num of People: ' . htmlspecialchars($row["persons"]) . '</p>';
     echo '<p class="description"> Date Posted: ' . htmlspecialchars($row["request_date_posted"]) . '</p>';
-    echo '<p class="description"> Phone: +30 ' . htmlspecialchars($row["number"]) . '</p>';
+    echo '<p class="description"> Phone: +30 ' . htmlspecialchars($row["civilian_number"]) . '</p>';
     echo '<p class="description"> State: ' . htmlspecialchars($row["state"]) . '</p>';
     echo '<button class="DeleteReq" onclick="deleteRequest(' . htmlspecialchars($row["id_request"]) . ')">Delete</button>';
     echo '<button class="DeliverReq">Deliver</button>';

@@ -44,7 +44,7 @@ function unloadItems(formId) {
       var initialDistance = calculateDistance(userLocationMarker.getLatLng(), baseMarker.getLatLng());
       userLocationMarker.bindPopup(`Your Location - Distance: ${initialDistance.toFixed(2)} kilometers`).openPopup();
       // Update the value of the address input field
-      document.getElementById("address1").value = geolocation;
+      document.getElementById("loadAddress").value = geolocation;
   
     });
   } else {
@@ -135,6 +135,7 @@ function unloadItems(formId) {
   var volWaitingOffers = [];
   var myRequests = [];
   var myOffers = [];
+  var myOffers = 0;
 
  
   //__________________________Fetch the JSON data from the file__________________________
@@ -166,6 +167,12 @@ function unloadItems(formId) {
     })
     .catch(error => console.error('Error fetching the JSON data:', error));
 
+  fetch('taskcount.json')
+    .then(response => response.json())
+    .then(data => {
+        taskCount = parseInt(data[0].task_count, 10);  // Convert to number
+    })
+    .catch(error => console.error('Error fetching the taskcount JSON data:', error));
 
 
 //__________________active layers__________________________________________
@@ -187,47 +194,53 @@ const layerMarkers = {
 
 //___________________________________volWaitingRequests___________________________________
 function Waiting_requests_markers(data) {
+  console.log("Processing Waiting_requests_markers with taskCount:", taskCount);  // Logging taskCount in function
   // Clear existing markers for the layer
   layerMarkers.layer1 = [];
 
   // Loop through the data and create markers
   for (let i = 0; i < data.length; i++) {
-    const location = new L.LatLng(data[i].latitude, data[i].longitude);
+      const location = new L.LatLng(data[i].latitude, data[i].longitude);
 
-    var civilian_first_name = data[i].civilian_first_name;
-    var civilian_last_name = data[i].civilian_last_name;
-    var civilian_number = data[i].civilian_number;
-    var request_date_posted = data[i].request_date_posted;
-    var request_id=data[i].id_request;
-    var request_category = data[i].request_category;
-    var state = data[i].state;
-    var request_product_name = data[i].request_product_name;
-    var persons = data[i].persons;
+      var civilian_first_name = data[i].civilian_first_name;
+      var civilian_last_name = data[i].civilian_last_name;
+      var civilian_number = data[i].civilian_number;
+      var request_date_posted = data[i].request_date_posted;
+      var request_id = data[i].id_request;
+      var request_category = data[i].request_category;
+      var state = data[i].state;
+      var request_product_name = data[i].request_product_name;
+      var persons = data[i].persons;
 
-    var buttonHtml = '<button class="Acceptbut" onclick="handle_requests(' + request_id + ')">Accept</button>';
+      var requestbutton='<button class="Acceptbut" onclick="handle_requests(' + request_id + ')">Accept</button>';
+      /* if (taskCount <= 4) {
+        requestbutton = '<button class="Acceptbut" onclick="handle_requests(' + request_id + ')">Accept</button>';
+      } else {
+        requestbutton = '<strong style="display: block; text-align: center; color: red;">You have reached the maximum number of Tasks</strong>';
+      } */
 
-    const message = '<strong>' + civilian_first_name + ' ' + civilian_last_name + 
-                ' requests: </strong><br>' + '<strong> ' + 
-                request_category + '</strong>: ' + request_product_name + '<br><strong>For</strong>: ' +
-                persons + ' persons' + '<br><strong>Date posted</strong>: ' + 
-                request_date_posted + '<br><strong>Number: </strong> ' + '+30'+ civilian_number + 
-                '<br><strong>State:</strong> ' + state + '<br>' + buttonHtml;
-                 
-    // Create a new marker with a custom icon
-    const marker = L.marker(location, {
-      icon: L.icon({
-        iconUrl: 'pin1.png',
-        iconSize: [32, 32],
-        iconAnchor: [16, 32],
-        popupAnchor: [0, -32]
-      })
-    });
+      const message = '<strong>' + civilian_first_name + ' ' + civilian_last_name +
+          ' requests: </strong><br>' + '<strong> ' +
+          request_category + '</strong>: ' + request_product_name + '<br><strong>For</strong>: ' +
+          persons + ' persons' + '<br><strong>Date posted</strong>: ' +
+          request_date_posted + '<br><strong>Number: </strong> ' + '+30' + civilian_number +
+          '<br><strong>State:</strong> ' + state + '<br>' + requestbutton;
 
-    // Bind popup content to the marker
-    marker.bindPopup(message);
+      // Create a new marker with a custom icon
+      const marker = L.marker(location, {
+          icon: L.icon({
+              iconUrl: 'pin1.png',
+              iconSize: [32, 32],
+              iconAnchor: [16, 32],
+              popupAnchor: [0, -32]
+          })
+      });
 
-    // Add marker to the layerMarkers array
-    layerMarkers.layer1.push(marker);
+      // Bind popup content to the marker
+      marker.bindPopup(message);
+
+      // Add marker to the layerMarkers array
+      layerMarkers.layer1.push(marker);
   }
   // Update the marker cluster group
   updateClusterGroup();
@@ -251,18 +264,20 @@ function offers_markers(data) {
       var offer_quantity = data[i].offer_quantity ;
       var offer_id=data[i].offer_id;
 
-      
-      var buttonHtml = '<button class="Acceptbut" onclick="handle_offers(' + offer_id + ')">Accept</button>';
+      var offerbutton ='<button class="Acceptbut" onclick="handle_offers(' + offer_id + ')">Accept</button>';
 
-
-     
+      /* if (taskCount <= 4) {
+        offerbutton = '<button class="Acceptbut" onclick="handle_offers(' + offer_id + ')">Accept</button>';
+      } else {
+        offerbutton = '<strong style="display: block; text-align: center; color: red;">You have reached the maximum number of Tasks</strong>';
+      } */
 
     const message = '<strong>' + civilian_first_name + ' ' + civilian_last_name + 
                 ' requests: </strong><br>' + '<strong> ' + 
                 offer_category + '</strong>: ' + offer_product_name + '<br><strong>For</strong>: ' +
                 offer_quantity + ' persons' + '<br><strong>Date posted</strong>: ' + 
                 offer_date_posted + '<br><strong>Number: </strong> ' + '+30'+ civilian_number + 
-                '<br><strong>State:</strong> ' + offer_status + '<br>' + buttonHtml;
+                '<br><strong>State:</strong> ' + offer_status + '<br>' + offerbutton;
                  
     // Create a new marker with a custom icon
     const marker = L.marker(location, {
