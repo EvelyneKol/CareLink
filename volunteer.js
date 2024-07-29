@@ -78,6 +78,7 @@ function unloadItems(formId) {
       iconAnchor: [20, 41],
       popupAnchor: [1, -34]
     });
+
   
     userLocationMarker = L.marker([userLat, userLng], { draggable: true }).addTo(map).setIcon(myTruck);
     userLocationMarker.bindPopup('Your Location').openPopup();
@@ -94,8 +95,10 @@ function unloadItems(formId) {
       updateLine(); // Add this line to update offer lines
       updateRequestLines();
       updateOfferLines();
+      checkDistancesAndEnableButtons();
       
     });
+ 
   }
   
   
@@ -353,6 +356,7 @@ function my_requests(data) {
       fillOpacity: 0.5,
       radius: 50 // Radius in meters
     });
+    
 
     // Add the marker and circle to the map
     marker.addTo(map);
@@ -366,8 +370,35 @@ function my_requests(data) {
 
   // Update the marker cluster group
   updateClusterGroup();
+// Check distances and enable buttons
+
 }
 
+function checkDistancesAndEnableButtons() {
+  if (!userLocationMarker) return; // Check if userLocationMarker exists
+
+  RequestMarkers.forEach(marker => {
+    var distance = calculateDistance(marker.getLatLng(), userLocationMarker.getLatLng());
+    // Check if distance is less than 500 meters
+    if (distance < 500) {
+      // Find the associated button and enable it
+      const id_request = marker.options.id_request; // Ensure id_request is stored in marker options
+      document.querySelectorAll(`button.DeliverReq`).forEach(button => {
+        if (button.getAttribute('onclick').includes(id_request)) {
+          button.disabled = false;
+        }
+      });
+    } else {
+      // Disable the button if the distance is greater than 500 meters
+      const id_request = marker.options.id_request; // Ensure id_request is stored in marker options
+      document.querySelectorAll(`button.DeliverReq`).forEach(button => {
+        if (button.getAttribute('onclick').includes(id_request)) {
+          button.disabled = true;
+        }
+      });
+    }
+  });
+}
 
 function drawRequestLines() {
   if (!userLocationMarker || !activeLayers.layer3) return; // Check if userLocationMarker exists and layer3 is active
@@ -509,6 +540,7 @@ function toggleLayer(layer) {
     } else if (layer === 'layer3') { // Always call my_requests when enabling layer3
       my_requests(myRequests);
       drawRequestLines();
+
     } else if (layer === 'layer4') { // Always call my_offers when enabling layer4
       my_offers(myOffers);
       drawOfferLines();
