@@ -14,11 +14,22 @@ function unloadItems(formId) {
   L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL', {
     attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
   }).addTo(map);
+
+  var baselatitude = 0 ;
+  var baselongitude = 0;
+
+  fetch('baseLocation.json')
+  .then(response => response.json())
+  .then(data => {
+      baselatitude = parseFloat(data[0].latitude);
+      baselongitude = parseFloat(data[0].longitude);
+  })
+  .catch(error => console.error('Error fetching the taskcount JSON data:', error));
+
   
   var userLocationMarker;
-  var baseMarker = L.marker([38.2904558214517, 21.79578903224108]);
+  var baseMarker = L.marker([baselatitude ,  baselongitude]);
   var popup1 = baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
-  
   var line = L.polyline([], { color: 'black' }).addTo(map); // Initialize an empty polyline
 
   var RequestMarkers = [];
@@ -59,10 +70,10 @@ function unloadItems(formId) {
       popupAnchor: [1, -34]
     });
   
-    baseMarker = L.marker([38.290399042463136, 21.79564239581478]).addTo(map).setIcon(baseIcon);
+    baseMarker = L.marker([baselatitude ,  baselongitude]).addTo(map).setIcon(baseIcon);
     baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
 
-    var circle = L.circle([38.290399042463136, 21.79564239581478], {
+    var circle = L.circle([baselatitude ,  baselongitude], {
       color: 'blue',
       fillColor: 'blue',
       fillOpacity: 0.5,
@@ -356,7 +367,6 @@ function my_requests(data) {
       fillOpacity: 0.5,
       radius: 50 // Radius in meters
     });
-    
 
     // Add the marker and circle to the map
     marker.addTo(map);
@@ -384,17 +394,14 @@ function checkDistancesAndEnableButtons() {
       // Find the associated button and enable it
       const id_request = marker.options.id_request; // Ensure id_request is stored in marker options
       document.querySelectorAll(`button.DeliverReq`).forEach(button => {
-        if (button.getAttribute('onclick').includes(id_request)) {
-          button.disabled = false;
-        }
+        button.disabled = false;
+
       });
     } else {
       // Disable the button if the distance is greater than 500 meters
       const id_request = marker.options.id_request; // Ensure id_request is stored in marker options
       document.querySelectorAll(`button.DeliverReq`).forEach(button => {
-        if (button.getAttribute('onclick').includes(id_request)) {
-          button.disabled = true;
-        }
+        button.disabled = true;
       });
     }
   });
