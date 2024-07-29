@@ -1,22 +1,59 @@
 <?php
 include 'Connection.php';
 
-    session_start();
-    if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'volunteer') {
-        header('Location: sign_in.php');
-        exit();
+session_start();
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'volunteer') {
+    header('Location: sign_in.php');
+    exit();
+}
+
+// Check connection
+if ($conn->connect_error) {
+    die("Failed to connect to MySQL: " . $conn->connect_error);
+}
+// Check if the username is set in cookies
+if(isset($_COOKIE['username'])){
+    $defaultUsername = $_COOKIE['username'];
+} else {
+    $defaultUsername = "";
+}
+
+//διαβασμα συντεταγμενων αποθηκης απο την βαση δεδομεων
+$baseLocation = "SELECT SUBSTRING_INDEX(base_location, ',', 1) AS latitude,
+        SUBSTRING_INDEX(base_location, ',', -1) AS longitude
+        FROM base";
+
+    $baseLocationData = array();
+
+    $sqlbaseLocation = $conn->query($baseLocation);
+
+    if ($sqlbaseLocation) {
+        while ($row = $sqlbaseLocation->fetch_assoc()) {
+            $baseLocationData[] = array(
+                "latitude" => $row["latitude"],
+                "longitude" => $row["longitude"]
+            );
+        }
+
+        // Encode $baseLocationData array to JSON
+        $json_data = json_encode($baseLocationData);
+
+        // Specify the path to store the JSON file
+        $json_file = 'baseLocation.json';
+
+        // Write JSON data to file
+        if (file_put_contents($json_file, $json_data)) {
+            return "JSON data successfully written to $json_file";
+        } else {
+            return "Unable to write JSON data to $json_file";
+        }
+
+        // Close the result set
+        $sqlbaseLocation->close();
+    } else {
+        die("Error executing the SQL query: " . $conn->error);
     }
 
-    // Check connection
-    if ($conn->connect_error) {
-        die("Failed to connect to MySQL: " . $conn->connect_error);
-    }
-    // Check if the username is set in cookies
-    if(isset($_COOKIE['username'])){
-        $defaultUsername = $_COOKIE['username'];
-    } else {
-        $defaultUsername = "";
-    }
 
     //-----------------συνάρτηση για fetch waiting requests------------------------
     function fetchRequests($conn) {
@@ -470,8 +507,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     
 }
-
-
 
 $sql = "SELECT DISTINCT category_name FROM categories";
 $result = $conn->query($sql);
