@@ -40,7 +40,7 @@ if ($existingQuantity >= $quantity) {
         $stmtUpdate->close();
     } else {
         $stmtDelete = $conn->prepare("DELETE FROM vehiclesOnAction WHERE category = ? AND products = ? AND driver = ?");
-        $stmtDelete->bind_param("sss", $CategoryUnload, $ProductUnload, $username);
+        $stmtDelete->bind_param("sss", $category, $product, $username);
         $stmtDelete->execute();
         $stmtDelete->close();
     }

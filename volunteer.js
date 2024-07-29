@@ -211,7 +211,7 @@ function Waiting_requests_markers(data) {
       var persons = data[i].persons;
       var requestbutton ;
 
-      if (taskCount <= 4) {
+      if (taskCount < 4) {
         requestbutton = '<button class="Acceptbut" onclick="handle_requests(' + id_request + ')">Accept</button>';
       } else {
         requestbutton = '<strong style="display: block; text-align: center; color: red;">You have reached the maximum number of Tasks</strong>';
@@ -267,7 +267,7 @@ function offers_markers(data) {
 
       var offerbutton;
 
-      if (taskCount <= 4) {
+      if (taskCount < 4) {
         offerbutton = '<button class="Acceptbut" onclick="handle_offers(' + offer_id + ')">Accept</button>';
       } else {
         offerbutton = '<strong style="display: block; text-align: center; color: red;">You have reached the maximum number of Tasks</strong>';
@@ -303,33 +303,36 @@ function offers_markers(data) {
 } 
 
 //___________________________________myRequests___________________________________
+let RequestCircles = []; // Array to store the circles
+
 function my_requests(data) {
   layerMarkers.layer3 = [];
+  RequestCircles = []; // Clear any existing circles
 
   // Loop through the data and create markers
   for (let i = 0; i < data.length; i++) {
     const location = new L.LatLng(data[i].latitude, data[i].longitude);
-      var civilian_first_name = data[i].civilian_first_name ;
-      var civilian_last_name = data[i].civilian_last_name ;
-      var civilian_number = data[i].civilian_number ;
-      var vehicle_name = data[i].vehicle_name ;
-      var task_date = data[i].task_date ;
-      var id_request = data[i].id_request;
-      var request_date_posted = data[i].request_date_posted;
-      var request_category = data[i].request_category ;
-      var state=data[i].state;
-      var request_product_name=data[i].request_product_name;
-      var persons=data[i].persons;
+    var civilian_first_name = data[i].civilian_first_name;
+    var civilian_last_name = data[i].civilian_last_name;
+    var civilian_number = data[i].civilian_number;
+    var vehicle_name = data[i].vehicle_name;
+    var task_date = data[i].task_date;
+    var id_request = data[i].id_request;
+    var request_date_posted = data[i].request_date_posted;
+    var request_category = data[i].request_category;
+    var state = data[i].state;
+    var request_product_name = data[i].request_product_name;
+    var persons = data[i].persons;
 
-      const message = '<strong>' + civilian_first_name + ' ' + civilian_last_name + 
-      ' requests: </strong> <br>' + '<strong> ' + 
+    const message = '<strong>' + civilian_first_name + ' ' + civilian_last_name +
+      ' requests: </strong> <br>' + '<strong> ' +
       request_category + '</strong>: ' + request_product_name + '<br><strong>For</strong>: ' +
-      persons + ' persons' + '<br><strong>Date posted</strong>: ' + 
-      request_date_posted + '<br><strong>Number: </strong> ' + '+30'+ civilian_number +
+      persons + ' persons' + '<br><strong>Date posted</strong>: ' +
+      request_date_posted + '<br><strong>Number: </strong> ' + '+30' + civilian_number +
       '<br><strong>Vehicle:</strong> ' + vehicle_name +
-      '<br><strong>Date Accepted </strong> ' + task_date + 
-      '<br><strong>State:</strong> ' + state ;
-                 
+      '<br><strong>Date Accepted </strong> ' + task_date +
+      '<br><strong>State:</strong> ' + state;
+
     // Create a new marker with a custom icon
     const marker = L.marker(location, {
       icon: L.icon({
@@ -340,18 +343,31 @@ function my_requests(data) {
       })
     });
 
-
     // Bind popup content to the marker
     marker.bindPopup(message);
-    // Add marker to the layerMarkers array
+
+    // Create a circle around the marker
+    const circle = L.circle(location, {
+      color: 'blue',
+      fillColor: 'blue',
+      fillOpacity: 0.5,
+      radius: 50 // Radius in meters
+    });
+
+    // Add the marker and circle to the map
+    marker.addTo(map);
+    circle.addTo(map);
+
+    // Store the marker and circle
     layerMarkers.layer3.push(marker);
-    RequestMarkers.push(marker); // Add to OfferMarkers array
+    RequestMarkers.push(marker); // Add to RequestMarkers array
+    RequestCircles.push(circle); // Add to RequestCircles array
   }
 
   // Update the marker cluster group
   updateClusterGroup();
+}
 
-} 
 
 function drawRequestLines() {
   if (!userLocationMarker || !activeLayers.layer3) return; // Check if userLocationMarker exists and layer3 is active
@@ -374,8 +390,11 @@ function updateRequestLines() {
 
 
 //_______________________________my_offers__________________________________
+
+let OfferCircles = [];
 function my_offers(data) {
   layerMarkers.layer4 = [];
+  OfferCircles = []; // Clear any existing circles
 
   // Loop through the data and create markers
   for (let i = 0; i < data.length; i++) {
@@ -413,14 +432,28 @@ function my_offers(data) {
 
     // Bind popup content to the marker
     marker.bindPopup(message);
+
+    // Create a circle around the marker
+    const circle = L.circle(location, {
+      color: 'blue',
+      fillColor: 'blue',
+      fillOpacity: 0.5,
+      radius: 50 // Radius in meters
+    });
+
+    marker.addTo(map);
+    circle.addTo(map);
+
     // Add marker to the layerMarkers array
     layerMarkers.layer4.push(marker);
     OfferMarkers.push(marker); // Add to OfferMarkers array
+    OfferCircles.push(circle); // Add to RequestCircles array
   }
 
   // Update the marker cluster group
   updateClusterGroup();
 }
+
 
 function drawOfferLines() {
   if (!userLocationMarker || !activeLayers.layer4) return; // Check if userLocationMarker exists and layer4 is active
@@ -450,14 +483,18 @@ function toggleLayer(layer) {
     activeLayers[layer] = false;
 
     if (layer === 'layer3') {
-      RequestLines.forEach(line => map.removeLayer(line)); // Remove all offer lines from the map
-      RequestLines = []; // Clear the offer lines array
+      RequestLines.forEach(line => map.removeLayer(line)); // Remove all request lines from the map
+      RequestLines = []; // Clear the request lines array
+      RequestCircles.forEach(circle => map.removeLayer(circle)); // Remove all circles from the map
+      RequestCircles = []; // Clear the circles array
     }
 
     // Remove lines if layer4 is deactivated
     if (layer === 'layer4') {
       OfferLines.forEach(line => map.removeLayer(line)); // Remove all offer lines from the map
       OfferLines = []; // Clear the offer lines array
+      OfferCircles.forEach(circle => map.removeLayer(circle)); // Remove all circles from the map
+      OfferCircles = []; // Clear the circles array
     }
 
   } else {
@@ -465,14 +502,14 @@ function toggleLayer(layer) {
     activeLayers[layer] = true;
 
     // Initialize markers for the layer if not already done
-    if (layer === 'layer1' && layerMarkers.layer1.length === 0) {
+    if (layer === 'layer1') {
       Waiting_requests_markers(volWaitingRequests);
-    } else if (layer === 'layer2' && layerMarkers.layer2.length === 0) {
+    } else if (layer === 'layer2') {
       offers_markers(volWaitingOffers);
-    } else if (layer === 'layer3' && layerMarkers.layer3.length === 0) {
+    } else if (layer === 'layer3') { // Always call my_requests when enabling layer3
       my_requests(myRequests);
       drawRequestLines();
-    } else if (layer === 'layer4' && layerMarkers.layer4.length === 0) {
+    } else if (layer === 'layer4') { // Always call my_offers when enabling layer4
       my_offers(myOffers);
       drawOfferLines();
     }
