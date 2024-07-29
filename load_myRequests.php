@@ -105,8 +105,8 @@ foreach ($myRequests as $row) {
     echo '<p class="description"> Date Posted: ' . htmlspecialchars($row["request_date_posted"]) . '</p>';
     echo '<p class="description"> Phone: +30 ' . htmlspecialchars($row["civilian_number"]) . '</p>';
     echo '<p class="description"> State: ' . htmlspecialchars($row["state"]) . '</p>';
-    echo '<button class="DeleteReq" onclick="deleteRequest(' . htmlspecialchars($row["id_request"]) . ')">Delete</button>';
-    echo '<button class="DeliverReq">Deliver</button>';
+    echo '<button class="DeleteReq" onclick="delete_request(' . htmlspecialchars($row["id_request"]) . ')">Delete</button>';
+    echo '<button class="DeliverReq" onclick="deliver_requests(\'' . htmlspecialchars($row["id_request"]) . '\', \'' . htmlspecialchars($row["request_category"]) . '\', \'' . htmlspecialchars($row["request_product_name"]) . '\', \'' . htmlspecialchars($row["persons"]) . '\')">Deliver</button>';
     echo '</div>';
     echo '</div>';
   

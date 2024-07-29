@@ -8,12 +8,11 @@ if ($conn->connect_error) {
 
 // Get data from the AJAX request
 $requestId = $_POST['requestId'];
-$username = $_POST['username'];
 
 // Check if the username matches the request_civilian
 // Prepare and execute the insert query
-$deleteoffer = $conn->prepare("DELETE FROM task where task_volunteer = ? and task_request_id = ? ");
-$deleteoffer->bind_param("si", $username,  $requestId);
+$deleteoffer = $conn->prepare("DELETE FROM task where task_request_id = ? ");
+$deleteoffer->bind_param("i",  $requestId);
 $deleteoffer->execute();
 
 // Prepare and execute the update query

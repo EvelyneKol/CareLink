@@ -20,7 +20,7 @@ include 'Connection.php';
 
     //-----------------συνάρτηση για fetch waiting requests------------------------
     function fetchRequests($conn) {
-        $waitingRequest = "SELECT 
+        $waitingRequest = "SELECT DISTINCT
             civilian.civilian_first_name,
             civilian.civilian_last_name,
             civilian.civilian_number,
@@ -54,7 +54,7 @@ include 'Connection.php';
                     "civilian_last_name" => $row["civilian_last_name"],
                     "civilian_number" => $row["civilian_number"],
                     "request_date_posted" => $row["request_date_posted"],
-                    "request_id" => $row["id_request"],
+                    "id_request" => $row["id_request"],
                     "request_category" => $row["request_category"],
                     "state" => $row["state"],
                     "request_product_name" => $row["request_product_name"], 
@@ -71,11 +71,16 @@ include 'Connection.php';
         $json_file = 'volWaitingRequests.json';
 
         // Write JSON data to file
-        file_put_contents($json_file, $json_data);
+        // Write JSON data to file
+        if (file_put_contents($json_file, $json_data)) {
+            
+        } else {
+            echo "Unable to write JSON data to $json_file";
+        }
 
         $sqlwaitingRequest->close();
         } else {
-        return "Error executing the SQL query: " . $conn->error;
+            die("Error executing the SQL query: " . $conn->error);
         }
 
     }
@@ -795,8 +800,30 @@ $conn->close();
             }
     </script>
 
-    <script>
-        $(document).ready(function() {
+    
+
+  <script>
+
+    function LoadVehicle(username) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("vehiclestatus").innerHTML = this.responseText;
+            }
+        };
+        xmlhttp.open("GET", "load_vehicle.php?q=" + username, true);
+        xmlhttp.send();
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get the default username value
+        var defaultUsername = document.getElementById("txtUsername").value;
+
+        // Call LoadVehicle to fetch and display user requests
+        LoadVehicle(defaultUsername);
+    });
+
+    $(document).ready(function() {
             $('#Cateload').change(function() {
                 var category_name = $(this).val();
                 $.ajax({
@@ -814,9 +841,7 @@ $conn->close();
                 });
             });
         });
-    </script>
-
-    <script>
+  
         $(document).ready(function() {
             $('#CateUnload').change(function() {
                 var category = $(this).val();
@@ -835,288 +860,169 @@ $conn->close();
                 });
             });
         });
-    </script>
 
-  <script>
     // JavaScript functions
-    function handle_requests(requestId) {
-            var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
-            var url = "addrequest_volunteer.php";
+    function handle_requests(id_request) {
+    var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
+    var url = "addrequest_volunteer.php";
 
-            // Create a FormData object and append the data you want to send
-            var formData = new FormData();
-            formData.append("requestId", requestId);
-            formData.append("username", username);
+    // Create a FormData object and append the data you want to send
+    var formData = new FormData();
+    formData.append("id_request", id_request);
+    formData.append("username", username);
 
-            // Create the XMLHttpRequest object
-            var xhr = new XMLHttpRequest();
+    // Create the XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
 
-            // Setup the AJAX request
-            xhr.open("POST", url, true);
+    // Setup the AJAX request
+    xhr.open("POST", url, true);
 
-            // Set up the onload and onerror functions
-            xhr.onload = function () {
-                if (xhr.status == 200) {
-                    // Handle the success response
-                    console.log(xhr.responseText);
-                    // After handling the request, update the JSON file
-                    // You can update the UI or perform other actions if needed
-                    location.reload();
-                    updateRequests();
-                    updateMyRequests();
-                    updatetasks();
-
-                } else {
-                    // Handle the error response
-                    console.error("Error: " + xhr.statusText);
-                }
-            };
-
-            xhr.onerror = function () {
-                // Handle the network error
-                console.error("Network error");
-            };
-
-            // Send the AJAX request with the form data
-            xhr.send(formData);
+    // Set up the onload and onerror functions
+    xhr.onload = function () {
+        if (xhr.status == 200) {
+            // Handle the success response
+            console.log(xhr.responseText);
+            // After handling the request, update the JSON file
+            updateRequests();
+            updateMyRequests();
+            updatetasks(); 
+            location.reload();
+        } else {
+            // Handle the error response
+            console.error("Error: " + xhr.statusText);
         }
+    };
 
-        function updateRequests() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?volWaitingRequests_json=true", true);
-            xhr.onload = function () {
-                if (xhr.status == 200) {
-                    console.log("JSON file updated successfully");
-                } else {
-                    console.error("Failed to update JSON file: " + xhr.statusText);
-                }
-            };
-            xhr.onerror = function () {
-                console.error("Network error while updating JSON file");
-            };
-            xhr.send();
+    xhr.onerror = function () {
+        // Handle the network error
+        console.error("Network error");
+    };
+
+    // Send the AJAX request with the form data
+    xhr.send(formData);
+}
+
+
+function updateRequests() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?volWaitingRequests_json=true", true);
+    xhr.onload = function () {
+        if (xhr.status == 200) {
+            console.log("JSON file updated successfully");
+        } else {
+            console.error("Failed to update JSON file: " + xhr.statusText);
         }
+    };
+    xhr.onerror = function () {
+        console.error("Network error while updating JSON file");
+    };
+    xhr.send();
+}
 
-        function updateMyRequests() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?myRequests_json=true", true);
-            xhr.onload = function () {
-                if (xhr.status == 200) {
-                    console.log("JSON file updated successfully");
-                } else {
-                    console.error("Failed to update JSON file: " + xhr.statusText);
-                }
-            };
-            xhr.onerror = function () {
-                console.error("Network error while updating JSON file");
-            };
-            xhr.send();
+function updateMyRequests() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?myRequests_json=true", true);
+    xhr.onload = function () {
+        if (xhr.status == 200) {
+            console.log("JSON file updated successfully");
+        } else {
+            console.error("Failed to update JSON file: " + xhr.statusText);
         }
+    };
+    xhr.onerror = function () {
+        console.error("Network error while updating JSON file");
+    };
+    xhr.send();
+}
 
-        function updatetasks() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?taskcount_json=true", true);
-            xhr.onload = function () {
-                if (xhr.status == 200) {
-                    console.log("JSON file updated successfully");
-                } else {
-                    console.error("Failed to update JSON file: " + xhr.statusText);
-                }
-            };
-            xhr.onerror = function () {
-                console.error("Network error while updating JSON file");
-            };
-            xhr.send();
+        
+
+function handle_offers(offerId) {
+    var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
+    var url = "addoffer_volunteer.php";
+
+    // Create a FormData object and append the data you want to send
+    var formData = new FormData();
+    formData.append("offerId", offerId);
+    formData.append("username", username);
+
+    // Create the XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
+
+    // Setup the AJAX request
+    xhr.open("POST", url, true);
+
+    // Set up the onload and onerror functions
+    xhr.onload = function () {
+        if (xhr.status == 200) {
+            // Handle the success response
+            console.log(xhr.responseText);
+            // After handling the request, update the JSON file
+            updateOffers();
+            updateMyOffers();
+            updatetasks();
+            location.reload();
+        } else {
+            // Handle the error response
+            console.error("Error: " + xhr.statusText);
         }
+    };
+    xhr.onerror = function () {
+        // Handle the network error
+        console.error("Network error");
+    };
 
-    function handle_offers(offerId) {
-        var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
-        var url = "addoffer_volunteer.php";
+    // Send the AJAX request with the form data
+    xhr.send(formData);
+}
 
-        // Create a FormData object and append the data you want to send
-        var formData = new FormData();
-        formData.append("offerId", offerId);
-        formData.append("username", username);
-
-        // Create the XMLHttpRequest object
-        var xhr = new XMLHttpRequest();
-
-        // Setup the AJAX request
-        xhr.open("POST", url, true);
-
-        // Set up the onload and onerror functions
-        xhr.onload = function () {
-            if (xhr.status == 200) {
-                // Handle the success response
-                console.log(xhr.responseText);
-                // After handling the request, update the JSON file
-                updateOffers();
-                updateMyOffers();
-                updatetasks();
-                // You can update the UI or perform other actions if needed
-                location.reload();
-            } else {
-                // Handle the error response
-                console.error("Error: " + xhr.statusText);
-            }
-        };
-        xhr.onerror = function () {
-            // Handle the network error
-            console.error("Network error");
-        };
-
-        // Send the AJAX request with the form data
-        xhr.send(formData);
-    }
-
-    function updateOffers() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?volWaitingOffers=true", true);
-            xhr.onload = function () {
-                if (xhr.status == 200) {
-                    console.log("JSON file updated successfully");
-                } else {
-                    console.error("Failed to update JSON file: " + xhr.statusText);
-                }
-            };
-            xhr.onerror = function () {
-                console.error("Network error while updating JSON file");
-            };
-            xhr.send();
+function updateOffers() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?volWaitingOffers=true", true);
+    xhr.onload = function () {
+        if (xhr.status == 200) {
+            console.log("JSON file updated successfully");
+        } else {
+            console.error("Failed to update JSON file: " + xhr.statusText);
         }
+    };
+    xhr.onerror = function () {
+        console.error("Network error while updating JSON file");
+    };
+    xhr.send();
+}
 
-    function updateMyOffers() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?myOffers=true", true);
-            xhr.onload = function () {
-                if (xhr.status == 200) {
-                    console.log("JSON file updated successfully");
-                } else {
-                    console.error("Failed to update JSON file: " + xhr.statusText);
-                }
-            };
-            xhr.onerror = function () {
-                console.error("Network error while updating JSON file");
-            };
-            xhr.send();
+function updateMyOffers() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?myOffers=true", true);
+    xhr.onload = function () {
+        if (xhr.status == 200) {
+            console.log("JSON file updated successfully");
+        } else {
+            console.error("Failed to update JSON file: " + xhr.statusText);
         }
+    };
+    xhr.onerror = function () {
+        console.error("Network error while updating JSON file");
+    };
+    xhr.send();
+}
 
-
-    // Παράδωση Request
-    function deliver_requests(requestId) {
-        var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
-        var url = "deliver_request_volunteer.php";
-
-        // Create a FormData object and append the data you want to send
-        var formData = new FormData();
-        formData.append("requestId", requestId);
-        formData.append("username", username);
-
-        // Create the XMLHttpRequest object
-        var xhr = new XMLHttpRequest();
-
-        // Setup the AJAX request
-        xhr.open("POST", url, true);
-
-        // Set up the onload and onerror functions
-        xhr.onload = function () {
-            if (xhr.status == 200) {
-                // Handle the success response
-                console.log(xhr.responseText);
-                // You can update the UI or perform other actions if needed
-                location.reload();
-            } else {
-                // Handle the error response
-                console.error("Error: " + xhr.statusText);
-            }
-        };
-
-        xhr.onerror = function () {
-            // Handle the network error
-            console.error("Network error");
-        };
-
-        // Send the AJAX request with the form data
-        xhr.send(formData);
-    }
-
-
-    // Διαγραφή request 
-    function delete_request(requestId) {
-        var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
-        var url = "delete_request_volunteer.php";
-
-        // Create a FormData object and append the data you want to send
-        var formData = new FormData();
-        formData.append("requestId", requestId);
-        formData.append("username", username);
-
-        // Create the XMLHttpRequest object
-        var xhr = new XMLHttpRequest();
-
-        // Setup the AJAX request
-        xhr.open("POST", url, true);
-
-        // Set up the onload and onerror functions
-        xhr.onload = function () {
-            if (xhr.status == 200) {
-                // Handle the success response
-                console.log(xhr.responseText);
-                // You can update the UI or perform other actions if needed
-                location.reload();
-            } else {
-                // Handle the error response
-                console.error("Error: " + xhr.statusText);
-            }
-        };
-
-        xhr.onerror = function () {
-            // Handle the network error
-            console.error("Network error");
-        };
-
-        // Send the AJAX request with the form data
-        xhr.send(formData);
-    }
-
-
-    // Διαγραφή Offer 
-    function delete_offer(offerId) {
-        var username = "<?php echo $defaultUsername; ?>"; // Get the username from PHP
-        var url = "delete_offer_volunteer.php";
-
-        // Create a FormData object and append the data you want to send
-        var formData = new FormData();
-        formData.append("offerId", offerId);
-        formData.append("username", username);
-
-        // Create the XMLHttpRequest object
-        var xhr = new XMLHttpRequest();
-
-        // Setup the AJAX request
-        xhr.open("POST", url, true);
-
-        // Set up the onload and onerror functions
-        xhr.onload = function () {
-            if (xhr.status == 200) {
-                // Handle the success response
-                console.log(xhr.responseText);
-                // You can update the UI or perform other actions if needed
-                location.reload();
-            } else {
-                // Handle the error response
-                console.error("Error: " + xhr.statusText);
-            }
-        };
-
-        xhr.onerror = function () {
-            // Handle the network error
-            console.error("Network error");
-        };
-
-        // Send the AJAX request with the form data
-        xhr.send(formData);
-    }
+function updatetasks() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?taskcount_json=true", true);
+    xhr.onload = function () {
+        if (xhr.status == 200) {
+            console.log("JSON file updated successfully");
+        } else {
+            console.error("Failed to update JSON file: " + xhr.statusText);
+        }
+    };
+    xhr.onerror = function () {
+        console.error("Network error while updating JSON file");
+    };
+    xhr.send();
+}
 
     function showMyRequests(username) {
             var xmlhttp = new XMLHttpRequest();
@@ -1137,6 +1043,92 @@ $conn->close();
             showMyRequests(defaultUsername);
         });
 
+        function deliver_requests(requestId, category, product, quantity) {
+            var username = "<?php echo $defaultUsername; ?>";  // Get the username from PHP and escape it
+            var url = "deliver_request_volunteer.php";
+
+            // Create a FormData object and append the data you want to send
+            var formData = new FormData();
+            formData.append("requestId", requestId);
+            formData.append("category", category);
+            formData.append("product", product);
+            formData.append("quantity", quantity);
+            formData.append("username", username);
+
+            // Create the XMLHttpRequest object
+            var xhr = new XMLHttpRequest();
+
+            // Setup the AJAX request
+            xhr.open("POST", url, true);
+
+            // Set up the onload and onerror functions
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    // Handle the success response
+                    console.log(xhr.responseText);
+                    // Update the UI or perform other actions if needed
+                    updateRequests();
+                    updateMyRequests();
+                    updatetasks();
+
+                    // Optionally, provide feedback before reloading
+                    if (confirm("Delivery successful! Would you like to reload the page?")) {
+                        location.reload();
+                    }
+                } else {
+                    // Handle the error response
+                    console.error("Error: " + xhr.statusText);
+                    alert("Error occurred: " + xhr.statusText);
+                }
+            };
+
+            xhr.onerror = function () {
+                // Handle the network error
+                console.error("Network error");
+                alert("Network error. Please try again later.");
+            };
+
+            // Send the AJAX request with the form data
+            xhr.send(formData);
+        }
+
+
+  function delete_request(requestId) {
+        var url = "delete_request_volunteer.php";
+
+        // Create a FormData object and append the data you want to send
+        var formData = new FormData();
+        formData.append("requestId", requestId);
+
+        // Create the XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+
+        // Setup the AJAX request
+        xhr.open("POST", url, true);
+
+        // Set up the onload and onerror functions
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+                // Handle the success response
+                console.log(xhr.responseText);
+                updateRequests();
+                updateMyRequests();
+                updatetasks(); 
+                location.reload();
+            } else {
+                // Handle the error response
+                console.error("Error: " + xhr.statusText);
+            }
+        };
+        xhr.onerror = function () {
+            // Handle the network error
+            console.error("Network error");
+        };
+        // Send the AJAX request with the form data
+        xhr.send(formData);
+    }
+
+
     function showMyOffers(username) {
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function () {
@@ -1156,24 +1148,93 @@ $conn->close();
             showMyOffers(defaultUsername);
         });
 
-    function LoadVehicle(username) {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                document.getElementById("vehiclestatus").innerHTML = this.responseText;
+       
+    function accept_offer(offerId, category, product, quantity,latitude,longitude) {
+            var username = "<?php echo $defaultUsername; ?>";  // Get the username from PHP and escape it
+            var url = "accept_offer_volunteer.php";
+
+            // Create a FormData object and append the data you want to send
+            var formData = new FormData();
+                formData.append("offerId", offerId);
+                formData.append("category", category);
+                formData.append("product", product);
+                formData.append("quantity", quantity);
+                formData.append("latitude", latitude);
+                formData.append("longitude", longitude);
+                formData.append("username", username);
+
+            // Create the XMLHttpRequest object
+            var xhr = new XMLHttpRequest();
+
+            // Setup the AJAX request
+            xhr.open("POST", url, true);
+
+            // Set up the onload and onerror functions
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    // Handle the success response
+                    console.log(xhr.responseText);
+                    // Update the UI or perform other actions if needed
+                    updateOffers();
+                    updateMyOffers();
+                    updatetasks();
+
+                    location.reload();
+
+                } else {
+                    // Handle the error response
+                    console.error("Error: " + xhr.statusText);
+                    alert("Error occurred: " + xhr.statusText);
+                }
+            };
+
+            xhr.onerror = function () {
+                // Handle the network error
+                console.error("Network error");
+                alert("Network error. Please try again later.");
+            };
+
+            // Send the AJAX request with the form data
+            xhr.send(formData);
+        }
+
+    function delete_offer(offerId) {
+        var url = "delete_offer_volunteer.php";
+
+        // Create a FormData object and append the data you want to send
+        var formData = new FormData();
+        formData.append("offerId", offerId);
+
+        // Create the XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+
+        // Setup the AJAX request
+        xhr.open("POST", url, true);
+
+        // Set up the onload and onerror functions
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+                // Handle the success response
+                console.log(xhr.responseText);
+
+                updateOffers();
+                updateMyOffers();
+                updatetasks();
+                // You can update the UI or perform other actions if needed
+                location.reload();
+            } else {
+                // Handle the error response
+                console.error("Error: " + xhr.statusText);
             }
         };
-        xmlhttp.open("GET", "load_vehicle.php?q=" + username, true);
-        xmlhttp.send();
+        xhr.onerror = function () {
+            // Handle the network error
+            console.error("Network error");
+        };
+        // Send the AJAX request with the form data
+        xhr.send(formData);
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        // Get the default username value
-        var defaultUsername = document.getElementById("txtUsername").value;
-
-        // Call LoadVehicle to fetch and display user requests
-        LoadVehicle(defaultUsername);
-    });
-  </script>
+    </script>
 </body>
 </html>

@@ -104,8 +104,8 @@ foreach ($myOffers as $row) {
     echo '<p class="description"> Date Posted: ' . htmlspecialchars($row["offer_date_posted"]) . '</p>';
     echo '<p class="description"> Phone: +30 ' . htmlspecialchars($row["civilian_number"]) . '</p>';
     echo '<p class="description"> State: ' . htmlspecialchars($row["offer_status"]) . '</p>';
-    echo '<button class="DeleteOffer" onclick="deleteRequest(' . htmlspecialchars($row["offer_id"]) . ')">Delete</button>';
-    echo '<button class="AcceptOffer">Accept</button>';
+    echo '<button class="DeleteOffer" onclick="delete_offer(' . htmlspecialchars($row["offer_id"]) . ')">Delete</button>';
+    echo '<button class="AcceptOffer" onclick="accept_offer(\'' . htmlspecialchars($row["offer_id"]) . '\', \'' . htmlspecialchars($row["offer_category"]) . '\', \'' . htmlspecialchars($row["offer_product_name"]) . '\', \'' . htmlspecialchars($row["offer_quantity"]) . '\', \'' . htmlspecialchars($row["latitude"]) . '\', \'' . htmlspecialchars($row["longitude"]) . '\')">Accept</button>';
     echo '</div>';
     echo '</div>';
 }

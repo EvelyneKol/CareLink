@@ -135,7 +135,7 @@ function unloadItems(formId) {
   var volWaitingOffers = [];
   var myRequests = [];
   var myOffers = [];
-  var myOffers = 0;
+  var myOffers = 0; 
 
  
   //__________________________Fetch the JSON data from the file__________________________
@@ -170,11 +170,10 @@ function unloadItems(formId) {
   fetch('taskcount.json')
     .then(response => response.json())
     .then(data => {
-        taskCount = parseInt(data[0].task_count, 10);  // Convert to number
+        taskCount = parseInt(data[0].task_count, 10);
     })
     .catch(error => console.error('Error fetching the taskcount JSON data:', error));
-
-
+ 
 //__________________active layers__________________________________________
 const activeLayers = {};
 
@@ -194,7 +193,6 @@ const layerMarkers = {
 
 //___________________________________volWaitingRequests___________________________________
 function Waiting_requests_markers(data) {
-  console.log("Processing Waiting_requests_markers with taskCount:", taskCount);  // Logging taskCount in function
   // Clear existing markers for the layer
   layerMarkers.layer1 = [];
 
@@ -206,18 +204,20 @@ function Waiting_requests_markers(data) {
       var civilian_last_name = data[i].civilian_last_name;
       var civilian_number = data[i].civilian_number;
       var request_date_posted = data[i].request_date_posted;
-      var request_id = data[i].id_request;
+      var id_request = parseInt(data[i].id_request);
       var request_category = data[i].request_category;
       var state = data[i].state;
       var request_product_name = data[i].request_product_name;
       var persons = data[i].persons;
+      var requestbutton ;
 
-      var requestbutton='<button class="Acceptbut" onclick="handle_requests(' + request_id + ')">Accept</button>';
-      /* if (taskCount <= 4) {
-        requestbutton = '<button class="Acceptbut" onclick="handle_requests(' + request_id + ')">Accept</button>';
+      if (taskCount <= 4) {
+        requestbutton = '<button class="Acceptbut" onclick="handle_requests(' + id_request + ')">Accept</button>';
       } else {
         requestbutton = '<strong style="display: block; text-align: center; color: red;">You have reached the maximum number of Tasks</strong>';
-      } */
+      } 
+
+       '<button class="Acceptbut" onclick="handle_requests(' + id_request + ')">Accept</button>';
 
       const message = '<strong>' + civilian_first_name + ' ' + civilian_last_name +
           ' requests: </strong><br>' + '<strong> ' +
@@ -247,6 +247,7 @@ function Waiting_requests_markers(data) {
 }
 
 
+
 //____________________________offersss_______________________________
 function offers_markers(data) {
   layerMarkers.layer2 = [];
@@ -262,15 +263,15 @@ function offers_markers(data) {
       var offer_status = data[i].offer_status;
       var offer_product_name = data[i].offer_product_name;
       var offer_quantity = data[i].offer_quantity ;
-      var offer_id=data[i].offer_id;
+      var offer_id=parseInt(data[i].offer_id);
 
-      var offerbutton ='<button class="Acceptbut" onclick="handle_offers(' + offer_id + ')">Accept</button>';
+      var offerbutton;
 
-      /* if (taskCount <= 4) {
+      if (taskCount <= 4) {
         offerbutton = '<button class="Acceptbut" onclick="handle_offers(' + offer_id + ')">Accept</button>';
       } else {
         offerbutton = '<strong style="display: block; text-align: center; color: red;">You have reached the maximum number of Tasks</strong>';
-      } */
+      } 
 
     const message = '<strong>' + civilian_first_name + ' ' + civilian_last_name + 
                 ' requests: </strong><br>' + '<strong> ' + 
