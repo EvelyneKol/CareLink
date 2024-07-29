@@ -17,7 +17,7 @@ if(isset($_COOKIE['username'])){
 } else {
     $defaultUsername = "";
 }
-
+function baseLocation($conn) {
 //διαβασμα συντεταγμενων αποθηκης απο την βαση δεδομεων
 $baseLocation = "SELECT SUBSTRING_INDEX(base_location, ',', 1) AS latitude,
         SUBSTRING_INDEX(base_location, ',', -1) AS longitude
@@ -53,7 +53,7 @@ $baseLocation = "SELECT SUBSTRING_INDEX(base_location, ',', 1) AS latitude,
     } else {
         die("Error executing the SQL query: " . $conn->error);
     }
-
+}
 
     //-----------------συνάρτηση για fetch waiting requests------------------------
     function fetchRequests($conn) {
