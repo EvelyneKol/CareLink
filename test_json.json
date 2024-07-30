@@ -112,21 +112,13 @@
         },
         {
             "id": "23",
-            "name": "Test Product",
+            "name": "Toothpaste ",
             "category": "9",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "weight",
-                    "detail_value": "500g"
-                },
-                {
-                    "detail_name": "pack size",
-                    "detail_value": "12"
-                },
-                {
-                    "detail_name": "expiry date",
-                    "detail_value": "13/12/1978"
+                    "detail_name": "AIM Toothpaste ",
+                    "detail_value": "75ml"
                 }
             ]
         },
@@ -168,13 +160,13 @@
         },
         {
             "id": "28",
-            "name": "PARADEIGMA1",
+            "name": "Dry Eye Drops",
             "category": "10",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Eye Drops",
+                    "detail_value": "For daily usage"
                 }
             ]
         },
@@ -440,44 +432,36 @@
         },
         {
             "id": "48",
-            "name": "",
+            "name": "Allergy Eye Drops",
             "category": "10",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                   "detail_name": "Eye Drops",
+                    "detail_value": "For allergy usage"
                 }
             ]
         },
         {
             "id": "49",
-            "name": "",
+            "name": "Equate Eye Care",
             "category": "10",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
-                },
-                {
-                    "detail_name": "",
-                    "detail_value": ""
-                },
-                {
-                    "detail_name": "",
+                    "detail_name": "Eye Drops",
                     "detail_value": ""
                 }
             ]
         },
         {
             "id": "50",
-            "name": "",
+            "name": "Red Eye Relief",
             "category": "10",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                   "detail_name": "Eye Drops",
                     "detail_value": ""
                 }
             ]
@@ -489,8 +473,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Rags",
+                    "detail_value": "5 packs"
                 }
             ]
         },
@@ -501,8 +485,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Detergent",
+                    "detail_value": "200ml"
                 }
             ]
         },
@@ -513,8 +497,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Disinfectant",
+                    "detail_value": "75ml"
                 }
             ]
         },
@@ -525,8 +509,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Mop",
+                    "detail_value": "Tall"
                 }
             ]
         },
@@ -537,8 +521,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Bucket",
+                    "detail_value": "5 L"
                 }
             ]
         },
@@ -549,8 +533,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Scrubs",
+                    "detail_value": "12 pack"
                 }
             ]
         },
@@ -561,8 +545,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Masks",
+                    "detail_value": "20 pack"
                 }
             ]
         },
@@ -573,8 +557,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Broom",
+                    "detail_value": "Tall"
                 }
             ]
         },
@@ -796,109 +780,85 @@
         },
         {
             "id": "77",
-            "name": "",
+            "name": "TheraTears",
             "category": "10",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
-                },
-                {
-                    "detail_name": "",
-                    "detail_value": ""
-                },
-                {
-                    "detail_name": "",
+                   "detail_name": "Eye Drops",
                     "detail_value": ""
                 }
             ]
         },
         {
             "id": "78",
-            "name": "",
+            "name": "Hard Lens Solution",
             "category": "10",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "Lens Drops",
                     "detail_value": ""
                 }
             ]
         },
         {
             "id": "79",
-            "name": "",
+            "name": "Contact Lens Solution",
             "category": "10",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "Lens Drops",
                     "detail_value": ""
                 }
             ]
         },
         {
             "id": "80",
-            "name": "",
+            "name": "Clear Eyes Cooling Comfort",
             "category": "10",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "Eye Drops",
                     "detail_value": ""
                 }
             ]
         },
         {
             "id": "81",
-            "name": "",
+            "name": "Disinfecting Contact Lens Solution",
             "category": "10",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "Lens Drops",
                     "detail_value": ""
                 }
             ]
         },
         {
             "id": "82",
-            "name": "",
+            "name": "Eyelid and Lash Cleanser",
             "category": "10",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
-                },
-                {
-                    "detail_name": "",
-                    "detail_value": ""
-                },
-                {
-                    "detail_name": "",
-                    "detail_value": ""
-                },
-                {
-                    "detail_name": "ghw56",
-                    "detail_value": "twhwhrwh"
-                },
-                {
-                    "detail_name": "",
+                    "detail_name": "Eye Drops",
                     "detail_value": ""
                 }
             ]
         },
         {
             "id": "83",
-            "name": "t22",
+            "name": "Mouthwash",
             "category": "9",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "wtwty",
-                    "detail_value": "wytwty"
+                    "detail_name": "Mouthwash",
+                    "detail_value": "100ml"
                 }
             ]
         },
@@ -1169,7 +1129,7 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "volume",
+                    "detail_name": "Chlorine",
                     "detail_value": "500ml"
                 }
             ]
@@ -1181,8 +1141,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "volume",
-                    "detail_value": "20pieces"
+                    "detail_name": "Gloves",
+                    "detail_value": "20 pairs"
                 }
             ]
         },
@@ -1325,8 +1285,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Towels",
+                    "detail_value": "3 packs"
                 }
             ]
         },
@@ -1337,8 +1297,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Wipes",
+                    "detail_value": "5 packs"
                 }
             ]
         },
@@ -1384,12 +1344,12 @@
         },
         {
             "id": "122",
-            "name": "",
-            "category": "10",
+            "name": "Womens multivitamins",
+            "category": "13",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "multivitamins for every use",
                     "detail_value": ""
                 }
             ]
@@ -1479,14 +1439,6 @@
                 {
                     "detail_name": "piece",
                     "detail_value": "10 pieces"
-                },
-                {
-                    "detail_name": "",
-                    "detail_value": ""
-                },
-                {
-                    "detail_name": "",
-                    "detail_value": ""
                 }
             ]
         },
@@ -1535,10 +1487,6 @@
                 {
                     "detail_name": "pieces",
                     "detail_value": "1"
-                },
-                {
-                    "detail_name": "",
-                    "detail_value": ""
                 }
             ]
         },
@@ -1563,10 +1511,6 @@
                 {
                     "detail_name": "rolls",
                     "detail_value": "1 roll"
-                },
-                {
-                    "detail_name": "",
-                    "detail_value": ""
                 }
             ]
         },
@@ -1680,12 +1624,12 @@
         },
         {
             "id": "145",
-            "name": "",
-            "category": "10",
+            "name": "Mens multivitamins",
+            "category": "13",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "multivitamins for every use",
                     "detail_value": ""
                 }
             ]
@@ -1764,12 +1708,12 @@
         },
         {
             "id": "152",
-            "name": "",
-            "category": "10",
+            "name": "Age 50+ multivitamins",
+            "category": "13",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "multivitamins for every use",
                     "detail_value": ""
                 }
             ]
@@ -1783,10 +1727,6 @@
                 {
                     "detail_name": "volume",
                     "detail_value": "200g"
-                },
-                {
-                    "detail_name": "",
-                    "detail_value": ""
                 }
             ]
         },
@@ -1823,10 +1763,6 @@
                 {
                     "detail_name": "1",
                     "detail_value": ""
-                },
-                {
-                    "detail_name": "",
-                    "detail_value": ""
                 }
             ]
         },
@@ -1851,10 +1787,6 @@
                 {
                     "detail_name": "",
                     "detail_value": "20"
-                },
-                {
-                    "detail_name": "",
-                    "detail_value": ""
                 }
             ]
         },
@@ -2191,10 +2123,6 @@
                 {
                     "detail_name": "10",
                     "detail_value": "600ml"
-                },
-                {
-                    "detail_name": "",
-                    "detail_value": ""
                 }
             ]
         },
@@ -2320,12 +2248,12 @@
         },
         {
             "id": "196",
-            "name": "-",
-            "category": "10",
+            "name": "Kids' multivitamins",
+            "category": "13",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "multivitamins for every use",
                     "detail_value": ""
                 }
             ]
@@ -2339,10 +2267,6 @@
                 {
                     "detail_name": "10",
                     "detail_value": "500mg"
-                },
-                {
-                    "detail_name": "",
-                    "detail_value": ""
                 }
             ]
         },
@@ -2354,10 +2278,6 @@
             "details": [
                 {
                     "detail_name": "20",
-                    "detail_value": ""
-                },
-                {
-                    "detail_name": "",
                     "detail_value": ""
                 }
             ]
@@ -2383,10 +2303,6 @@
                 {
                     "detail_name": "20",
                     "detail_value": "200g"
-                },
-                {
-                    "detail_name": "",
-                    "detail_value": ""
                 }
             ]
         },
@@ -2640,12 +2556,12 @@
         },
         {
             "id": "217",
-            "name": "",
-            "category": "10",
+            "name": "Prenatal vitamins",
+            "category": "13",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "multivitamins for every use",
                     "detail_value": ""
                 }
             ]
@@ -3241,20 +3157,296 @@
                     "detail_value": ""
                 }
             ]
+        },
+        {
+            "id": "267",
+            "name": "Kids melatonin",
+            "category": "13",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Essential for kids",
+                    "detail_value": ""
+                }
+            ]
+        },
+        {
+            "id": "268",
+            "name": "Magnesium",
+            "category": "13",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Essential for All",
+                    "detail_value": ""
+                }
+            ]
+        },
+        {
+            "id": "269",
+            "name": "Equate sleep aids",
+            "category": "13",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Essential for All",
+                    "detail_value": ""
+                }
+            ]
+        },
+        {
+            "id": "270",
+            "name": "Stress relief",
+            "category": "13",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Essential for All",
+                    "detail_value": ""
+                }
+            ]
+        },
+        {
+            "id": "271",
+            "name": "Snoring aids",
+            "category": "13",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Essential for All",
+                    "detail_value": ""
+                }
+            ]
+        },
+        {
+            "id": "272",
+            "name": "Toothbrushe",
+            "category": "9",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Toothbrushe",
+                    "detail_value": "Medium"
+                }
+            ]
+        },
+        {
+            "id": "273",
+            "name": "Teeth Whitening",
+            "category": "9",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Teeth Whitening",
+                    "detail_value": "4 packs"
+                }
+            ]
+        },
+        {
+            "id": "274",
+            "name": "Oral Pain Relief",
+            "category": "9",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Oral Pain Relief",
+                    "detail_value": "1 pack"
+                }
+            ]
+        },
+        {
+            "id": "275",
+            "name": "Dental Floss",
+            "category": "9",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Dental Floss",
+                    "detail_value": "small"
+                }
+            ]
+        },
+        {
+            "id": "276",
+            "name": "Picks",
+            "category": "9",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Picks",
+                    "detail_value": "Medium"
+                }
+            ]
+        },
+        {
+            "id": "277",
+            "name": "Breath Freshener",
+            "category": "9",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Breath Freshener",
+                    "detail_value": "100ml"
+                }
+            ]
+        },
+        {
+            "id": "278",
+            "name": "Breath Freshener for kids",
+            "category": "9",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Breath Freshener for kids",
+                    "detail_value": "100ml"
+                }
+            ]
+        },
+        {
+            "id": "279",
+            "name": "Mouth Guard",
+            "category": "9",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Mouth Guard,",
+                    "detail_value": "Medium"
+                }
+            ]
+        },
+        {
+            "id": "280",
+            "name": "Baby Healing Ointment",
+            "category": "8",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Healing Ointment",
+                    "detail_value": "small"
+                }
+            ]
+        },
+        {
+            "id": "281",
+            "name": "Skin Protection for Newborns",
+            "category": "8",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Skin Protection",
+                    "detail_value": "small"
+                }
+            ]
+        },
+        {
+            "id": "282",
+            "name": "Baby Diaper Rash Cream",
+            "category": "8",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Rash Cream",
+                    "detail_value": "50ml"
+                }
+            ]
+        },
+        {
+            "id": "283",
+            "name": "Baby Wash & Shampoo",
+            "category": "8",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Shampoo",
+                    "detail_value": "100ml"
+                }
+            ]
+        },
+        {
+            "id": "284",
+            "name": "Baby oil",
+            "category": "8",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Οil",
+                    "detail_value": "100ml"
+                }
+            ]
+        },
+        {
+            "id": "285",
+            "name": "Baby powder",
+            "category": "8",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Baby powder",
+                    "detail_value": "5 pack"
+                }
+            ]
+        },
+        {
+            "id": "286",
+            "name": "Cotton Swabs",
+            "category": "8",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Cotton Swabs",
+                    "detail_value": "20 pack"
+                }
+            ]
+        },
+        {
+            "id": "287",
+            "name": "Baby Bubble Bath",
+            "category": "8",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Baby Bubble Bath",
+                    "detail_value": "100ml"
+                }
+            ]
+        },
+        {
+            "id": "288",
+            "name": "Hypoallergenic Newborn Body Wash",
+            "category": "8",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Body Wash",
+                    "detail_value": "100ml"
+                }
+            ]
+        },
+        {
+            "id": "289",
+            "name": "Acetaminophen Medicine",
+            "category": "8",
+            "quantity": "50",
+            "details": [
+                {
+                    "detail_name": "Medicine",
+                    "detail_value": "12 packs"
+                }
+            ]
         }
     ],
     "categories": [
         {
             "id": "10",
-            "category_name": "PARADEIGMA1"
+            "category_name": "Eye Care"
         },
         {
             "id": "13",
-            "category_name": "-----"
+            "category_name": "Vitamins Supplements"
         },
         {
             "id": "9",
-            "category_name": "2d hacker"
+            "category_name": "Oral care"
         },
         {
             "id": "49",
@@ -3334,7 +3526,7 @@
         },
         {
             "id": "8",
-            "category_name": "Hacker of class"
+            "category_name": "Baby"
         },
         {
             "id": "34",
