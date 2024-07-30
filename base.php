@@ -1,108 +1,77 @@
 <?php
-include 'Connection.php';
+  $servername = "localhost";
+  $username = "root";
+  $password = "karagiannis";
+  $dbname = "test";
+  
+  $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-//add a category
-if (isset($_POST['add_category'])) {
-    $category_name = $_POST['category_name'];
-    
-    // Check if the category name is not empty
-    if (!empty($category_name)) {
-        // Prepare and execute SQL statement to insert the new category into the table
-        $sql = "INSERT INTO categories (base_id_categories, category_name) VALUES (1, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $category_name);
-        
-        if ($stmt->execute()) {
-            echo "Category added successfully.";
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['Insert']) && isset($_POST['Category']) && isset($_POST['Product']) && isset($_POST['Quantity']) && isset($_POST['Details'])) {
+        // Handle the insert logic
+        $category = $_POST['Category'];
+        $product = $_POST['Product'];
+        $quantity = (int)$_POST['Quantity'];
+        $details = $_POST['Details'];
+
+        $Checkprod = $conn->prepare("SELECT quantity_on_stock FROM categories WHERE category_name = ? AND products = ? ");
+        $Checkprod->bind_param("ss", $category, $product);
+        $Checkprod->execute();
+        $Checkprod->store_result();
+
+        if ($Checkprod->num_rows > 0) {
+            $Checkprod->bind_result($currentQuantity);
+            $Checkprod->fetch();
+            $newQuantity = $currentQuantity + $quantity;
+
+            $stmtUpdate = $conn->prepare("UPDATE categories SET quantity_on_stock = ? WHERE category_name = ? AND products = ?");
+            $stmtUpdate->bind_param("iss", $newQuantity, $category, $product);
+            $stmtUpdate->execute();
+            $stmtUpdate->close();
         } else {
-            echo "Error adding category: " . $conn->error;
+            $stmtInsert = $conn->prepare("INSERT INTO categories (base_id_categories, category_id, category_name, products, quantity_on_stock, details)VALUES (1, null , ?, ?, ?, ?)");
+            $stmtInsert->bind_param("ssis", $category, $product, $quantity, $details);
+            $stmtInsert->execute();
+            $stmtInsert->close();
         }
-    } else {
-        echo "Category name cannot be empty.";
+        $Checkprod->close();
+
+    } elseif (isset($_POST['Delete']) && isset($_POST['Category']) && isset($_POST['Product']) && isset($_POST['Quantity']) && isset($_POST['Details'])) {
+        // Handle the delete logic
+        $category = $_POST['Category'];
+        $product = $_POST['Product'];
+        $quantity = (int)$_POST['Quantity'];
+        $details = $_POST['Details'];
+
+        $Checkprod = $conn->prepare("SELECT quantity_on_stock FROM categories WHERE category_name = ? AND products = ? ");
+        $Checkprod->bind_param("ss", $category, $product);
+        $Checkprod->execute();
+        $Checkprod->store_result();
+
+        if ($Checkprod->num_rows > 0) {
+            $Checkprod->bind_result($currentQuantity);
+            $Checkprod->fetch();
+            $newQuantity = $currentQuantity - $quantity;
+            if ($currentQuantity >= $quantity) {
+                $stmtUpdate = $conn->prepare("UPDATE categories SET quantity_on_stock = ? WHERE category_name = ? AND products = ?");
+                $stmtUpdate->bind_param("iss", $newQuantity, $category, $product);
+                $stmtUpdate->execute();
+                $stmtUpdate->close();
+            }else{
+                echo "Error: Not enough quantity to delete.";
+            }
+        } else {
+            echo "Error: Not such product to delete.";
+        }
+        $Checkprod->close();
+
     }
 }
-
-//Delete category
-if (isset($_POST['delete_selected_category'])) {
-    $category_name = $_POST['delete_category'];
-
-    // Prepare and execute SQL statement to delete the selected category
-    $sql = "DELETE FROM categories WHERE category_name = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $category_name);
-    
-    if ($stmt->execute()) {
-        echo "Category '$category_name' deleted successfully.";
-    } else {
-        echo "Error deleting category: " . $conn->error;
-    }
-}
-
-//Delete products
-if (isset($_POST['delete_product'])) {
-    $category_name = $_POST['category_name'];
-    $product_name = $_POST['product_name'];
-
-    // Prepare and execute SQL statement to delete the selected product from the selected category
-    $sql = "DELETE FROM categories WHERE category_name = ? AND products = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $category_name, $product_name);
-    
-    if ($stmt->execute()) {
-        echo "Product '$product_name' from category '$category_name' deleted successfully.";
-    } else {
-        echo "Error deleting product: " . $conn->error;
-    }
-}
-
-
-//Add products
-if (isset($_POST['add_product'])) {
-    $category_name = $_POST['category_name'];
-    $product_name = $_POST['product_name'];
-
-    // Prepare and execute SQL statement to insert the new product into the selected category
-    $sql = "INSERT INTO categories (category_name, products) VALUES (?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $category_name, $product_name);
-    
-    if ($stmt->execute()) {
-        echo "Product '$product_name' added to category '$category_name' successfully.";
-    } else {
-        echo "Error adding product: " . $conn->error;
-    }
-}
-
-//
-
-
-
-// Fetch categories from the database
-$query = "SELECT distinct category_name FROM categories";
-$result = $conn->query($query);
-
-$categories = array();
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $categories[] = $row;
-    }
-}
-
-// Fetch products from the database
-$query_product = "SELECT distinct products FROM categories";
-$product_result = $conn->query($query_product);
-
-$products = array();
-if ($product_result->num_rows > 0) {
-    while ($row = $product_result->fetch_assoc()) {
-        $products[] = $row;
-    }
-}
-
+// Close the database connection
 ?>
 
 <!DOCTYPE html>
@@ -127,189 +96,66 @@ if ($product_result->num_rows > 0) {
     </div>
 
     <div class="form_container">
-        <h2>Add New Category</h2>
-        <form action="base.php" method="post">
-            <label for="category_name">Category Name:</label>
-            <input type="text" id="category_name" name="category_name" required>
-            <input class="button" type="submit" name="add_category" value="Add Category">
-        </form>
+        <div id="base_managment">
+            <div class="row">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">
+                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" onsubmit="resetForm()">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label for="Category" class="form-label">Category</label>
+                                <input type="text" class="form-control p-2" id="Category" name="Category" placeholder="Write the category..." autocomplete="on" required>
+                            </div>
 
-        <h2>Delete Category</h2>
-        <form action="base.php" method="post">
-            <label for="delete_category">Choose a Category to Delete:</label>
-            <select id="delete_category" name="delete_category">
-            <option value="">Select a category</option>
-                <?php
-                // Fetch existing categories from the database
-                $sql = "SELECT category_name FROM categories";
-                $result = $conn->query($sql);
-
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<option value='" . $row["category_name"] . "'>" . $row["category_name"] . "</option>";
-                    }
-                } else {
-                    echo "<option value='' disabled>No categories available</option>";
-                }
-                ?>
-            </select>
-            <input class="button" type="submit" name="delete_selected_category" value="Delete Category">
-        </form>
-
-        <h2>Delete Product</h2>
-        <form action="base.php" method="post">
-            <label for="category_name">Choose a Category:</label>
-            <select id="category_name" name="category_name">
-                <?php
-                // Fetch existing categories from the database
-                $sql = "SELECT DISTINCT category_name FROM categories";
-                $result = $conn->query($sql);
-
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<option value='" . $row["category_name"] . "'>" . $row["category_name"] . "</option>";
-                    }
-                } else {
-                    echo "<option value='' disabled>No categories available</option>";
-                }
-                ?>
-            </select>
-            <br><br>
-            <label for="product_name">Choose a Product:</label>
-            <select id="product_name" name="product_name">
-                <!-- Options will be populated based on the selected category using JavaScript -->
-            </select>
-            <br><br>
-            <input type="submit" name="delete_product" value="Delete Product">
-        </form>
-
-        <!--Add product -->
-        <h2>Add Product</h2>
-        <form action="base.php" method="post">
-            <label for="category_name">Choose a Category:</label>
-            <select id="category_name" name="category_name">
-                <?php
-                // Fetch existing categories from the database
-                $sql = "SELECT DISTINCT category_name FROM categories";
-                $result = $conn->query($sql);
-
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<option value='" . $row["category_name"] . "'>" . $row["category_name"] . "</option>";
-                    }
-                } else {
-                    echo "<option value='' disabled>No categories available</option>";
-                }
-                ?>
-            </select>
-            <br><br>
-            <label for="product_name">Enter Product Name:</label>
-            <input type="text" id="product_name" name="product_name">
-            <br><br>
-            <input type="submit" name="add_product" value="Add Product">
-        </form>
-
-
-        <!-- Form for adding or deleting products -->
-        <form action="base.php" method="post">
-            <h3>Add/Delete Product</h3>
-            <label for="category_id">Category ID:</label>
-            <input type="text" id="category_id" name="category_id">
-            <label for="product_name">Product Name:</label>
-            <input type="text" id="product_name" name="product_name">
-            <input class="button" type="submit" name="add_product" value="Add Product">
-            <input class="button" type="submit" name="delete_product" value="Delete Product">
-        </form>
-
-        <!-- Form for updating details or quantity on stock -->
-        <form action="base.php" method="post">
-            <h2>Update Details of the Products</h2>
-            <label for="category_id_update">Choose a Category:</label>
-            <select id="category_id_update" name="category_id_update">
-            <option value="">Select a category</option>
-                <?php
-                $sql = "SELECT distinct category_name FROM categories";
-                $result = $conn->query($sql);
-
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<option value='" . $row["category_id"] . "'>" . $row["category_name"] . "</option>";
-                    }
-                }
-                ?>
-            </select>
-
-            <!-- Populate dropdown with products based on selected category -->
-            <label for="product_id">Choose a Product:</label>
-            <select id="product_id" name="product_id">
-                <?php
-                $query_product = "SELECT distinct products FROM categories";
-                $product_result = $conn->query($query_product);
-                
-                $products = array();
-                if ($product_result->num_rows > 0) {
-                    while ($row = $product_result->fetch_assoc()) {
-                        $products[] = $row;
-                    }
-                }
-                ?>
-            </select>
-
-            <label for="details">Details:</label>
-            <textarea id="details" name="details"></textarea>
-        </form>
-
-        <form action="process_form.php" method="post" id="update_quantity_form">
-            <h2>Increase the Quantity of Product</h2>
-            <label for="category_id_update">Choose a Category:</label>
-            <select id="category_id_update" name="category_id_update">
-                <option value="">Select a category</option>
-                <!-- Populate dropdown with categories from the database -->
-                <?php
-                $query_product = "SELECT distinct products FROM categories";
-                $product_result = $conn->query($query_product);
-                
-                $products = array();
-                if ($product_result->num_rows > 0) {
-                    while ($row = $product_result->fetch_assoc()) {
-                        $products[] = $row;
-                    }
-                }
-                ?>
-            </select>
-
-            <!-- Populate dropdown with products based on selected category -->
-            <label for="product_id">Choose a Product:</label>
-            <select id="product_id" name="product_id">
-                <?php
-                $product_query = "SELECT DISTINCT products FROM categories";
-                $product_result = $conn->query($product_query);
-
-                if ($product_result->num_rows > 0) {
-                    while ($row = $product_result->fetch_assoc()) {
-                        echo "<option value='" . $row["category_name"] . "'>" . $row["category_name"] . "</option>";
-                    }
-                }
-                ?>
-            </select>
-
-            <label for="quantity_on_stock">Quantity on Stock:</label>
-            <input type="text" id="quantity_on_stock" name="quantity_on_stock">
-            <input type="submit" name="update_quantity" value="Update Quantity">
-        </form>
-
-        <!-- Form for updating database from JSON URL -->
-        <form action="process_form.php" method="post">
-            <h3>Update Database from JSON URL</h3>
-            <input class="button" type="submit" name="update_from_json_url" value="Update from JSON URL">
-        </form>
-
-        <!-- Form for uploading JSON file -->
-        <form action="process_form.php" method="post" enctype="multipart/form-data">
-            <h3>Upload JSON File</h3>
-            <input type="file" name="json_file" id="json_file">
-            <input type="submit" name="upload_json_file" value="Upload JSON File">
-        </form>
+                            <div class="col-sm-6">
+                                <label for="Product" class="form-label">Product</label>
+                                <input type="text" class="form-control p-2" placeholder="Write the Product..." id="Product" name="Product" autocomplete="on" required>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label for="Quantity" class="form-label">Quantity</label>
+                                <input type="number" class="form-control p-2" id="Quantity" name="Quantity"
+                                    placeholder="Insert the quantity of the product" autocomplete="on" required min="0">
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="Details" class="form-label">Details</label>
+                                <input type="text" class="form-control p-2" placeholder="Write the Details..." id="Details" name="Details" autocomplete="on" required>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-sm-3"></div>
+                            <div class="col-sm-6">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <button class="Insert" type="submit" name="Insert">Insert</button>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <button class="Delete" type="submit" name="Delete">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-sm-3"></div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">
+                    <form action="add_data.php" method="POST" enctype="multipart/form-data">
+                        <h3>Upload JSON File</h3>
+                        <input type="file" name="json_file" id="json_file" required>
+                        <button class="update" type="submit" name="Update">Update</button>
+                    </form>
+                </div>
+                <div class="col-sm-3"></div>
+            </div>
+        </div>
     </div>    
 
 
@@ -341,8 +187,9 @@ if ($product_result->num_rows > 0) {
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='5'>No data available in shortage table</td></tr>";
+                    echo "<tr><td colspan='5'>No data available in Product table</td></tr>";
                 }
+                $conn->close();
                 ?>
             </tbody>
         </table>
