@@ -2,7 +2,7 @@
     $servername = "localhost";
     $username = "root";
     $password = "karagiannis";
-    $dbname = "care";
+    $dbname = "test";
 
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -56,7 +56,7 @@
 
         // Insert into MySQL table
         $sql = "INSERT INTO categories (base_id_categories, category_id, category_name, products, quantity_on_stock, details)
-                VALUES (1, null , '$category_name', '$product_name', 30, '$details')";
+                VALUES (1, null , '$category_name', '$product_name', 50, '$details')";
         if ($conn->query($sql) === FALSE) {
             echo "Error: " . $sql . "<br>" . $conn->error;
         }
