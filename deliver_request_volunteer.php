@@ -13,16 +13,6 @@ $product = $_POST['product'];
 $quantity = (int)$_POST['quantity'];
 $username = $_POST['username'];
 
-// Prepare and execute the update query
-$updaterequest = $conn->prepare("UPDATE request SET state = 'COMPLETED' WHERE id_request = ?");
-$updaterequest->bind_param("i", $requestId);
-$updaterequest->execute();
-
-// Prepare and execute the update query
-$updatetasks = $conn->prepare("DELETE FROM task WHERE task_request_id = ? ");
-$updatetasks->bind_param("i", $requestId);
-$updatetasks->execute();
-
 $stmtCheck = $conn->prepare("SELECT quantity FROM vehiclesOnAction WHERE category = ? AND products = ? AND driver = ?");
 $stmtCheck->bind_param("sss", $category, $product, $username);
 $stmtCheck->execute();
@@ -32,6 +22,15 @@ $stmtCheck->close();
 
 if ($existingQuantity >= $quantity) {
     $newQuantity = $existingQuantity - $quantity;
+        // Prepare and execute the update query
+        $updaterequest = $conn->prepare("UPDATE request SET state = 'COMPLETED' WHERE id_request = ?");
+        $updaterequest->bind_param("i", $requestId);
+        $updaterequest->execute();
+
+        // Prepare and execute the update query
+        $updatetasks = $conn->prepare("DELETE FROM task WHERE task_request_id = ? ");
+        $updatetasks->bind_param("i", $requestId);
+        $updatetasks->execute();
 
     if ($newQuantity != 0) {
         $stmtUpdate = $conn->prepare("UPDATE vehiclesOnAction SET quantity = ? WHERE category = ? AND products = ? AND driver = ?");
