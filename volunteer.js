@@ -304,6 +304,7 @@ function offers_markers(data) {
       })
     });
 
+    
 
     // Bind popup content to the marker
     marker.bindPopup(message);
