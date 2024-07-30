@@ -664,11 +664,11 @@ $conn->close();
                         </div>
                         <br>
                         <div class="row">
-                            <div class="col-sm-6">
+                        <div class="col-sm-6">
                             <label for="Quantload" class="form-label">Quantity</label>
                             <input type="number" class="form-control p-2" id="Quantload" name="Quantload"
-                                placeholder="Insert the quantity of the product " autocomplete="off" required>
-                            </div>
+                                placeholder="Insert the quantity of the product" autocomplete="off" required min="0">
+                        </div>
                             <div class="col-sm-6">
                             <div class="row">
                                 <div class="col-sm-6">
@@ -733,7 +733,7 @@ $conn->close();
                             <div class="col-sm-6">
                                 <label for="Quantunload" class="form-label">Quantity</label>
                                 <input type="number" class="form-control p-2" id="Quantunload" name="Quantunload"
-                                    placeholder="Insert the quantity of the product " autocomplete="off" required>
+                                    placeholder="Insert the quantity of the product " autocomplete="off" required min="0">
                             </div>
                             <div class="col-sm-6">
                                 <div class="row">
