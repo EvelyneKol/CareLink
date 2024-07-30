@@ -431,6 +431,7 @@ $baseLocation = "SELECT SUBSTRING_INDEX(base_location, ',', 1) AS latitude,
     }
     
 
+    
 //________________________________queries for load and unload_________________________________________
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
