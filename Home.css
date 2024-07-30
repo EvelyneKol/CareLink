@@ -22,10 +22,11 @@ body {
 
 .navbar img {
     height: auto;
-    width : 270px;
+    width : 220px;
     margin-top: -10px;
     padding-left: 20px;
     padding-bottom: 20px;
+    align-items: center;
 }
 
 li {

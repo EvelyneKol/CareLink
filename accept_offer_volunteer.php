@@ -6,6 +6,10 @@ if ($conn->connect_error) {
     die("Failed to connect to MySQL: " . $conn->connect_error);
 }
 
+
+$date = date("Y-m-d");
+date_default_timezone_set("Europe/Athens");
+
 // Get data from the AJAX request
 $offerId = $_POST['offerId'];
 $category = $_POST['category'];
@@ -18,8 +22,8 @@ $username = $_POST['username'];
 $vehicle_location = $latitude . ', ' . $longitude;
 
 // Prepare and execute the update query for the offer
-$updaterequest = $conn->prepare("UPDATE offer SET offer_status = 'COMPLETED' WHERE offer_id = ?");
-$updaterequest->bind_param("i", $offerId);
+$updaterequest = $conn->prepare("UPDATE offer SET offer_status = 'COMPLETED' AND complete_offer = ? WHERE offer_id = ?");
+$updaterequest->bind_param("si", $date, $offerId);
 $updaterequest->execute();
 $updaterequest->close();
 

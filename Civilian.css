@@ -1,116 +1,112 @@
 * {
   margin: 0;
   padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
-  font-family: verdana;
   background-color: rgb(255, 255, 255);
   overflow-x: hidden;
   overflow-y: scroll;
 }
 
-.header {
-  background-color: #EBE3D5;
-
-}
-
 /*nav*/
 .navbar {
   list-style-type: none;
-  margin-top: -35px;
-  padding: 2px;
-  background-color: #3b3b3b;
+  margin-top: 35px;
+  padding: 10px;
+  background-color: #ffffff;
   overflow: hidden;
-  font-size: 22px;
+  color: rgb(15, 1, 1);
+}
+
+.navbar img {
+  height: auto;
+  width : 270px;
+  margin-top: -10px;
+  padding-left: 20px;
+  padding-bottom: 20px;
+}
+
+li {
+  float: center;
+  align-items: center;
 }
 
 li a {
-  color: white;
+  color: rgb(0, 0, 0);
   text-align: center;
-  padding: 25px;
-  text-decoration: none;
-}
-
-li a:visited {
+  font-size: 18px;
+  padding: 14px 16px;
   text-decoration: none;
 }
 
 li a:hover,
 li a:focus {
-  background-color: rgb(185, 175, 158);
   color: #000000;
   cursor: pointer;
-  padding: 25px;
-  
+  text-decoration: underline;
+  text-decoration-thickness: 2px; 
 }
 
-
-/* Add this to your existing CSS file or within a <style> tag */
-.reminder-notes ul {
-  list-style-type: none; /* Remove default list styling */
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.reminder-notes ul li {
-  background-color: #faf3cd; /* Yellow background */
-  color: black; /* Text color */
-  border: 1px solid #ccc; /* Border color */
-  border-radius: 5px; /* Rounded corners */
+/* Forthsection */
+.Buttons {
+  text-align: center;
+  gap: 10px;
+  display: float;
   padding: 20px;
-  margin: 20px;
-  width: 150px; /* Fixed width */
-  height: 250px; /* Fixed height */
-  overflow: hidden; /* Hide overflow text */
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Optional: add a slight shadow */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Distribute space evenly */
+  justify-content: center; 
 }
 
-.reminder-notes ul li a {
-  text-decoration: none; /* Remove underline from links */
-  color: inherit; /* Inherit text color */
+.Buttons button {
+  background-color: #db3232;
+  border-radius: 6px;
+  border: solid 1px;
+  border-color: #858585;
+  padding: 10px 70px;
+  margin-top: 1rem;
+  transition-duration: 0.4s;
+  padding: 10px 30px;
 }
 
-.reminder-notes ul li h2 {
-  font-size: 1.2em; /* Adjust title font size */
-  margin: 0;
-  padding: 0;
-}
-
-.reminder-notes ul li p {
-  font-size: 0.9em; /* Adjust text font size */
-  margin: 5px 0 0 0;
-  padding: 0;
-}
-
-
-
-.active{
- background-color: #e7e6e5;
- color: #000000;
- padding: 25px;
- margin-left: -6px;
-} 
-
-
-.a1 {
-  float: right;
-  font-size: 25px;
+.Buttons a {
+  font-size: 20px;
+  display: inline;
+  color: #ffffff;
   text-decoration: none;
-  color: #000000;
-  margin-top: -60px;
-  margin-bottom: 15px;
 }
+
+.Buttons a:visited {
+  text-decoration: none;
+}
+
+.Buttons a:focus {
+  cursor: pointer;
+}
+
+.Offer:hover {
+  background-color: rgba(221, 221, 221, 0.363);
+}
+
+.Offer:hover a {
+  color: #000000;
+}
+
+.Request:hover {
+  background-color: rgba(221, 221, 221, 0.363);
+}
+
+.Request:hover a {
+  color: #000000;
+
+}
+
 
 /*First section*/
 .Firstsection {
   margin-top: 10px 0px 10px 0px;
   border-radius: 20px 60px 20px;
-  background-color: #EBE3D5;
+  background-color: rgba(221, 221, 221, 0.363);;
   text-align: justify;
   font-size: 13px;
 }
@@ -205,6 +201,83 @@ li a:focus {
 margin: 10px 0px 5px 0px;
 text-align: center;
 }
+
+
+/* Add this to your existing CSS file or within a <style> tag */
+.reminder-notes ul {
+  display: flex;
+  flex-wrap: wrap;
+  list-style-type: none; /* Remove default list styling */
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.reminder-notes ul li {
+  background-color: #faf3cd; /* Yellow background */
+  color: black; /* Text color */
+  border: 1px solid #ccc; /* Border color */
+  border-radius: 5px; /* Rounded corners */
+  padding: 20px;
+  margin: 20px;
+  width: 250px; /* Fixed width */
+  height: 250px; /* Fixed height */
+  overflow: hidden; /* Hide overflow text */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Optional: add a slight shadow */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Distribute space evenly */
+}
+
+.reminder-notes ul li a {
+  text-decoration: none; /* Remove underline from links */
+  color: inherit; /* Inherit text color */
+}
+
+.reminder-notes ul li h2 {
+  font-size: 1.2em; /* Adjust title font size */
+  margin: 0;
+  padding: 0;
+}
+
+.reminder-notes ul li p {
+  font-size: 0.9em; /* Adjust text font size */
+  margin: 5px 0 0 0;
+  padding: 0;
+}
+
+.active{
+ background-color: #e7e6e5;
+ color: #000000;
+ padding: 25px;
+ margin-left: -6px;
+} 
+
+
+.a1 {
+  float: right;
+  font-size: 25px;
+  text-decoration: none;
+  color: #000000;
+  margin-top: -60px;
+  margin-bottom: 15px;
+}
+
+.reminder-notes button{
+  margin-top:5px;
+  float:right;
+}
+
+.delete {
+  margin-top: 20px;
+  padding: 5px 14px;
+  border-radius: 4px;
+  background-color: rgba(221, 221, 221, 0.662);
+  color: black;
+  border: none;
+  transition-duration: 0.4s;
+}
+
 
 /*FOOTER*/
 .Footer {
