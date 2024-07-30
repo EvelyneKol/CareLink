@@ -17,40 +17,30 @@ if(isset($_COOKIE['username'])){
   $defaultUsername = "";
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $username = $_POST['username'];
-  $people = (int)$_POST['People']; 
-  $Category = $_POST['categorySelect'];
-  $product = $_POST['productSelect'];
-  $date = date("Y-m-d"); // Change the format to match the database column type
-  date_default_timezone_set("Europe/Athens");
-  $time = date("H:i:s"); // Format as "hour:minute:second
+/* if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $shortageId = $_POST['shortage_id'];
+  $category = $_POST['category'];
+  $productName = $_POST['product_name'];
+  $quantity = $_POST['quantity'];
 
-  // Debugging statement
-  echo "Category: " . $Category;
+  // Get the current date and time
+  $datePosted = date('Y-m-d');
+  $timePosted = date('H:i:s');
 
-  // Insert requests into 'requests' table
-  $stmt = $conn->prepare("INSERT INTO request (request_civilian, request_category, request_product_name, persons, request_date_posted, request_time_posted) VALUES (?, ?, ?, ?, ?, ?)");
-  $stmt->bind_param("sssiss", $username, $Category, $product, $people, $date, $time);
+  // Assuming you have the username of the civilian making the offer
+  $offerCivilian = 'some_user'; // Replace with actual civilian username
 
-  // Execute the statement
+  $sql = "INSERT INTO offer (offer_civilian, offer_category, offer_product_name, offer_quantity, offer_date_posted, offer_time_posted, offer_status) VALUES (?, ?, ?, ?, ?, ?, 'WAITING')";
+
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("sssiss", $offerCivilian, $category, $productName, $quantity, $datePosted, $timePosted);
+
   if ($stmt->execute()) {
-      $success_message = "Request was made successfully";
-      // Redirect to a different page after successful form submission
-      header("Location: Civilian.php");
-      exit(); // Make sure to exit to prevent further execution of the script
+      echo "Offer added successfully.";
   } else {
-      // Handle the error
       echo "Error: " . $stmt->error;
   }
-
-  // Close the statement
-  $stmt->close();
-}
-
-// Fetch categories from the database
-$sql = "SELECT distinct category_name FROM categories";
-$result = $conn->query($sql);
+} */
 
 // Fetch shortage records from the database
 $shortageQuery = "SELECT * FROM shortage ORDER BY shortage_datetime DESC";
@@ -76,120 +66,58 @@ $conn->close();
 </head>
 
 <body>
-  <div class="header container-fluid">
-    <p><img src="images/logo.png" alt="Logo" width="200"></p>
-    <a href="home.html" class="a1"><i class="fa fa-sign-out" style="font-size:24px"></i>Log out</a>
+
+<div class="navbar">
+      <img src="images/logo1.png" alt="Logo">
+      <ul class="nav">
+          <li><a href="logout.php"><i class="fa fa-sign-out" style="font-size:24px"></i> Log out</a></li>
+      </ul>
   </div>
 
-  <div class="navbar">
-      <ul class="nav">
-          <li><a class="active" href="Home.html">Home</a></li>
-          <li><a href="admin_map.php">Map</a></li>
-      </ul>
-      <ul class="nav">            
-          <li><a href="home.html"><i class="fa fa-sign-out" style="font-size:24px" ></i> Log out</a></li>
-      </ul>
+  <div class="Buttons">
+    <div class="row">
+      <div class="col4 col-sm-6">
+        <button class="Request"><a href="civilian_requests.php">Make a Request</a></button>
+      </div>
+      <div class="col5 col-sm-6">
+        <button class="Offer"><a href="sign_in.html">Offer</a></button>
+      </div>
+    </div>
   </div>
-  
+
   <div class="Main container-fluid">
     <div class="Firstsection">
-      <h2> Civilian members</h2>
+      <h2> Welcome back </h2>
+      <h2 id="txtUsername"><?php echo $defaultUsername; ?></h2>
       <div class="container mt-5">
         <div class="row">
           <div class="col">
-            <h3><a class="a" href="#A">Requests </a><img src="images/request.png" alt="heart"></h3>
-            <p>A map with all the tasks available,
-              the <strong>tasks</strong> you have taken with their <strong>route</strong> and the
-              location of the <strong>store</strong> in available for you.</p>
+            <h3><a class="a">My Requests </a><img src="images/request.png" alt="heart"></h3>
+            <p>All members of 
+              <strong>CareLink</strong> can see a list with the <strong>Requests</strong> they have made as well as their
+              <strong>status</strong>.</p>
           </div>
           <div class="col">
-            <h3><a class="a" href="#B">Offer </a><img src="images/heart.png" alt="heart"></h3>
+            <h3><a class="a">My Offers </a><img src="images/heart.png" alt="heart"></h3>
+            <p>All member of CareLink can <strong>offer</strong> items to people in need.
+              By declaring availability to team's announcements for <strong>shortages</strong> the volunteers
+              will be responsible to tranfers the products.</p>
+          </div>
+
+          <div class="col">
+            <h3><a class="a" href="#A">Shortages</a> <i class="fa fa-bullhorn" style="font-size:24px"></i></h3>
             <p>All member of our society can <strong>offer</strong> items to people in need.
               By declaring availability to team's announcements about <strong>shortages</strong> the volunteers
               undertake to transport them.</p>
           </div>
+
         </div>
       </div>
     </div>
 
-    <div class="Secondsection">
-      <h3 id="A">Make a request!</h3>
-      <hr>
-      <p>Hey there! In this section, you have the chance to submit a form with all the
-        products that you need.
-        Quick reminder: stick to one product per category each time.
-        But guess what? You're not limited by quantity,
-        so go ahead and submit as many forms as your heart desires!</p>
-      <div class="row">
-        <div class="col-sm-3"></div>
-        <div class="req col-sm-6">
-        <form id="requestForm" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" onsubmit="resetForm()">
-            <div class="row">
-              <div class="col-sm-6">
-                <label for="txtUsername" class="form-label">Username</label>
-                <input type="text" class="form-control p-2" id="txtUsername" name="username"
-                placeholder="Write your Username..." autocomplete="on" required value="<?php echo $defaultUsername; ?>" readonly>
-              </div>
-              <br>
-              <div class="col-sm-6">
-                <label for="people" class="form-label">People</label>
-                <input type="text" class="form-control p-2" id="people" name="People"
-                  placeholder="Number of people" pattern="[0-9]{1,2}" autocomplete="on" required>
-              </div>
-            </div>
-            <br>
-            <div>
-                <div class="col-sm-6">
-                    <label for="categorySelect" class="form-label">Category</label>
-                    <select id="categorySelect" class="form-control p-2" name="categorySelect">
-                    <option value="">Select a category</option>
-                        <?php
-                        // Check if there are results
-                        if ($result->num_rows > 0) {
-                            // Output data of each row
-                            while($row = $result->fetch_assoc()) {
-                                echo '<option value="' . htmlspecialchars($row["category_name"]) . '">' . htmlspecialchars($row["category_name"]) . '</option>';
-                            }
-                        } else {
-                            echo '<option value="">No categories available</option>';
-                        }
-                        ?>
-                    </select>
-                    
-                    <br>
-                    
-                    <div class="col-sm-6">
-                        <label for="productSelect" class="form-label">Product</label>
-                        <select id="productSelect" class="form-control p-2" name="productSelect">
-                        <option value="">Select a category First</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <?php
-            if (!empty($success_message)) {
-                echo "<p class='success-message'>$success_message</p>";
-            }
-            ?>
-            <br>
-            <button class="submit" type="submit">Submit</button>
-            <button class="reset" type="reset" onclick="resetForm()">Reset</button>
-           
-          </form>
-        </div>
-        <div class="col-sm-3"></div>
-      </div>
-    </div>
-
-    <div class="thirdsection">
-        <h3>My requests</h3>
-        <hr>
-        <!-- Add a div to display the user requests -->
-        <div id="userRequests"></div>
-    </div>
 
     <div class="Secondsection">
-      <h3 id="A">Shortages</h3>
+      <h3 >Shortages</h3>
       <hr>
       <div class="reminder-notes">
         <?php
@@ -200,7 +128,9 @@ $conn->close();
                 echo '<h2>Category: ' . htmlspecialchars($row["shortage_category"]) . '</h2>';
                 echo '<p>Product Name: ' . htmlspecialchars($row["shortage_product_name"]) . '</p>';
                 echo '<p>Quantity: ' . htmlspecialchars($row["shortage_quantity"]) . '</p>';
-                echo '<p>Date & Time: ' . htmlspecialchars($row["shortage_datetime"]) . '</p>';              
+                echo '<p>Date & Time: ' . htmlspecialchars($row["shortage_datetime"]) . '</p>';  
+                //echo '<button class="DeleteReq" onclick="delete_request(' . htmlspecialchars($row["id_shortage"]) . ')">Delete</button>';            
+                echo '<button class="delete"  onclick="addOffer(\'' . htmlspecialchars($row["id_shortage"]) . '\', \'' . htmlspecialchars($row["shortage_category"]) . '\', \'' . htmlspecialchars($row["shortage_product_name"]) . '\', \'' . htmlspecialchars($row["shortage_quantity"]) . '\')">Make an Offer</button>';
                 echo '</li>';
             }
             echo '</ul>';
@@ -209,13 +139,6 @@ $conn->close();
         }
         ?>
       </div>
-    </div>
-
-    <div class="forthsection">
-        <h3>My Offers</h3>
-        <hr>
-        <!-- Add a div to display the user requests -->
-        <div></div>
     </div>
 
   </div>
@@ -250,67 +173,55 @@ $conn->close();
   </div>
 
   <script>
-        $(document).ready(function() {
-            $('#categorySelect').change(function() {
-                var category_name = $(this).val();
-                $.ajax({
-                    type: 'POST',
-                    url: 'fetch_products.php',
-                    data: {category_name: category_name},
-                    dataType: 'json',
-                    success: function(data) {
-                        $('#productSelect').empty();
-                        $('#productSelect').append('<option value="">Select Product</option>');
-                        $.each(data, function(index, value) {
-                            $('#productSelect').append('<option value="'+ value +'">'+ value +'</option>');
-                        });
-                    }
-                });
-            });
-        });
-    </script>
+      function addOffer(shortageId, category, product, quantity) {
+            //var username = document.getElementById("txtUsername").value;  // Get the username from PHP and escape it
 
-  <script>
-        function showRequests(username) {
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    document.getElementById("userRequests").innerHTML = this.responseText;
+            // JavaScript to get the username from the h2 element
+            var usernameElement = document.getElementById("txtUsername");
+            var username = usernameElement.textContent.trim();  // Use textContent to get the text, and trim() to remove any extra spaces
+
+
+            var url = "add_offer_civilian.php";
+
+            // Create a FormData object and append the data you want to send
+            var formData = new FormData();
+            formData.append("shortageId", shortageId);
+            formData.append("category", category);
+            formData.append("product", product);
+            formData.append("quantity", quantity);
+            formData.append("username", username);
+
+            // Create the XMLHttpRequest object
+            var xhr = new XMLHttpRequest();
+
+            // Setup the AJAX request
+            xhr.open("POST", url, true);
+
+            // Set up the onload and onerror functions
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    // Handle the success response
+                    console.log(xhr.responseText);
+                    location.reload();
+                
+                } else {
+                    // Handle the error response
+                    console.error("Error: " + xhr.statusText);
                 }
             };
-            xmlhttp.open("GET", "load_requests.php?q=" + username, true);
-            xmlhttp.send();
-        }
 
-        document.addEventListener("DOMContentLoaded", function () {
-            // Get the default username value
-            var defaultUsername = document.getElementById("txtUsername").value;
+            xhr.onerror = function () {
+                // Handle the network error
+                console.error("Network error");
+            };
 
-            // Call showRequests to fetch and display user requests
-            showRequests(defaultUsername);
-        });
-    
+            // Send the AJAX request with the form data
+            xhr.send(formData);
+      }
 
-        function deleteRequest(requestId) {
-    // You can use AJAX to send a request to a PHP file that will delete the row from the database
-    // Example using fetch API
-        fetch('delete.php?id=' + requestId, {
-               method: 'GET',
-        })
-        .then(data => {
-            // Handle the response if needed
-            console.log(data);
-            // Optionally, you can remove the HTML element for the deleted request
-            var cardElement = document.getElementById('card_' + requestId);
-            if (cardElement) {
-                cardElement.remove();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-  }
   </script>
+
+  
     
 </body>
 
