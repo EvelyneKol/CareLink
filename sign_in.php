@@ -136,8 +136,7 @@ $conn->close();
                 alert("Please fill in all fields.");
             } 
             else {
-                // Add your login logic here
-                alert("Logging in...");
+                
             }
         }
     </script>
