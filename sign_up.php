@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <meta charset="UTF-8">
   <link rel="icon" type="image/jpg" sizes="96x96" href="favicon-96x96.png">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="css/form.css">
+  <link rel="stylesheet" href="form.css">
   <title>Signup Form</title>
 </head>
 
@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class="container">
     <div class="form-container">
       <div class="tabs">
-        <a href="sign_in.html"> <button onclick="showTab('signin')">Sign In</button></a>
+        <a href="sign_in.php"> <button onclick="showTab('signin')">Sign In</button></a>
         <button onclick="showTab('signup')" class="active">Sign Up</button>
       </div>
       <div id="signup-tab" class="tab">

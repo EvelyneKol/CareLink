@@ -71,7 +71,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/jpg" sizes="96x96" href="favicon-96x96.png">
-    <link rel="stylesheet" href="css/form.css">
+    <link rel="stylesheet" href="form.css">
     <title>Sign in Form</title>
 </head>
 <body>
@@ -80,7 +80,7 @@ $conn->close();
         <div class="form-container">
             <div class="tabs">
                 <button onclick="showTab('signin')" class="active">Sign In</button>
-                <a href="sign_up_civilian.html"><button onclick="showTab('signup')">Sign Up</button></a>
+                <a href="sign_up.php"><button onclick="showTab('signup')">Sign Up</button></a>
             </div>
             <div id="signin-tab" class="tab">
                 <p>Welcome back to CareLink!</p>
@@ -91,8 +91,6 @@ $conn->close();
                     <input type="password" placeholder="Enter Your Password" id="password" name="password" required>
                     <label for="showpass" id="rlabel">Show Password</label>
                     <input type="checkbox" id="showpass" name="showpass" onclick="passwordvisibility()">
-                    <label for="keepme" id="keepme">Keep me Signed in</label>
-                    <input type="checkbox" id="remember" name="remember" onclick="">
                     <?php
                     if (isset($error_message)) {
                         echo "<p class='error-message'>$error_message</p>";
