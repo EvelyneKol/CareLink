@@ -344,30 +344,30 @@ $conn->close();
 
 
     <div class="Firstsection">
-    <h2> Map </h2>
-    <br>
-    <form class="filters">
-        <input type="checkbox" id="layer1" name="mapLayer" onchange="toggleLayer('layer1')">
-        <label for="layer1">Vehicles Waiting</label>
+        <h2> Map </h2>
+        <br>
+        <form class="filters">
+            <input type="checkbox" id="layer1" name="mapLayer" onchange="toggleLayer('layer1')">
+            <label for="layer1">Vehicles Waiting</label>
 
-        <input type="checkbox" id="layer2" name="mapLayer" onchange="toggleLayer('layer2')">
-        <label for="layer2">Vehicles On The Way</label>
+            <input type="checkbox" id="layer2" name="mapLayer" onchange="toggleLayer('layer2')">
+            <label for="layer2">Vehicles On The Way</label>
 
-        <input type="checkbox" id="layer3" name="mapLayer" onchange="toggleLayer('layer3')">
-        <label for="layer3">Offers</label>
+            <input type="checkbox" id="layer3" name="mapLayer" onchange="toggleLayer('layer3')">
+            <label for="layer3">Offers</label>
 
-        <input type="checkbox" id="layer4" name="mapLayer" onchange="toggleLayer('layer4')">
-        <label for="layer4">Waiting Requests</label>
+            <input type="checkbox" id="layer4" name="mapLayer" onchange="toggleLayer('layer4')">
+            <label for="layer4">Waiting Requests</label>
 
-        <input type="checkbox" id="layer5" name="mapLayer" onchange="toggleLayer('layer5')">
-        <label for="layer5">On their way Requests</label>
+            <input type="checkbox" id="layer5" name="mapLayer" onchange="toggleLayer('layer5')">
+            <label for="layer5">On their way Requests</label>
 
-        <input type="checkbox" id="layer6" name="mapLayer" onchange="toggleLayer('layer6')" disabled>
-        <label for="layer6">Lines</label>
+            <input type="checkbox" id="layer6" name="mapLayer" onchange="toggleLayer('layer6')" disabled>
+            <label for="layer6">Lines</label>
 
-    </form>
-    <div id='map'></div>
-</div>
+        </form>
+        <div id='map'></div>
+    </div>
     
     <div class="Footer container-fluid">
         <div class="row">
