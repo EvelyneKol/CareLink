@@ -94,11 +94,11 @@ $conn->close();
         <div id="userOffers"></div>
     </div>
 
-<!--     <div class="thirdsection">
+    <div class="thirdsection">
         <h3>Completed offers</h3>
         <hr>
-        <div id=""></div>
-    </div> -->
+        <div id="pastOffers"></div>
+    </div> 
 
 
    
@@ -151,6 +151,28 @@ $conn->close();
             // Call showOffers to fetch and display user requests
             showOffers(defaultUsername);
         });
+
+        function showPastOffers(username) {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("pastOffers").innerHTML = this.responseText;
+                }
+            };
+            xmlhttp.open("GET", "load_past_Offers_civilian.php?q=" + username, true);
+            xmlhttp.send();
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get the default username value
+            //var defaultUsername = document.getElementById("txtUsername");
+            var defaultUsername = document.getElementById('txtUsername').innerText;
+      
+            // Call showOffers to fetch and display user requests
+            showOffers(defaultUsername);
+        });
+    
+
     
     
 
