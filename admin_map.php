@@ -11,26 +11,60 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-
+function baseLocation($conn) {
+    //διαβασμα συντεταγμενων αποθηκης απο την βαση δεδομεων
+    $baseLocation = "SELECT SUBSTRING_INDEX(base_location, ',', 1) AS latitude,
+            SUBSTRING_INDEX(base_location, ',', -1) AS longitude
+            FROM base";
+    
+        $baseLocationData = array();
+    
+        $sqlbaseLocation = $conn->query($baseLocation);
+    
+        if ($sqlbaseLocation) {
+            while ($row = $sqlbaseLocation->fetch_assoc()) {
+                $baseLocationData[] = array(
+                    "latitude" => $row["latitude"],
+                    "longitude" => $row["longitude"]
+                );
+            }
+    
+            // Encode $baseLocationData array to JSON
+            $json_data = json_encode($baseLocationData);
+    
+            // Specify the path to store the JSON file
+            $json_file = 'baseLocation.json';
+    
+            // Write JSON data to file
+            if (file_put_contents($json_file, $json_data)) {
+                return "JSON data successfully written to $json_file";
+            } else {
+                return "Unable to write JSON data to $json_file";
+            }
+    
+            // Close the result set
+            $sqlbaseLocation->close();
+        } else {
+            die("Error executing the SQL query: " . $conn->error);
+        }
+    }
 
 //οχηματα
-$vehicles = "SELECT 
-        vehicle.vehicle_name,
-        SUBSTRING_INDEX(vehicle.vehicle_location, ',', 1) AS latitude,
-	    SUBSTRING_INDEX(vehicle.vehicle_location, ',', -1) AS longitude,
-        COALESCE(vehiclesOnAction.quantity, 0) AS quantity,
-        COALESCE(vehiclesOnAction.products, 'No products') AS products,
-        COUNT(task.task_id) AS task_count
-    FROM 
-        vehicle
-    LEFT JOIN 
-        vehiclesOnAction ON vehicle.vehicle_name = vehiclesOnAction.v_name
-    LEFT JOIN 
-        task ON vehiclesOnAction.driver = task.task_volunteer
-    GROUP BY 
-        vehicle.vehicle_name, 
-        vehiclesOnAction.quantity, 
-        vehiclesOnAction.products";
+    $vehicles = "SELECT 
+                    vehicle.vehicle_name,
+                    SUBSTRING_INDEX(vehicle.vehicle_location, ',', 1) AS latitude,
+                    SUBSTRING_INDEX(vehicle.vehicle_location, ',', -1) AS longitude,
+                    GROUP_CONCAT(CONCAT(vehiclesOnAction.quantity, ' ', vehiclesOnAction.products) SEPARATOR '; ') AS products,
+                    SUM(COALESCE(vehiclesOnAction.quantity, 0)) AS quantity,
+                    COUNT(DISTINCT task.task_id) AS task_count
+                FROM 
+                    vehicle
+                LEFT JOIN 
+                    vehiclesOnAction ON vehicle.vehicle_name = vehiclesOnAction.v_name
+                LEFT JOIN 
+                    task ON vehiclesOnAction.driver = task.task_volunteer
+                GROUP BY 
+                    vehicle.vehicle_name";
 
     $data2 = array();
     $sqlVehicle = $conn->query($vehicles);
@@ -132,7 +166,7 @@ return "Error executing the SQL query: " . $conn->error;
 }
 
 
-$offers = "SELECT 
+$offers = "SELECT distinct
             civilian.civilian_first_name,
             civilian.civilian_last_name,
             civilian.civilian_number,
@@ -202,7 +236,7 @@ if ($sqloffers) {
 
 
 //on the way requests
-$onTheWayRequests = "SELECT 
+$onTheWayRequests = "SELECT distinct
                 civilian.civilian_first_name,
                 civilian.civilian_last_name,
                 civilian.civilian_number,
@@ -220,7 +254,7 @@ $onTheWayRequests = "SELECT
                 JOIN 
                 civilian ON request.request_civilian = civilian.civilian_username
                 LEFT JOIN 
-                task ON request.id_request = task.task_offer_id
+                task ON request.id_request = task.task_request_id
                 LEFT JOIN 
                 vehiclesOnAction ON task.task_volunteer = vehiclesOnAction.driver
                 LEFT JOIN 
@@ -282,27 +316,16 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/admin_map.css">
     <link rel="icon" type="image/jpg" sizes="96x96" href="images/favicon.png">
-    <link rel="stylesheet" href="leaflet-routing-machine.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <!-- Leaflet Routing Machine CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
-    <!-- Leaflet Routing Machine JavaScript -->
-    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css" />
-    <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-</head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@latest/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@latest/dist/leaflet.markercluster.js"></script>
 
+</head>
 <body>
     <div class="header">
         <h2><img src="images/logo.png" alt="Logo" width="200"></h2>

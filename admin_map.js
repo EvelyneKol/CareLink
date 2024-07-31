@@ -1,20 +1,32 @@
-var map = L.map('map').setView([38.2904558214517, 21.79578903224108], 14);
+var baselatitude = 0 ;
+var baselongitude = 0;
+
+fetch('baseLocation.json')
+.then(response => response.json())
+.then(data => {
+    baselatitude = parseFloat(data[0].latitude);
+    baselongitude = parseFloat(data[0].longitude);
+})
+.catch(error => console.error('Error fetching the taskcount JSON data:', error));
+
+
+var map = L.map('map').setView([baselatitude, baselongitude], 14);
 L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL', {
   attribution:
     '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
 }).addTo(map);
 
-var baseMarker = L.marker([38.2904558214517, 21.79578903224108], { draggable: true });
+
+
+var baseMarker = L.marker([baselatitude, baselongitude], { draggable: true });
 var popup1 = baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
 
  if ('geolocation' in navigator) {
   navigator.geolocation.getCurrentPosition(function (position) {
-    var userLat = position.coords.latitude;
-    var userLng = position.coords.longitude;
+  
+    map.setView([baselatitude, baselongitude], 13);
 
-    map.setView([userLat, userLng], 13);
-
-    initializeBaseMarker(userLat, userLng);
+    initializeBaseMarker(baselatitude, baselongitude);
 
   });
 } else {
@@ -29,7 +41,7 @@ function initializeBaseMarker(userLat, userLng) {
     popupAnchor: [1, -34]
   });
 
-  baseMarker = L.marker([38.290399042463136, 21.79564239581478], { draggable: true }).addTo(map).setIcon(baseIcon);
+  baseMarker = L.marker([baselatitude, baselongitude], { draggable: true }).addTo(map).setIcon(baseIcon);
   baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
 
   baseMarker.on('dragend', function (event) {
@@ -155,7 +167,7 @@ function on_the_way_vehicles_markers(data) {
     // Create a new marker with a custom icon
     const marker = L.marker(location, {
       icon: L.icon({
-        iconUrl: 'truck.png',
+        iconUrl: 'images/truck.png',
         iconSize: [32, 32],
         iconAnchor: [16, 32],
         popupAnchor: [0, -32]
