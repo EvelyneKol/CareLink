@@ -12,6 +12,8 @@ $category = $_POST['category'];
 $product = $_POST['product'];
 $quantity = (int)$_POST['quantity'];
 $username = $_POST['username'];
+$date = date("Y-m-d");
+date_default_timezone_set("Europe/Athens");
 
 $stmtCheck = $conn->prepare("SELECT quantity FROM vehiclesOnAction WHERE category = ? AND products = ? AND driver = ?");
 $stmtCheck->bind_param("sss", $category, $product, $username);
@@ -23,8 +25,8 @@ $stmtCheck->close();
 if ($existingQuantity >= $quantity) {
     $newQuantity = $existingQuantity - $quantity;
         // Prepare and execute the update query
-        $updaterequest = $conn->prepare("UPDATE request SET state = 'COMPLETED' WHERE id_request = ?");
-        $updaterequest->bind_param("i", $requestId);
+        $updaterequest = $conn->prepare("UPDATE request SET state = 'COMPLETED', complete_request=? WHERE id_request = ?");
+        $updaterequest->bind_param("si",$date, $requestId);
         $updaterequest->execute();
 
         // Prepare and execute the update query
