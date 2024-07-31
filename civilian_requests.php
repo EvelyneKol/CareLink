@@ -83,7 +83,7 @@ $conn->close();
           <li><a href="Civilian.php"><i class="fa fa-home" style="font-size:24px"></i> Home</a></li>
           <p> | </p>
           <li>
-            <a href="load_myOffers.php">
+            <a href="Civilian_offers.php">
             <i class="fa fa-heart" style="font-size:24px"></i> Offers
             </a>
           </li>
@@ -241,24 +241,24 @@ $conn->close();
     
 
         function deleteRequest(requestId) {
-    // You can use AJAX to send a request to a PHP file that will delete the row from the database
-    // Example using fetch API
-        fetch('delete.php?id=' + requestId, {
-               method: 'GET',
-        })
-        .then(data => {
-            // Handle the response if needed
-            console.log(data);
-            // Optionally, you can remove the HTML element for the deleted request
-            var cardElement = document.getElementById('card_' + requestId);
-            if (cardElement) {
-                cardElement.remove();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-  }
+          // You can use AJAX to send a request to a PHP file that will delete the row from the database
+          // Example using fetch API
+              fetch('delete.php?id=' + requestId, {
+                    method: 'GET',
+              })
+              .then(data => {
+                  // Handle the response if needed
+                  console.log(data);
+                  // Optionally, you can remove the HTML element for the deleted request
+                  var cardElement = document.getElementById('card_' + requestId);
+                  if (cardElement) {
+                      cardElement.remove();
+                  }
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+              });
+        }
   </script>
     
 </body>
