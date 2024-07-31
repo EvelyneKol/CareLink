@@ -7,7 +7,6 @@
  /*Second section*/
 .Secondsection {
   margin-top: 20px;
-  font-family: 'Work Sans', sans-serif;
   float: center;
 }
 

@@ -2,93 +2,72 @@
 <html>
 <head>
 <style>
+
 *{  font-family: Arial, Helvetica, sans-serif;}
 
- /*Second section*/
+/*Second section*/
 .Secondsection {
-  margin-top: 20px;
-  font-family: 'Work Sans', sans-serif;
-  float: center;
+    margin-top: 20px;
+    float: center;
 }
 
 .Secondsection h3,
 .Secondsection p {
-  margin: 10px 0px 5px 0px;
-  text-align: center;
+    margin: 10px 0px 5px 0px;
+    text-align: center;
 }
 
 .reminder-notes {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 20px; /* Adjust gap between items as needed */
+ display: flex;
+ flex-wrap: wrap;
+ justify-content: center;
+ align-items: center;
+ margin: 20px;
+ gap: 20px; /* Adjust gap between items as needed */
 }
 
 .reminder-notes ul {
-  display: flex;
-  flex-wrap: wrap;
-  list-style-type: none; /* Remove default list styling */
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  text-align: center;
+ display: flex;
+ flex-wrap: wrap;
+ list-style-type: none; /* Remove default list styling */
+ padding: 0;
+ display: flex;
+ flex-wrap: wrap;
+ text-align: center;
 }
 
 .reminder-notes ul li {
-  background-color: #faf3cd; /* Yellow background */
-  color: black; /* Text color */
-  border: 1px solid #ccc; /* Border color */
-  border-radius: 5px; /* Rounded corners */
-  padding: 20px;
-  margin: 20px;
-  width: 240px; /* Fixed width */
-  height: 280px; /* Fixed height */
-  overflow: hidden; /* Hide overflow text */
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Optional: add a slight shadow */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Distribute space evenly */
+ background-color: #faf3cd; /* Yellow background */
+ color: black; /* Text color */
+ border: 1px solid #ccc; /* Border color */
+ border-radius: 5px; /* Rounded corners */
+ padding: 20px;
+ margin: 20px;
+ width: 240px; 
+ height: 280px; 
+ overflow: hidden; 
+ box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); 
+ display: flex;
+ flex-direction: column;
+ justify-content: space-between; 
 }
 
 .reminder-notes ul li a {
-  text-decoration: none; /* Remove underline from links */
-  color: inherit; /* Inherit text color */
+ text-decoration: none; /* Remove underline from links */
+ color: inherit; 
 }
 
 .reminder-notes ul li h2 {
-  font-size: 1.2em; /* Adjust title font size */
-  margin: 0;
-  padding: 0;
+ font-size: 1.2em; 
+ margin: 0;
+ padding: 0;
 }
 
 .reminder-notes ul li p {
-  font-size: 0.9em; /* Adjust text font size */
-  margin: 5px 0 0 0;
-  padding: 0;
+ font-size: 0.9em; 
+ margin: 5px 0 0 0;
+ padding: 0;
 }
-
-.delete {
-  margin-top: 20px;
-  padding: 5px 14px;
-  border-radius: 4px;
-  background-color: rgba(221, 221, 221, 0.662);
-  color: black;
-  border: none;
-  transition-duration: 0.4s;
-}
-
-.delete button{
-  margin-top:5px;
-  float:right;
-}
-
-.delete:active,
-.delete:hover {
-  background-color: rgb(0, 146, 195);
-  color: rgb(255, 255, 255);
-}
-
 
 </style>
 </head>
