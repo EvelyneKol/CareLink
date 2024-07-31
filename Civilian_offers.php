@@ -92,14 +92,11 @@ $conn->close();
         <h3>My offers</h3>
         <hr>
         <div id="userOffers"></div>
-    </div>
-
-    <div class="thirdsection">
+        <br>
         <h3>Completed offers</h3>
         <hr>
         <div id="pastOffers"></div>
-    </div> 
-
+    </div>
 
    
   <div class="Footer container-fluid">
@@ -169,7 +166,7 @@ $conn->close();
             var defaultUsername = document.getElementById('txtUsername').innerText;
       
             // Call showOffers to fetch and display user requests
-            showOffers(defaultUsername);
+            showPastOffers(defaultUsername);
         });
     
 
