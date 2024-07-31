@@ -78,12 +78,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="icon" type="image/jpg" sizes="96x96" href="images/favicon.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="base.css">
 </head>
 <body>
     <div class="header">
-        <h2><img src="images/logo.png" alt="Logo" width="210"></h2>
+        <h2><img src="images/logo1.png" alt="Logo"></h2>
         <p><strong>Base management</strong><br>Add or delete categories and items or make ony other changes</p>
+        <hr>
     </div>
 
     <div class="home">

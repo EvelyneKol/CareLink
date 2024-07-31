@@ -1,26 +1,36 @@
-* {
-    margin: 0;
-    padding: 0;
+*{
+    font-size: 18px;
+    font-family: 'Work Sans', sans-serif;
 }
+
   
 body {
-    font-family: verdana;
     background-color: rgb(255, 255, 255);
     overflow-x: hidden;
     overflow-y: scroll;
 }
   
 .header {
-    background-color: #dddcd9cc;
+    background-color: #ffffffcc;
     text-align: left;
     font-size: 40px;
     color: rgb(15, 1, 1);
     height: 200px;
 }
 
+.header img {
+    height: auto;
+    width : 220px;
+    margin-top: 30px;
+    margin-left: 20px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+    align-items: center;
+}
+
 .header p{
     text-align: right;
-    margin-top: -100px;
+    margin-top: -70px;
     font-size: 19px;
     display: hidden;
     margin-right: 15px;
@@ -62,7 +72,7 @@ body {
 }
 
 /*Buttons*/
-.button{
+.form_container button{
     margin-top: 20px;
     margin-bottom: 20px;
     padding: 5px 14px;
@@ -71,41 +81,21 @@ body {
     color: black;
     border: none;
     transition-duration: 0.4s;
-    /*
-    align-items: center;
-    appearance: none;
-    background-color: #fff;
-    border: 1px solid #dbdbdb;
-    border-radius: .375em;
-    box-shadow: none;
-    box-sizing: border-box;
-    color: #363636;
-    cursor: pointer;
-    display: inline-flex;
-    font-family: BlinkMacSystemFont,-apple-system,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-size: 1rem;
-    height: 2em;
-    justify-content: center;
-    line-height: 1.5;
-    padding: 2px;
-    text-align: center;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    vertical-align: top;
-    white-space: nowrap;*/
 }
 
-.button:focus {
+.form_container button:focus {
   border-color: #485fc7;
   outline: 0;
 }
 
-.button:hover {
+.form_container button:hover {
   border-color: #b5b5b5;
+  background-color: #db3232;;
+  color: rgb(255, 255, 255);
 }
 
-.button:focus:not(:active) {
+
+.form_container button:focus:not(:active) {
   box-shadow: rgba(72, 95, 199, .25) 0 0 0 .125em;
 }
   
@@ -115,7 +105,7 @@ body {
     padding-top: 50px;
     display: block;
     width: 100%;
-    margin: 1em 0;
+    margin: 20px;
     text-align: center;
 }
 
