@@ -107,7 +107,7 @@
     if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $username = $_GET['q'];
 
-        $sql = "SELECT * FROM request WHERE request_civilian = ?";
+        $sql = "SELECT * FROM offer WHERE offer_civilian = ? AND offer_status IN ('WAITING', 'ON THE WAY')";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $username);
 
@@ -117,22 +117,22 @@
             die("Error: " . $stmt->error);
         }
 
-        $stmt->bind_result($id_request, $request_civilian, $request_category, $request_product_name, $persons, $request_date_posted, $request_time_posted, $state, $complete_request);
+        $stmt->bind_result($offer_id, $offer_civilian, $offer_category, $offer_product_name, $offer_quantity, $offer_date_posted, $offer_time_posted, $offer_status, $complete_offer);
         echo '<ul>';
         // Loop through the records and generate HTML for each
         while ($stmt->fetch()) {
             echo '<li>';  
-            echo '<h2 class="title"> Your request from <strong>' . htmlspecialchars($request_category) . '</strong></h2>';
-            echo '<p> Product: ' . htmlspecialchars($request_product_name) . '</p>';
-            echo '<p> Num of People: ' . htmlspecialchars($persons) . '</p>';
-            echo '<p> Date Posted: ' . htmlspecialchars($request_date_posted) . '</p>';
-            echo '<p> Time Posted: ' . htmlspecialchars($request_time_posted) . '</p>';
-            echo '<p> Time Completed: ' . htmlspecialchars($complete_request) . '</p>';
-            if($state == "WAITING") {
-              echo '<p> State: <strong>' . htmlspecialchars($state) . '</strong></p>';
-              echo '<button class="delete" onclick="deleteRequest(' . $id_request . ')">Delete</button>';
+            echo '<h2 class="title"> Your request from <strong>' . htmlspecialchars($offer_category) . '</strong></h2>';
+            echo '<p> Product: ' . htmlspecialchars($offer_product_name) . '</p>';
+            echo '<p> Num of People: ' . htmlspecialchars($offer_quantity) . '</p>';
+            echo '<p> Date Posted: ' . htmlspecialchars($offer_date_posted) . '</p>';
+            echo '<p> Time Posted: ' . htmlspecialchars($offer_time_posted) . '</p>';
+            echo '<p> Time Completed: ' . htmlspecialchars($complete_offer) . '</p>';
+            if($offer_status == "WAITING") {
+              echo '<p> offer_status: <strong>' . htmlspecialchars($offer_status) . '</strong></p>';
+              echo '<button class="delete" onclick="deleteRequest(' . $offer_id . ')">Delete</button>';
             } else {
-              echo '<p> State: <strong>' . htmlspecialchars($state) . '</strong></p>';
+              echo '<p> offer_status: <strong>' . htmlspecialchars($offer_status) . '</strong></p>';
             }
             echo '</li>';
         }

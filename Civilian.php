@@ -80,15 +80,15 @@ $conn->close();
         <button class="Request"><a href="civilian_requests.php">Make a Request</a></button>
       </div>
       <div class="col5 col-sm-6">
-        <button class="Offer"><a href="sign_in.html">Offer</a></button>
+        <button class="Offer"><a href="Civilian_offers.php">Offer</a></button>
       </div>
     </div>
   </div>
 
   <div class="Main container-fluid">
     <div class="Firstsection">
-      <h2> Welcome back </h2>
-      <h2 id="txtUsername"><?php echo $defaultUsername; ?></h2>
+      <h2> Your options as a Civilian </h2>
+      <h2 id="txtUsername" style="display: none;"><?php echo $defaultUsername; ?></h2>
       <div class="container mt-5">
         <div class="row">
           <div class="col">
