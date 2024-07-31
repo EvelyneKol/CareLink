@@ -40,7 +40,7 @@ $conn->close();
     <title>CareLink</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/Contact_info.css">
+    <link rel="stylesheet" href="Contact_info.css">
     <link rel="icon" type="image/jpg" sizes="96x96" href="images/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -48,26 +48,29 @@ $conn->close();
 </head>
 
 <body>
-    <div class="header container-fluid">
-        <p><img src="images/logo.png" alt="Logo" width="200"></p>
-    </div>
 
     <div class="navbar">
+        <img src="images/logo1.png" alt="Logo" >
         <ul class="nav">
-            <li><a href="Home.html">Home</a></li>
-            <li><a class="active" href="Contact_info.html">Contact Info</a></li>
+        <li><a href="Home.html">Home</a></li>
+        <p style="font-size: 18px;"> | </p >
+        <li><a class="active" href="Contact_info.php">Contact Info</a></li>
         </ul>
         <ul class="nav">
-            <li style="float:right;"><a href="sign_up_civilian.html">Sign Up</a></li>
-            <li style="float:right;"><a href="sign_in.html">Sign In</a></li>
+        <li style="float:right;"><a href="sign_up.php"><i class="fa fa-pencil-square-o" style="font-size:24px"></i>Sign
+            Up</a></li>
+        <li style="float:right;"><a href="sign_in.php"><i class="fa fa-sign-in" style="font-size:24px"></i>Sign In</a>
+        </li>
         </ul>
     </div>
+    <hr>
 
-    <div class="Main container-fluid">
 
-       <div class="contacts">
-            <h2>Main Contacts</h2>
-            <div class="row">
+    <div class="contacts">
+        <h2>Main Contacts</h2>
+
+        <div class="container">
+            <div class="row row-centered">
                 <div class="col-sm-6">
                     <div class="container">
                         <h3>Evangelia Kolagki</h3>
@@ -98,7 +101,7 @@ $conn->close();
                         <div class="row">
                             <div class="col-sm-6">
                                 <label for="firstname" class="form-label">First Name:</label>
-                                <input type="text" id="firstname" class="form-control p-2" name="firstname" maxlength="30"
+                                <input type="text" id="firstname" class="form-control p-2 w-60" name="firstname" maxlength="30"
                                     placeholder="Enter your First Name.." autocomplete="on" pattern="[a-zA-Z]{0-25}"
                                     required>
                             </div>
@@ -168,22 +171,29 @@ $conn->close();
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-
 <script>
+    function sendEmail() {
+        const recipient = 'email@example.com'; // Replace with the recipient's email address
+        const subject = 'Subject of the email'; // Replace with your desired subject
+        const body = 'Content of the email'; // Replace with your desired email content
+        const mailtoLink = `mailto:${recipient}?subject=${subject}&body=${body}`;
+
+        window.location.href = mailtoLink;
+    }
+
     // Initialize the map
-    var map = L.map('map').setView([38.290399042463136, 21.79564239581478], 14); // Set the coordinates and zoom level
+    var map = L.map('map').setView([38.247368, 21.736798], 16); // Set your preferred coordinates and zoom level
 
-    // Add a tile layer (for example, OpenStreetMap)
-    L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL',{
-  attribution:
-  '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
-}).addTo(map);
-    var baseMarker = L.marker([38.290399042463136, 21.79564239581478]).addTo(map);
+    // Add the tile layer (replace with your desired map provider)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+    }).addTo(map);
 
-    var popup1 = baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup().addTo(map);
+    // Add a marker for your headquarters
+    var headquartersMarker = L.marker([38.247368, 21.736798]).addTo(map); // Set your headquarters coordinates
 
-    var yourMarker = L.marker([38.2218082001025, 21.749210277231732]).addTo(map);
+    // Add a popup to the marker
+    headquartersMarker.bindPopup("<b>Headquarters: </b><br>Agiou Nikolaou 38").openPopup(); // Set your headquarters address 
 
-    var popup2 = yourMarker.bindPopup('Your location is here!').openPopup().addTo(map);
 
 </script>

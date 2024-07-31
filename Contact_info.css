@@ -1,65 +1,102 @@
 * {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
-    font-family: verdana;
-    background-color: rgb(255, 255, 255);
-    overflow-x: hidden;
-    overflow-y: scroll;
+  background-color: rgb(255, 255, 255);
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
-.header {
-    background-color: #EBE3D5;
-    text-align: left;
-    font-size: 40px;
-    color: rgb(15, 1, 1);
-    align-items: center;
-
-}
-
+/*db3232*/
 .navbar {
-    list-style-type: none;
-    margin-top: -35px;
-    padding: 10px;
-    background-color: #3b3b3b;
-    overflow: hidden;
+  list-style-type: none;
+  margin-top: 35px;
+  padding: 10px;
+  background-color: #ffffff;
+  overflow: hidden;
+  color: rgb(15, 1, 1);
+}
+
+.navbar img {
+  height: auto;
+  width : 220px;
+  margin-top: -10px;
+  padding-left: 20px;
+  padding-bottom: 20px;
+  align-items: center;
 }
 
 li {
-    float: left;
+  float: left;
 }
 
 li a {
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
+  color: rgb(0, 0, 0);
+  text-align: center;
+  font-size: 18px;
+  padding: 14px 16px;
+  text-decoration: none;
 }
 
 li a:visited {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 li a:hover,
 li a:focus {
-    background-color: rgba(241, 226, 199, 0.74);
-    color: #000000;
-    cursor: pointer;
+  color: #000000;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 2px; 
 }
 
 .active {
-    background-color: #EBE3D5;
-    color: #000000;
+  color: #db3232;
 }
+
+
 
 /* second sectin */
 
-.Secondsection .col1, .col2{
-  margin-top: 15px;
-
+h2{
+  text-align: center;
 }
+
+.Secondsection{
+  text-align: center;
+  margin: 30px;
+}
+
+.col1,
+.col2,
+.col3,
+.col4,
+.col5 {
+    text-align: center;
+}
+
+
+/*photos container*/
+.container {
+  text-align: center; /* Center text and content within the container */
+  padding: 20px; /* Optional: Add padding */
+  margin-bottom: 20px; /* Space between the containers */
+}
+
+.photo1, .photo2 {
+  max-width: 100%; /* Responsive image */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 8px; /* Optional: Rounded corners */
+}
+
+.row-centered {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+}
+
 .submit,
 .reset {
   margin-top: 20px;
@@ -80,7 +117,7 @@ li a:focus {
 
 .reset:active,
 .reset:hover {
-  background-color: rgb(248, 62, 5);
+  background-color: #db3232;
   color: rgb(255, 255, 255);
 }
 
