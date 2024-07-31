@@ -2,6 +2,7 @@
     font-size: 20px;
     font-family: 'Work Sans', sans-serif;
 }
+
 body {
     background-color: rgb(255, 255, 255);
     overflow-x: hidden;
@@ -9,36 +10,33 @@ body {
 }
 
 /*Header*/
-.header {
-    background-color: #e7e6e5;
-    text-align: left;
-    font-size: 40px;
-    margin-top: -80px;
-    padding: 30px 0.5rem;
-    color: rgb(15, 1, 1);
-    align-items: center;
-
-}
-
-.h3-header{
-    margin-top: -60px;
-    margin-left: 24px;
-    color: rgb(110, 94, 50);
-}
-
 .navbar {
     list-style-type: none;
-    margin-top: -35px;
-    padding: 2px;
-    background-color: #3b3b3b;
+    margin-top: 35px;
+    padding: 10px;
+    background-color: #ffffff;
     overflow: hidden;
-    font-size: 22px;
+    color: rgb(15, 1, 1);
 }
-  
+
+.navbar img {
+    height: auto;
+    width : 220px;
+    margin-top: -10px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+    align-items: center;
+}
+
+li {
+    float: left;
+}
+
 li a {
-    color: white;
+    color: rgb(0, 0, 0);
     text-align: center;
-    padding: 25px;
+    font-size: 18px;
+    padding: 14px 16px;
     text-decoration: none;
 }
 
@@ -48,30 +46,26 @@ li a:visited {
 
 li a:hover,
 li a:focus {
-    background-color: rgb(185, 175, 158);
     color: #000000;
     cursor: pointer;
-    padding: 25px;
-    
+    text-decoration: underline;
+    text-decoration-thickness: 2px; 
 }
 
-.active{
-   background-color: #e7e6e5;
-   color: #000000;
-   padding: 25px;
-   margin-left: -6px;
-} 
+.active {
+    color: #db3232;
+}
+
 
 /*First Section*/
 .Firstsection{
     margin-top: 10px 0px 10px 0px;
-    background-color: #e7e6e5;
+    background-color: rgba(221, 221, 221, 0.363);
     text-align: justify;
     border-radius: 15px 35px 30px;
 }
 
 .Firstsection h2{
-    font-family: 'Work Sans', sans-serif;
     text-align: center;
     font-size: 32px;
     margin-top: 18px;
@@ -95,10 +89,6 @@ li a:focus {
     font-size: 25px; 
 }
 
-/* Secondsection */
-.select{
-    font-family: Arial, Helvetica, sans-serif;
-}
 
 
 .Secondsection{
@@ -110,7 +100,7 @@ li a:focus {
 table,
 th,
 td {
-    border: 3px solid #e7e6e5;
+    border: 3px solid #8a8a8a;
     font-size: 20px;
     margin: auto;
     justify-content: center;
@@ -139,12 +129,12 @@ table{
 .Forthsection a {
     font-size: 30px;
     display: inline;
-    color: #000000;
+    color: #ffffff;
     text-decoration: none;
 }
 
 .Forthsection button {
-    background-color: #e7e6e5;
+    background-color: #db3232;
     border-radius: 6px;
     border: solid 1px;
     border-color: #858585;
@@ -152,7 +142,7 @@ table{
     margin-top: 1rem;
     transition-duration: 0.4s;
     font-size: 30px;
-    color: #000000;
+    color: white;
 }
 
 .Forthsection a:visited {
@@ -165,24 +155,22 @@ table{
 
 
 .add:hover {
-    background-color: rgb(185, 175, 158);
+    background-color: rgba(221, 221, 221, 0.363);
 }
 
 .add:hover a {
-    color: #ffffff;
-    /* white text color */
+    color: #000000;
 } 
 
 
 /*Fifthsection*/
 .Fifthsection{
     padding: 20px;
-    background-color: #e7e6e5;
+    background-color: rgba(221, 221, 221, 0.363);
     text-align: justify;
     margin-bottom: 30px;
 }
 .Fifthsection h2{
-    font-family: 'Work Sans', sans-serif;
     text-align: center;
     font-size: 32px;
     margin-top: 15px;

@@ -21,7 +21,7 @@ $result = $conn->query($sql);
     <title>CareLink Administrator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="admin.css">
     <link rel="icon" type="image/jpg" sizes="96x96" href="images/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -29,61 +29,57 @@ $result = $conn->query($sql);
 </head>
 
 <body>
-    <div class="header">
-        <h2><img src="images/logo.png" alt="Logo" width="200"></h2>
-        <div class="h3-header">
-            <h4>Back to admin actions!</h4> 
-          </div>
-    </div>
 
-    <div class="navbar">
-        <ul class="nav">
-            <li><a class="active" href="Home.html">Home</a></li>
-            <li><a href="admin_map.php">Map</a></li>
-            <li><a href="base.php">Database </a></li>
-        </ul>
-        <ul class="nav">            
-            <li><a href="home.html"><i class="fa fa-sign-out" style="font-size:24px" ></i> Log out</a></li>
-        </ul>
-    </div>
+<div class="navbar">
+    <img src="images/logo1.png" alt="Logo" >
+    <ul class="nav">
+        <li><a class="active" href="Home.html">Home</a></li>
+        <p style="font-size: 18px;"> | </p >
+        <li><a href="admin_map.php">Map</a></li>
+        <p style="font-size: 18px;"> | </p >
+        <li><a href="base.php">Database </a></li>
+    </ul>
+    <ul class="nav">
+        <li><a href="logout.php"><i class="fa fa-sign-out" style="font-size:24px" ></i> Log out</a></li>
+    </ul>
+  </div>
 
     <div class="Main container-fluid">
         <div class="Firstsection">
-          <h2> What to do as an admin:</h2>
-          <div class="container mt-5">
+            <h2> What to do as an admin:</h2>
+            <div class="container mt-5">
             <div class="row">
-              <div class="col-sm-4">
+                <div class="col-sm-4">
                 <h3><a class="a2" href="#A">Create volunteer account</a><i class='fa fa-address-card' style='font-size:24px'></i></h3> 
                 <p>The administrator is the only one who can <strong>add a volunteer</strong> in our society.</p>
-              </div>
-              <div class="col-sm-4">
+                </div>
+                <div class="col-sm-4">
                 <h3><a class="a2" href="#B">Create announcement</a> <i class="fa fa-bullhorn" style="font-size:24px"></i></h3>        
                 <p>Admin creates new <strong>announcements</strong> to be displayed
-                  in the application of the citizen, and concern <strong>needs</strong> for various items.</p>     
-              </div>
-              <div class="col-sm-4">
+                    in the application of the citizen, and concern <strong>needs</strong> for various items.</p>     
+                </div>
+                <div class="col-sm-4">
                 <h3><a class="a2" href="base.php">Βase management</a><i class="fa fa-clipboard" style="font-size:24px"></i></h3>
                 <p>The administrator is able to <strong>add categories and items</strong> as well as manage the details of all the items to be delivered.</p>
-              </div>
-              <div class="col-sm-4">
+                </div>
+                <div class="col-sm-4">
                 <h3><a class="a2" href="#C">Base status</a><i class="fa fa-folder-open" style="font-size:24px"></i></h3>        
                 <p>The administrator sees a <strong>detailed status</strong> of all <strong>items</strong>, whether they are in the base or loaded on vehicles,filtered based on item categories.
                 </p>     
-              </div>
-              <div class="col-sm-4">
+                </div>
+                <div class="col-sm-4">
                 <h3><a class="a2" href="admin_map.php">Maps</a><i class="fa fa-map" style="font-size:24px"></i></h3>        
                 <p>With different <strong>markers</strong>, the base, the location of every
-                  rescue vehicle, the requests and offers not completed can be seen in the map.</p>     
-              </div>
-              <div class="col-sm-4">
+                    rescue vehicle, the requests and offers not completed can be seen in the map.</p>     
+                </div>
+                <div class="col-sm-4">
                 <h3><a class="a2" href="#D">Service statistics</a><i class="fa fa-pie-chart" style="font-size:24px"></i></h3>        
                 <p>The administrator sees a <strong>graph</strong> depicting the number of
-                  Requests, new Offers, completed Requests and Offers in a time period he wants.</p>     
-              </div>             
+                    Requests, new Offers, completed Requests and Offers in a time period he wants.</p>     
+                </div>             
             </div>
-          </div>
+            </div>
         </div>
-        
     </div>
 
     <div class="Forthsection">
@@ -93,7 +89,7 @@ $result = $conn->query($sql);
                 <button class="add"><a href="sign_up_volunteer.php">+ Volunteer</a></button>
             </div>
             <div id= 'B' class="col5 col-sm-6">
-                <h2>Create announcement for items in sortage</h2>
+                <h2>Create announcement for items in shortage</h2>
                 <button class="add"><a href="announcement.php">+ Announcement</a></button>
             </div>
         </div>

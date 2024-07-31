@@ -314,7 +314,7 @@ $conn->close();
     <title>CareLink Map</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/admin_map.css">
+    <link rel="stylesheet" href="admin_map.css">
     <link rel="icon" type="image/jpg" sizes="96x96" href="images/favicon.png">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -327,23 +327,21 @@ $conn->close();
 
 </head>
 <body>
-    <div class="header">
-        <h2><img src="images/logo.png" alt="Logo" width="200"></h2>
-        <div class="h3-header">
-            <h3>Back to tracking!</h3> 
-          </div>
-    </div>
-
     <div class="navbar">
+        <img src="images/logo1.png" alt="Logo" >
         <ul class="nav">
             <li><a href="admin.php">Home</a></li>
+            <p style="font-size: 18px;"> | </p >
             <li><a class="active" href="admin_map.html">Map</a></li>
+            <p style="font-size: 18px;"> | </p >
             <li><a href="base.php">Database </a></li>
         </ul>
-        <ul class="nav">            
+        <ul class="nav">
             <li><a href="#"><i class="fa fa-sign-out" style="font-size:24px" ></i> Log out</a></li>
+        </li>
         </ul>
     </div>
+
 
     <div class="Firstsection">
     <h2> Map </h2>
