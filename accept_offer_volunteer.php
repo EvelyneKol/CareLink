@@ -7,22 +7,22 @@ if ($conn->connect_error) {
 }
 
 
-$date = date("Y-m-d");
-date_default_timezone_set("Europe/Athens");
-
 // Get data from the AJAX request
 $offerId = $_POST['offerId'];
 $category = $_POST['category'];
 $product = $_POST['product'];
-$quantity = (int)$_POST['quantity']; // Ensure quantity is an integer
+$quantity = (int)$_POST['quantity']; 
 $latitude = $_POST['latitude'];
 $longitude = $_POST['longitude'];
 $username = $_POST['username'];
 
 $vehicle_location = $latitude . ', ' . $longitude;
 
+$date = date("Y-m-d");
+date_default_timezone_set("Europe/Athens");
+
 // Prepare and execute the update query for the offer
-$updaterequest = $conn->prepare("UPDATE offer SET offer_status = 'COMPLETED' AND complete_offer = ? WHERE offer_id = ?");
+$updaterequest = $conn->prepare("UPDATE offer SET offer_status = 'COMPLETED', complete_offer = ? WHERE offer_id = ?");
 $updaterequest->bind_param("si", $date, $offerId);
 $updaterequest->execute();
 $updaterequest->close();
