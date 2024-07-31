@@ -10,25 +10,13 @@ function unloadItems(formId) {
   form.style.display = 'block';
   }
 
-  var map = L.map('map').setView([38.2904558214517, 21.79578903224108], 14);
+  var map = L.map('map');
   L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL', {
     attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
   }).addTo(map);
-
-  var baselatitude = 0 ;
-  var baselongitude = 0;
-
-  fetch('baseLocation.json')
-  .then(response => response.json())
-  .then(data => {
-      baselatitude = parseFloat(data[0].latitude);
-      baselongitude = parseFloat(data[0].longitude);
-  })
-  .catch(error => console.error('Error fetching the taskcount JSON data:', error));
-
   
   var userLocationMarker;
-  var baseMarker = L.marker([baselatitude ,  baselongitude]);
+  var baseMarker = L.marker([38.29019669826742, 21.79566926942475]);
   var popup1 = baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
   var line = L.polyline([], { color: 'black' }).addTo(map); // Initialize an empty polyline
 
@@ -46,7 +34,7 @@ function unloadItems(formId) {
   
       map.setView([userLat, userLng], 13);
   
-      initializeBaseMarker(userLat, userLng);
+      initializeBaseMarker(38.29019669826742, 21.79566926942475);
       initializeUserLocationMarker(userLat, userLng);
   
       updateLine();
@@ -62,7 +50,7 @@ function unloadItems(formId) {
     console.log('Geolocation is not supported by your browser.');
   }
   
-  function initializeBaseMarker() {
+  function initializeBaseMarker(Lat, Lng) {
     var baseIcon = L.icon({
       iconUrl: 'images/base.png',
       iconSize: [41, 41],
@@ -70,10 +58,10 @@ function unloadItems(formId) {
       popupAnchor: [1, -34]
     });
   
-    baseMarker = L.marker([baselatitude ,  baselongitude]).addTo(map).setIcon(baseIcon);
+    baseMarker = L.marker([Lat, Lng]).addTo(map).setIcon(baseIcon);
     baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
 
-    var circle = L.circle([baselatitude ,  baselongitude], {
+    var circle = L.circle([Lat, Lng], {
       color: 'blue',
       fillColor: 'blue',
       fillOpacity: 0.5,
@@ -106,8 +94,8 @@ function unloadItems(formId) {
       updateLine(); // Add this line to update offer lines
       updateRequestLines();
       updateOfferLines();
-      checkDistancesAndEnableButtons();
-      
+      checkDistancesforRequests();
+      checkDistancesforOffers();
     });
  
   }
@@ -385,23 +373,23 @@ function my_requests(data) {
 
 }
 
-function checkDistancesAndEnableButtons() {
+function checkDistancesforRequests() {
   if (!userLocationMarker) return; // Check if userLocationMarker exists
 
   RequestMarkers.forEach(marker => {
     var distance = calculateDistance(marker.getLatLng(), userLocationMarker.getLatLng());
     // Check if distance is less than 500 meters
-    if (distance < 500) {
+    if (distance < 50) {
       // Find the associated button and enable it
       const id_request = marker.options.id_request; // Ensure id_request is stored in marker options
-      document.querySelectorAll(`button.DeliverReq`).forEach(button => {
+      document.querySelectorAll('button.DeliverReq').forEach(button => {
         button.disabled = false;
 
       });
     } else {
       // Disable the button if the distance is greater than 500 meters
       const id_request = marker.options.id_request; // Ensure id_request is stored in marker options
-      document.querySelectorAll(`button.DeliverReq`).forEach(button => {
+      document.querySelectorAll('button.DeliverReq').forEach(button => {
         button.disabled = true;
       });
     }
@@ -426,6 +414,7 @@ function updateRequestLines() {
   // Draw new lines connecting the markers to the user location marker
   drawRequestLines();
 }
+
 
 
 //_______________________________my_offers__________________________________
@@ -493,6 +482,29 @@ function my_offers(data) {
   updateClusterGroup();
 }
 
+function checkDistancesforOffers() {
+  if (!userLocationMarker) return; 
+
+  OfferMarkers.forEach(marker => {
+    var distance = calculateDistance(marker.getLatLng(), userLocationMarker.getLatLng());
+    // Check if distance is less than 500 meters
+    if (distance < 50) {
+      // Find the associated button and enable it
+      const id_request = marker.options.id_request; // Ensure id_request is stored in marker options
+      document.querySelectorAll('button.AcceptOffer').forEach(button => {
+        button.disabled = false;
+
+      });
+    } else {
+      // Disable the button if the distance is greater than 500 meters
+      const id_request = marker.options.id_request; // Ensure id_request is stored in marker options
+      document.querySelectorAll('button.AcceptOffer').forEach(button => {
+        button.disabled = true;
+      });
+    }
+  });
+}
+
 
 function drawOfferLines() {
   if (!userLocationMarker || !activeLayers.layer4) return; // Check if userLocationMarker exists and layer4 is active
@@ -513,6 +525,7 @@ function updateOfferLines() {
   
   drawOfferLines();
 }
+
 
 
 //_________________Function to toggle layers_________________________________
@@ -543,8 +556,10 @@ function toggleLayer(layer) {
     // Initialize markers for the layer if not already done
     if (layer === 'layer1') {
       Waiting_requests_markers(volWaitingRequests);
+
     } else if (layer === 'layer2') {
       offers_markers(volWaitingOffers);
+
     } else if (layer === 'layer3') { // Always call my_requests when enabling layer3
       my_requests(myRequests);
       drawRequestLines();
@@ -552,6 +567,7 @@ function toggleLayer(layer) {
     } else if (layer === 'layer4') { // Always call my_offers when enabling layer4
       my_offers(myOffers);
       drawOfferLines();
+
     }
   }
   // Update the marker cluster group

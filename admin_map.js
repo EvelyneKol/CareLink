@@ -1,39 +1,24 @@
-var baselatitude = 0 ;
-var baselongitude = 0;
-
-fetch('baseLocation.json')
-.then(response => response.json())
-.then(data => {
-    baselatitude = parseFloat(data[0].latitude);
-    baselongitude = parseFloat(data[0].longitude);
-})
-.catch(error => console.error('Error fetching the taskcount JSON data:', error));
-
-
-var map = L.map('map').setView([baselatitude, baselongitude], 14);
+var map = L.map('map').setView([38.29019669826742, 21.79566926942475], 14);
 L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL', {
   attribution:
     '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
 }).addTo(map);
 
 
-
-var baseMarker = L.marker([baselatitude, baselongitude], { draggable: true });
+var baseMarker = L.marker([38.29019669826742, 21.79566926942475], { draggable: true });
 var popup1 = baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
 
  if ('geolocation' in navigator) {
   navigator.geolocation.getCurrentPosition(function (position) {
-  
-    map.setView([baselatitude, baselongitude], 13);
 
-    initializeBaseMarker(baselatitude, baselongitude);
+    initializeBaseMarker(38.29019669826742, 21.79566926942475);
 
   });
 } else {
   console.log('Geolocation is not supported by your browser.');
 } 
 
-function initializeBaseMarker(userLat, userLng) {
+function initializeBaseMarker(Lat, Lng) {
   var baseIcon = L.icon({
     iconUrl: 'images/base.png',
     iconSize: [41, 41],
@@ -41,7 +26,7 @@ function initializeBaseMarker(userLat, userLng) {
     popupAnchor: [1, -34]
   });
 
-  baseMarker = L.marker([baselatitude, baselongitude], { draggable: true }).addTo(map).setIcon(baseIcon);
+  baseMarker = L.marker([38.29019669826742, 21.79566926942475], { draggable: true }).addTo(map).setIcon(baseIcon);
   baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
 
   baseMarker.on('dragend', function (event) {
@@ -56,7 +41,7 @@ function initializeBaseMarker(userLat, userLng) {
 // Define global variables for layers
 var vehicles = [];
 var Offers = [];
-var WaitingRequests = [];
+var WaitingRequests = [];s
 var OnWayRequests = [];
 
 
