@@ -569,8 +569,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Knipex",
+                    "detail_value": "medium"
                 }
             ]
         },
@@ -581,8 +581,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Knipex",
+                    "detail_value": "230mm"
                 }
             ]
         },
@@ -593,8 +593,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Stanley",
+                    "detail_value": "100cm"
                 }
             ]
         },
@@ -605,8 +605,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Stanley",
+                    "detail_value": "Big"
                 }
             ]
         },
@@ -617,8 +617,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Stanley",
+                    "detail_value": "Waterproof"
                 }
             ]
         },
@@ -629,8 +629,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Elastic",
+                    "detail_value": "Black"
                 }
             ]
         },
@@ -641,8 +641,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "UOMO",
+                    "detail_value": "Medium"
                 }
             ]
         },
@@ -653,8 +653,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Nike",
+                    "detail_value": "No 43"
                 }
             ]
         },
@@ -665,8 +665,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Pilot Jacket",
+                    "detail_value": "Large"
                 }
             ]
         },
@@ -677,8 +677,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": " Yellow Coat",
+                    "detail_value": "Medium"
                 }
             ]
         },
@@ -689,8 +689,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Leather Gloves",
+                    "detail_value": "medium"
                 }
             ]
         },
@@ -701,8 +701,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Blue pants",
+                    "detail_value": "No 33"
                 }
             ]
         },
@@ -713,8 +713,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Waterproof Boots",
+                    "detail_value": "No 42"
                 }
             ]
         },
@@ -1189,7 +1189,7 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "loud Whistle",
                     "detail_value": ""
                 }
             ]
@@ -1309,7 +1309,7 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "2,5L",
                     "detail_value": ""
                 }
             ]
@@ -1337,8 +1337,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Thick",
+                    "detail_value": "black"
                 }
             ]
         },
@@ -1485,8 +1485,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "pieces",
-                    "detail_value": "1"
+                    "detail_name": "Waterproof",
+                    "detail_value": ""
                 }
             ]
         },
@@ -1593,8 +1593,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "6 pack",
-                    "detail_value": ""
+                    "detail_name": "AA",
+                    "detail_value": "6 pack"
                 }
             ]
         },
@@ -1617,8 +1617,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "1",
-                    "detail_value": ""
+                    "detail_name": "Inox",
+                    "detail_value": "30cm"
                 }
             ]
         },
@@ -2001,7 +2001,7 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "Tablets",
                     "detail_value": "5"
                 }
             ]
@@ -2013,8 +2013,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": "10"
+                    "detail_name": "Tablets",
+                    "detail_value": "8"
                 }
             ]
         },
@@ -2025,8 +2025,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": "5"
+                    "detail_name": "Tablets",
+                    "detail_value": "3"
                 }
             ]
         },
@@ -2037,7 +2037,7 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "Tablets",
                     "detail_value": "5"
                 }
             ]
@@ -2049,8 +2049,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": "5"
+                    "detail_name": "Tablets",
+                    "detail_value": "2"
                 }
             ]
         },
@@ -2061,7 +2061,7 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "Pack",
                     "detail_value": "2"
                 }
             ]
@@ -2073,7 +2073,7 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "Pack",
                     "detail_value": "3"
                 }
             ]
@@ -2085,7 +2085,7 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "Pack",
                     "detail_value": "20"
                 }
             ]
@@ -2097,8 +2097,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": "6"
+                    "detail_name": "Pack",
+                    "detail_value": "10"
                 }
             ]
         },
@@ -2109,7 +2109,7 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "Pack",
                     "detail_value": "10"
                 }
             ]
@@ -2121,7 +2121,7 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "10",
+                    "detail_name": "Syrup",
                     "detail_value": "600ml"
                 }
             ]
@@ -2133,7 +2133,7 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "67",
+                    "detail_name": "Tablets",
                     "detail_value": "1000mg"
                 }
             ]
@@ -2217,8 +2217,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "16",
-                    "detail_value": "Mini"
+                    "detail_name": "Mini",
+                    "detail_value": "10ml"
                 }
             ]
         },
@@ -2525,8 +2525,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Mens Trousers",
+                    "detail_value": "No 34"
                 }
             ]
         },
@@ -2537,8 +2537,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Womens Shoes",
+                    "detail_value": "No 39"
                 }
             ]
         },
@@ -2549,8 +2549,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Leather Hoodie",
+                    "detail_value": "Large"
                 }
             ]
         },
@@ -2621,8 +2621,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "woolen scarf",
+                    "detail_value": "Large"
                 }
             ]
         },
@@ -2633,8 +2633,8 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
-                    "detail_value": ""
+                    "detail_name": "Kids gloves",
+                    "detail_value": "medium"
                 }
             ]
         },
@@ -2985,7 +2985,7 @@
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "Waterproof",
                     "detail_value": ""
                 }
             ]
@@ -3004,12 +3004,12 @@
         },
         {
             "id": "254",
-            "name": "Repair Tools",
+            "name": "Βlowtorch",
             "category": "54",
             "quantity": "50",
             "details": [
                 {
-                    "detail_name": "",
+                    "detail_name": "Waterproof",
                     "detail_value": ""
                 }
             ]
