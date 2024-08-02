@@ -170,10 +170,7 @@ $conn->close();
         });
     
 
-    
-    
-
-        function deleteRequest(requestId) {
+        function deleteOffers(requestId) {
     // You can use AJAX to send a request to a PHP file that will delete the row from the database
     // Example using fetch API
         fetch('delete.php?id=' + requestId, {

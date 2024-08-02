@@ -172,49 +172,41 @@ $conn->close();
   </div>
 
   <script>
-      function addOffer(shortageId, category, product, quantity) {
-            //var username = document.getElementById("txtUsername").value;  // Get the username from PHP and escape it
+    function addOffer(shortageId, category, product, quantity) {
+    // Get the username from the hidden h2 element
+    var usernameElement = document.getElementById("txtUsername");
+    var username = usernameElement ? usernameElement.textContent : null;
 
-            // JavaScript to get the username from the h2 element
-            var username = document.getElementById("txtUsername");
-           
-            var url = "add_offer_civilian.php";
+    var url = "add_offer_civilian.php";
+    var formData = new FormData();
+    formData.append("shortageId", shortageId);
+    formData.append("category", category);
+    formData.append("product", product);
+    formData.append("quantity", quantity);
+    formData.append("username", username);
 
-            // Create a FormData object and append the data you want to send
-            var formData = new FormData();
-            formData.append("shortageId", shortageId);
-            formData.append("category", category);
-            formData.append("product", product);
-            formData.append("quantity", quantity);
-            formData.append("username", username);
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
 
-            // Create the XMLHttpRequest object
-            var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            console.log("Success:", xhr.responseText);
+            location.reload();
 
-            // Setup the AJAX request
-            xhr.open("POST", url, true);
+        } else {
+            console.error("Error:", xhr.statusText);
+        }
+    };
 
-            // Set up the onload and onerror functions
-            xhr.onload = function () {
-                if (xhr.status == 200) {
-                    // Handle the success response
-                    console.log(xhr.responseText);
-                    location.reload();
-                
-                } else {
-                    // Handle the error response
-                    console.error("Error: " + xhr.statusText);
-                }
-            };
+    xhr.onerror = function () {
+        console.error("Network error");
+    };
 
-            xhr.onerror = function () {
-                // Handle the network error
-                console.error("Network error");
-            };
+    xhr.send(formData);
+    console.log("AJAX request sent");
+}
 
-            // Send the AJAX request with the form data
-            xhr.send(formData);
-      }
+
 
   </script>
 </body>
