@@ -28,7 +28,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Username doesn't exist, proceed with insertion
         $insert_stmt = $conn->prepare("INSERT INTO volunteer (vol_first_name, vol_last_name, vol_username, vol_password) VALUES (?, ?, ?, ?)");
         $insert_stmt->bind_param("ssss", $first_name, $last_name, $username, $password);
-        echo "<script>alert('Registered successfuly!'); window.location.href = 'sign_up_volunteer.php';</script>";
 
         if ($insert_stmt->execute()) {
             // Set a session variable with the success message
@@ -142,7 +141,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         return false;
       } else {
         // Display the alert
-        echo("Account created!");
+        alert("Account created!");
         return true;
         // Redirect to another page after alert
         window.location.href = "admin.php";
