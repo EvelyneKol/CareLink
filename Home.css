@@ -92,6 +92,7 @@ li a:focus {
 .donation-text .highlight {
     color: red;
     font-weight: bold;
+    font-size: 39px;
 }
 
 .donation-image a{
