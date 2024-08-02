@@ -580,12 +580,12 @@ $conn->close();
             <div class="container mt-5">
                 <div class="row">
                     <div class="col-sm-4">
-                        <h3><a class="a2" href="#Vehicle">My Vehicle</a><i class="fa fas fa-truck" style="font-size:23px"> </i></h3>
+                        <h3><a class="a2" href="#myDetails">My Vehicle</a><i class="fa fas fa-truck" style="font-size:23px"> </i></h3>
                         <p>Volunteers can <strong>tracking</strong> their <strong>vehicle</strong> and see what they tranfer at any
                         time.</p>
                     </div>
                     <div class="col-sm-4">
-                        <h3><a class="a2" href="#Map">Maps </a><i class="fa fa-map" style="font-size:24px"></i></h3>
+                        <h3><a class="a2" href="#Map">Map </a><i class="fa fa-map" style="font-size:24px"></i></h3>
                         <p>A map with all the tasks available,
                         the <strong>tasks</strong> you have taken with their <strong>route</strong> and the
                         location of the <strong>store</strong> in available for you.</p>
@@ -762,7 +762,7 @@ $conn->close();
             
         </div>
 
-        <div class="thirdsection">
+        <div class="thirdsection" id="Map">
             <h2 class="with-hr" id="B" style="text-align: center;">Map</h2>
             <hr>
             <form class="filters">
@@ -784,7 +784,7 @@ $conn->close();
 
 
         <div class="forthection">
-          <h2 class="with-hr" id="C" style="text-align: center;">My tasks</h2>
+          <h2 class="with-hr" id="Task" style="text-align: center;">My tasks</h2>
           <hr>
           <div class="row">
                 <div class="col-sm-6">

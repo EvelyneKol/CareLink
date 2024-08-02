@@ -91,10 +91,11 @@ li a:focus {
 
 
 
-.Secondsection{
+.Secondsection {
     text-align: center;
     align-items: center;
     padding-bottom: 30px;
+    margin: 20px;
 }
 
 table,
@@ -102,12 +103,13 @@ th,
 td {
     border: 3px solid #8a8a8a;
     font-size: 20px;
-    margin: auto;
     justify-content: center;
 }
-table{
-    margin: 15px;
-    width: 90%;
+
+table {
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .form {
@@ -117,8 +119,8 @@ table{
     align-items: center;
     display: flex;
     justify-content: center;
-    align-items: center;
 }
+
 
 /**/
 .Forthsection{

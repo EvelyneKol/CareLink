@@ -170,6 +170,7 @@ li a:focus {
 .sim3 {
     background-color: #db3232;
     border-radius: 50%;
+    color: #000000;
 }
 
 .col1 h2,
@@ -186,8 +187,8 @@ li a:focus {
 
 }
 
-/* Theardsection */
-.Theardsection {
+/* Thirdsection */
+.Thirdsection {
     margin-top: 50px;
 }
 
@@ -196,6 +197,7 @@ li a:focus {
 .card3 {
     background-color: rgba(221, 221, 221, 0.363);
     text-align: justify;
+    height: 220px;
 }
 
 .card1 h2,
@@ -209,17 +211,13 @@ li a:focus {
 }
 
 .Icon1,
-.Icon3 {
+.Icon3,
+.Icon2 {
     float: left;
     display: block;
     margin-right: 1rem;
+    margin-top: -25px;
 
-}
-
-.Icon2 {
-    float: right;
-    display: block;
-    margin-left: 1rem;
 }
 
 .card1 p,
