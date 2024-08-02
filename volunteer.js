@@ -72,7 +72,7 @@ function unloadItems(formId) {
   
   function initializeUserLocationMarker(userLat, userLng) {
     var myTruck = L.icon({
-      iconUrl: 'images/truck.png',
+      iconUrl: 'truck.png',
       iconSize: [41, 41],
       iconAnchor: [20, 41],
       popupAnchor: [1, -34]

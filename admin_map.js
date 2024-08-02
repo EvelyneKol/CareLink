@@ -41,7 +41,7 @@ function initializeBaseMarker(Lat, Lng) {
 // Define global variables for layers
 var vehicles = [];
 var Offers = [];
-var WaitingRequests = [];s
+var WaitingRequests = [];
 var OnWayRequests = [];
 
 
@@ -112,7 +112,7 @@ function Waiting_vehicles_markers(data) {
     // Create a new marker with a custom icon
     const marker = L.marker(location, {
       icon: L.icon({
-        iconUrl: 'images/truck.png',
+        iconUrl: 'truck.png',
         iconSize: [32, 32],
         iconAnchor: [16, 32],
         popupAnchor: [0, -32]
@@ -152,7 +152,7 @@ function on_the_way_vehicles_markers(data) {
     // Create a new marker with a custom icon
     const marker = L.marker(location, {
       icon: L.icon({
-        iconUrl: 'images/truck.png',
+        iconUrl: 'truck.png',
         iconSize: [32, 32],
         iconAnchor: [16, 32],
         popupAnchor: [0, -32]
