@@ -68,7 +68,7 @@ $result = $conn->query($sql);
                 </p>     
                 </div>
                 <div class="col-sm-4">
-                <h3><a class="a2" href="admin_map.php">Maps</a><i class="fa fa-map" style="font-size:24px"></i></h3>        
+                <h3><a class="a2" href="admin_map.php">Map</a><i class="fa fa-map" style="font-size:24px"></i></h3>        
                 <p>With different <strong>markers</strong>, the base, the location of every
                     rescue vehicle, the requests and offers not completed can be seen in the map.</p>     
                 </div>

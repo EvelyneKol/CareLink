@@ -12,11 +12,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $Phone = (int)$_POST['Phone'];
     $Comments = $_POST['Comments'];
 
-    $stmt = $conn->prepare("INSERT INTO info (info_fname , info_lname , info_mail , info_phone, comments) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO contact_info (info_fname , info_lname , info_mail , info_phone, comments) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("sssis", $firstname, $Lastname, $Email, $Phone, $Comments); // Fixed order of parameters
     if ($stmt->execute()) {
       // Redirect to a different page after successful form submission
-      header("Location: Contact_info.php");
+      header('Location: Contact_info.php');
       exit(); // Make sure to exit to prevent further execution of the script
     } else {
       echo "Error: " . $stmt->error;
@@ -172,14 +172,6 @@ $conn->close();
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <script>
-    function sendEmail() {
-        const recipient = 'email@example.com'; // Replace with the recipient's email address
-        const subject = 'Subject of the email'; // Replace with your desired subject
-        const body = 'Content of the email'; // Replace with your desired email content
-        const mailtoLink = `mailto:${recipient}?subject=${subject}&body=${body}`;
-
-        window.location.href = mailtoLink;
-    }
 
     // Initialize the map
     var map = L.map('map').setView([38.247368, 21.736798], 16); // Set your preferred coordinates and zoom level

@@ -28,6 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Username doesn't exist, proceed with insertion
         $insert_stmt = $conn->prepare("INSERT INTO volunteer (vol_first_name, vol_last_name, vol_username, vol_password) VALUES (?, ?, ?, ?)");
         $insert_stmt->bind_param("ssss", $first_name, $last_name, $username, $password);
+        echo "<script>alert('Registered successfuly!'); window.location.href = 'sign_up_volunteer.php';</script>";
 
         if ($insert_stmt->execute()) {
             // Set a session variable with the success message
@@ -53,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <meta charset="UTF-8">
   <link rel="icon" type="image/jpg" sizes="96x96" href="favicon-96x96.png">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="css/registration.css">
+  <link rel="stylesheet" href="form.css">
   <title>Volunteer Registration</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
@@ -131,11 +132,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       var name = document.getElementById("name").value;
       var lastname = document.getElementById("lastname").value;
       var username = document.getElementById("username").value;
-      var address = document.getElementById("address").value;
-      var phone = document.getElementById("phone").value;
       var password = document.getElementById("password").value;
 
-      if (name === "" || lastname === "" || username === "" || address === "" || phone === "" || password === "") {
+      if (name === "" || lastname === "" || username === "" || password === "") {
         alert("Please fill in all fields.");
         return false;
       } else if (password.length < 8 || password.length > 15 || !/[a-z]/.test(password)) {
@@ -143,7 +142,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         return false;
       } else {
         // Display the alert
-        alert("Account created!");
+        echo("Account created!");
+        return true;
         // Redirect to another page after alert
         window.location.href = "admin.php";
         // Return false to prevent form submission
