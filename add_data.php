@@ -4,7 +4,7 @@ session_start();
 $servername = "localhost";
 $username = "root";
 $password = "karagiannis";
-$dbname = "test";
+$dbname = "carelink";
 
 // Δημιουργία σύνδεσης
 $conn = new mysqli($servername, $username, $password, $dbname);

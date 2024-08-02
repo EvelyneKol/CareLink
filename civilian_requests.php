@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if ($stmt->execute()) {
       $success_message = "Request was made successfully";
       // Redirect to a different page after successful form submission
-      header("Location: Civilian.php");
+      header("Location: civilian_requests.php");
       exit(); // Make sure to exit to prevent further execution of the script
   } else {
       // Handle the error
@@ -58,7 +58,7 @@ $shortageResult = $conn->query($shortageQuery);
 
 
 // Close the database connection outside the if block
-$conn->close();
+
 ?>
 
 <!DOCTYPE html>
@@ -134,6 +134,7 @@ $conn->close();
                         } else {
                             echo '<option value="">No categories available</option>';
                         }
+                        $conn->close();
                         ?>
                     </select>
                     
@@ -217,9 +218,7 @@ $conn->close();
                 });
             });
         });
-    </script>
-
-  <script>
+    
         function showRequests(username) {
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function () {
@@ -241,24 +240,24 @@ $conn->close();
     
 
         function deleteRequest(requestId) {
-          // You can use AJAX to send a request to a PHP file that will delete the row from the database
           // Example using fetch API
-              fetch('delete.php?id=' + requestId, {
-                    method: 'GET',
-              })
-              .then(data => {
-                  // Handle the response if needed
-                  console.log(data);
-                  // Optionally, you can remove the HTML element for the deleted request
-                  var cardElement = document.getElementById('card_' + requestId);
-                  if (cardElement) {
-                      cardElement.remove();
-                  }
-              })
-              .catch(error => {
-                  console.error('Error:', error);
-              });
-        }
+          fetch('delete.php?id=' + requestId, {
+              method: 'GET',
+          })
+          .then(response => {
+              if (response.ok) {
+                  // Reload the page if the request was successful
+                  location.reload();
+              } else {
+                  // Handle non-200 responses
+                  console.error('Error:', response.statusText);
+              }
+          })
+          .catch(error => {
+              console.error('Error:', error);
+          });
+      }
+
   </script>
     
 </body>

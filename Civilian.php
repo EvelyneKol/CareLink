@@ -129,7 +129,6 @@ $conn->close();
                 echo '<p>Product Name: ' . htmlspecialchars($row["shortage_product_name"]) . '</p>';
                 echo '<p>Quantity: ' . htmlspecialchars($row["shortage_quantity"]) . '</p>';
                 echo '<p>Date & Time: ' . htmlspecialchars($row["shortage_datetime"]) . '</p>';  
-                //echo '<button class="DeleteReq" onclick="delete_request(' . htmlspecialchars($row["id_shortage"]) . ')">Delete</button>';            
                 echo '<button class="delete"  onclick="addOffer(\'' . htmlspecialchars($row["id_shortage"]) . '\', \'' . htmlspecialchars($row["shortage_category"]) . '\', \'' . htmlspecialchars($row["shortage_product_name"]) . '\', \'' . htmlspecialchars($row["shortage_quantity"]) . '\')">Make an Offer</button>';
                 echo '</li>';
             }
@@ -177,10 +176,8 @@ $conn->close();
             //var username = document.getElementById("txtUsername").value;  // Get the username from PHP and escape it
 
             // JavaScript to get the username from the h2 element
-            var usernameElement = document.getElementById("txtUsername");
-            var username = usernameElement.textContent.trim();  // Use textContent to get the text, and trim() to remove any extra spaces
-
-
+            var username = document.getElementById("txtUsername");
+           
             var url = "add_offer_civilian.php";
 
             // Create a FormData object and append the data you want to send
@@ -220,9 +217,6 @@ $conn->close();
       }
 
   </script>
-
-  
-    
 </body>
 
 </html>

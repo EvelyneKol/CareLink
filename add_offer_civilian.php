@@ -24,7 +24,7 @@ $status = "WAITING";
 
 // Check if the username matches the request_civilian
 // Prepare and execute the insert query
-$insertQuery = $conn->prepare("INSERT INTO offer VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)");
+$insertQuery = $conn->prepare("INSERT INTO offer VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, NULL)");
 $insertQuery->bind_param("sssisss", $username, $offerCategory, $offerProduct, $offerQuantity, $date, $time, $status);
 $insertQuery->execute();
 
