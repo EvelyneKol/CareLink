@@ -523,7 +523,8 @@ $conn->close();
 <html lang="el">
 <head>
   <meta charset="utf-8">
-  <title>CareLink</title>
+  <title>Volunteer</title>
+  <link rel="stylesheet" href="volunteer.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/jpg" sizes="96x96" href="images/favicon.png">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -539,8 +540,6 @@ $conn->close();
   <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="volunteer.css">
-
   
   <style>
         .thirdsection .Acceptbut{
@@ -567,12 +566,14 @@ $conn->close();
 
 <body>
     <div class="header container-fluid">
-        <p><img src="images/logo.png" alt="Logo" width="200"></p>
+        <p><img src="images/logo1.png" alt="Logo" width="200"></p>
         <a href="home.html" class="a1"><i class="fa fa-sign-out" style="font-size:24px"></i>Log out</a>
         <div class="h3-header">
         <h3>Get back to action!</h3>
         </div>
     </div>
+
+    <hr>
 
     <div class="Main container-fluid">
         <div class="Firstsection">
