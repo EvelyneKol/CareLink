@@ -99,21 +99,21 @@ $result = $conn->query($sql);
       <div id='C'>
           <hr>
           <h2>Base Status</h2>
-          <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-              <select name="category">
-              <option value="">Select a category</option>
-                  <?php
-                  if ($result->num_rows > 0) {
-                      while ($row = $result->fetch_assoc()) {
-                          echo "<option value='" . $row["category_name"] . "'>" . $row["category_name"] . "</option>";
-                      }
-                  } else {
-                      echo "<option value=''>No categories found</option>";
-                  }
-                  ?>
-              </select>
-              <input type="submit" name="submit" value="Submit">
-          </form>
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+                <select name="category">
+                <option value="">Select a category</option>
+                    <?php
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<option value='" . $row["category_name"] . "'>" . $row["category_name"] . "</option>";
+                        }
+                    } else {
+                        echo "<option value=''>No categories found</option>";
+                    }
+                    ?>
+                </select>
+                <input type="submit" name="submit" value="Submit">
+            </form>
 
           <?php
           // Process form submission
