@@ -337,7 +337,7 @@ $conn->close();
             <li><a href="base.php">Database </a></li>
         </ul>
         <ul class="nav">
-            <li><a href="#"><i class="fa fa-sign-out" style="font-size:24px" ></i> Log out</a></li>
+            <li><a href="logout.php"><i class="fa fa-sign-out" style="font-size:24px" ></i> Log out</a></li>
         </li>
         </ul>
     </div>
@@ -390,7 +390,7 @@ $conn->close();
             <h2>Contact info</h2>
             <br>
             <ul>
-              <li>Email: Karagiannis.giorg@gmail.com</li>
+              <li>Email: carelink@gmail.com</li>
               <br>
               <li>Phone: +30 123456789</li>
             </ul>
