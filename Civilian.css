@@ -106,7 +106,6 @@ li a:focus {
 /*First section*/
 .Firstsection {
   margin-top: 10px 0px 10px 0px;
-  border-radius: 20px 60px 20px;
   background-color: rgba(221, 221, 221, 0.363);;
   text-align: justify;
   font-size: 13px;
@@ -138,7 +137,7 @@ li a:focus {
 
 /*Second section*/
 .Secondsection {
-  margin-top: 20px;
+  margin: 20px;
   float: center;
 }
 
@@ -196,8 +195,8 @@ li a:focus {
 }
 
 .forthsection h3{
-margin: 10px 0px 5px 0px;
-text-align: center;
+  margin: 10px 0px 5px 0px;
+  text-align: center;
 }
 
 

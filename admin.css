@@ -59,10 +59,9 @@ li a:focus {
 
 /*First Section*/
 .Firstsection{
-    margin-top: 10px 0px 10px 0px;
+    margin: 20px ;
     background-color: rgba(221, 221, 221, 0.363);
     text-align: justify;
-    border-radius: 15px 35px 30px;
 }
 
 .Firstsection h2{

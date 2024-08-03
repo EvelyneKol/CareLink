@@ -82,14 +82,17 @@ $result = $conn->query($sql);
 
 </head>
 <body>
+
     <div class="header">
-        <h2><img src="images/logo.png" alt="Logo" width="200"></h2>
+        <h2><img src="images/logo1.png" alt="Logo"></h2>
+        <hr>
         <p><strong>Inform people for any shortages</strong><br>Choose the items that are in low stock and announcements will appear to every member of the community so that everyone can donate!</p>
     </div>
 
     <div class="home">
         <i><a href="admin.php"><i class="fa fa-home" style="font-size:24px"></i>Home</a></i>
     </div>
+
 
     <div class="form">
         <div class="col1 col-sm-7">

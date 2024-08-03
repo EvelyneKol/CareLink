@@ -87,10 +87,9 @@ $shortageResult = $conn->query($shortageQuery);
             <i class="fa fa-heart" style="font-size:24px"></i> Offers
             </a>
           </li>
+          <li style="margin-left:55px"><a href="logout.php"><i class="fa fa-sign-out" style="font-size:24px"></i> Log out</a></li>
       </ul>
-      <ul class="nav">
-          <li><a href="logout.php"><i class="fa fa-sign-out" style="font-size:24px"></i> Log out</a></li>
-      </ul>
+      
   </div>
 
     <div class="Secondsection">
@@ -226,7 +225,7 @@ $shortageResult = $conn->query($shortageQuery);
                     document.getElementById("userRequests").innerHTML = this.responseText;
                 }
             };
-            xmlhttp.open("GET", "load_requests.php?q=" + username, true);
+            xmlhttp.open("GET", "load_civilian_requests.php?q=" + username, true);
             xmlhttp.send();
         }
 

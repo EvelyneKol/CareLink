@@ -96,12 +96,12 @@ $result = $conn->query($sql);
     </div>
 
     <div class="Secondsection">
-      <div id='C'>
-          <hr>
-          <h2>Base Status</h2>
-            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-                <select name="category">
-                <option value="">Select a category</option>
+        <div id='C'>
+            <hr>
+            <h2>Base Status</h2>
+            <form id="categoryForm">
+                <select name="category" id="categorySelect">
+                    <option value="">Select a category</option>
                     <?php
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
@@ -114,43 +114,8 @@ $result = $conn->query($sql);
                 </select>
                 <input type="submit" name="submit" value="Submit">
             </form>
-
-          <?php
-          // Process form submission
-          if ($_SERVER["REQUEST_METHOD"] == "POST") {
-              $selected_category = $_POST["category"];
-              if (!empty($selected_category)) {
-                  // Fetch data based on selected category
-                  $sql = "SELECT * FROM categories WHERE category_name = ?";
-                  $stmt = $conn->prepare($sql);
-                  $stmt->bind_param("s", $selected_category);
-                  $stmt->execute();
-                  $result = $stmt->get_result();
-
-                  if ($result->num_rows > 0) {
-                      echo "<h2>Product status for $selected_category Category</h2>";
-                      echo "<table border='1'>";
-                      echo "<tr><th>Product</th><th>Quantity on Stock</th><th>Quantity on Truck</th></tr>";
-                      while ($row = $result->fetch_assoc()) {
-                          echo "<tr>";
-                          echo "<td>" . $row["products"] . "</td>";
-                          echo "<td>" . $row["quantity_on_stock"] . "</td>";
-                          echo "<td>" . $row["quantity_on_truck"] . "</td>";
-                          echo "</tr>";
-                      }
-                      echo "</table>";
-                  } else {
-                      echo "No data available for selected category.";
-                  }
-                  $stmt->close();
-              } else {
-                  echo "Please select a category.";
-              }
-          }
-          ?>
-
-          <?php?>
-      </div>
+            <div id="result"></div>
+        </div>
     </div>
 
     <div id="D" class="Fifthsection">
@@ -202,6 +167,26 @@ $result = $conn->query($sql);
 
 
 <script>
+
+        $(document).ready(function() {
+            $("#categoryForm").on("submit", function(e) {
+                e.preventDefault();
+                var selectedCategory = $("#categorySelect").val();
+                if (selectedCategory) {
+                    $.ajax({
+                        type: "POST",
+                        url: "load_json_data.php",
+                        data: { category: selectedCategory },
+                        success: function(response) {
+                            $("#result").html(response);
+                        }
+                    });
+                } else {
+                    $("#result").html("Please select a category.");
+                }
+            });
+        });
+
         $(document).ready(function() {
             var ctx = document.getElementById('statisticsChart').getContext('2d');
             var statisticsChart = new Chart(ctx, {

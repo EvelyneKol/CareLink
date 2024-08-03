@@ -2,14 +2,20 @@
 <html>
 <head>
 <style>
-*{  font-family: Arial, Helvetica, sans-serif;}
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Work Sans', sans-serif;
+}
 
  /*Second section*/
-.Secondsection {
+ .Secondsection {
   margin-top: 20px;
+  font-family: 'Work Sans', sans-serif;
   float: center;
 }
 
+.Secondsection h3,
 .Secondsection p {
   margin: 10px 0px 5px 0px;
   text-align: center;
@@ -49,8 +55,6 @@
   justify-content: space-between; /* Distribute space evenly */
 }
 
-
-
 .reminder-notes ul li h2 {
   font-size: 1.2em; /* Adjust title font size */
   margin: 0;
@@ -83,6 +87,7 @@
   background-color: rgb(0, 146, 195);
   color: rgb(255, 255, 255);
 }
+
 
 
 </style>

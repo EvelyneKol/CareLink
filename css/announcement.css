@@ -11,16 +11,26 @@ body {
 }
   
 .header {
-    background-color: #dddcd9cc;
+    background-color: #ffffffcc;
     text-align: left;
     font-size: 40px;
     color: rgb(15, 1, 1);
     height: 200px;
 }
 
+.header img {
+    height: auto;
+    width : 220px;
+    margin-top: 30px;
+    margin-left: 20px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+    align-items: center;
+}
+
 .header p{
     text-align: right;
-    margin-top: -100px;
+    margin-top: -70px;
     font-size: 19px;
     display: hidden;
     margin-right: 15px;
@@ -29,7 +39,7 @@ body {
 .home{
     align-items: right;
     text-align: right;
-    margin-top: -180px;
+    margin-top: -140px;
     margin-right: 20px;
 }
 
@@ -42,6 +52,7 @@ body {
     font-style: normal; /* Add this line */
 }
  
+ 
 /* second sectin */
 .form {
     text-align: center;
@@ -53,9 +64,8 @@ body {
     align-items: center;
 }
 
-.form h3 {
-    margin-top: 20px;
-    font-size: 1.2em; /* Adjust font size */
+.form h4 {
+    margin-top: -60px;
 }
 
 .submit,

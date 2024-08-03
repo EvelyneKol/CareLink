@@ -2,7 +2,11 @@
 <html>
 <head>
 <style>
-*{  font-family: Arial, Helvetica, sans-serif;}
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Work Sans', sans-serif;
+}
 
  /*Second section*/
 .Secondsection {
@@ -51,10 +55,6 @@
   justify-content: space-between; /* Distribute space evenly */
 }
 
-.reminder-notes ul li a {
-  text-decoration: none; /* Remove underline from links */
-  color: inherit; /* Inherit text color */
-}
 
 .reminder-notes ul li h2 {
   font-size: 1.2em; /* Adjust title font size */

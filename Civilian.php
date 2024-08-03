@@ -163,7 +163,7 @@ $conn->close();
         <h2>Contact info</h2>
         <br>
         <ul class="list-unstyled">
-          <li>Email: <span class="email">Karagiannis.giorg@gmail.com</span></li>
+          <li>Email: <span class="email">Carelink@gmail.com</span></li>
           <br>
           <li>Phone: +30 123456789</li>
         </ul>
