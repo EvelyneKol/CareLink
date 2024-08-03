@@ -17,46 +17,8 @@ if(isset($_COOKIE['username'])){
 } else {
     $defaultUsername = "";
 }
-function baseLocation($conn) {
-//διαβασμα συντεταγμενων αποθηκης απο την βαση δεδομεων
-$baseLocation = "SELECT SUBSTRING_INDEX(base_location, ',', 1) AS latitude,
-        SUBSTRING_INDEX(base_location, ',', -1) AS longitude
-        FROM base";
-
-    $baseLocationData = array();
-
-    $sqlbaseLocation = $conn->query($baseLocation);
-
-    if ($sqlbaseLocation) {
-        while ($row = $sqlbaseLocation->fetch_assoc()) {
-            $baseLocationData[] = array(
-                "latitude" => $row["latitude"],
-                "longitude" => $row["longitude"]
-            );
-        }
-
-        // Encode $baseLocationData array to JSON
-        $json_data = json_encode($baseLocationData);
-
-        // Specify the path to store the JSON file
-        $json_file = 'baseLocation.json';
-
-        // Write JSON data to file
-        if (file_put_contents($json_file, $json_data)) {
-            return "JSON data successfully written to $json_file";
-        } else {
-            return "Unable to write JSON data to $json_file";
-        }
-
-        // Close the result set
-        $sqlbaseLocation->close();
-    } else {
-        die("Error executing the SQL query: " . $conn->error);
-    }
-}
-
     //-----------------συνάρτηση για fetch waiting requests------------------------
-    function fetchRequests($conn) {
+function fetchRequests($conn) {
         $waitingRequest = "SELECT DISTINCT
             civilian.civilian_first_name,
             civilian.civilian_last_name,
@@ -132,7 +94,7 @@ $baseLocation = "SELECT SUBSTRING_INDEX(base_location, ',', 1) AS latitude,
 
 
     //----------------------συνάρτηση για waiting offer (προσφορές)-------------------
-    function fetchOffers($conn) {
+function fetchOffers($conn) {
         $offers = "SELECT 
                     civilian.civilian_first_name,
                     civilian.civilian_last_name,
@@ -216,7 +178,7 @@ $baseLocation = "SELECT SUBSTRING_INDEX(base_location, ',', 1) AS latitude,
 
 
     //-----------------------------fetch my Requests data--------------------------------------
-    function fetchMyRequests($conn, $defaultUsername){
+function fetchMyRequests($conn, $defaultUsername){
         $myrequest = "SELECT DISTINCT
                     civilian.civilian_first_name,
                     civilian.civilian_last_name,
@@ -303,7 +265,7 @@ $baseLocation = "SELECT SUBSTRING_INDEX(base_location, ',', 1) AS latitude,
 
 
 //____________function to fetch volunteer's offerss_____________________________________
-    function fetchMyOffers($conn,$defaultUsername){
+function fetchMyOffers($conn,$defaultUsername){
         $myoffers = "SELECT DISTINCT
                     civilian.civilian_first_name,
                     civilian.civilian_last_name,
@@ -388,7 +350,7 @@ $baseLocation = "SELECT SUBSTRING_INDEX(base_location, ',', 1) AS latitude,
         fetchMyOffers($conn,$defaultUsername);
     }
 
-    function fetchTaskCount($conn, $defaultUsername) {
+function fetchTaskCount($conn, $defaultUsername) {
         $taskCountQuery = "SELECT COUNT(task_volunteer) AS task_count FROM task WHERE task_volunteer = '$defaultUsername'";
     
         $taskCountData = array();
