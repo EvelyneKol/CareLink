@@ -39,7 +39,7 @@ body {
 .home{
     align-items: right;
     text-align: right;
-    margin-top: -180px;
+    margin-top: -140px;
     margin-right: 20px;
 }
 
@@ -61,6 +61,16 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+.form_container h2{
+    text-align: center;
+    margin-top: -80px;
+}
+
+.form_container h4{
+    text-align: center;
+}
+
 
 .form h3 {
     margin-top: 20px;

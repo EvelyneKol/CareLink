@@ -83,7 +83,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div class="header">
         <h2><img src="images/logo1.png" alt="Logo"></h2>
-        <p><strong>Base management</strong><br>Add or delete categories and items or make ony other changes</p>
         <hr>
     </div>
 
@@ -92,6 +91,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <div class="form_container">
+        <h2>Base management<br></h2>
+        <h4>Add or delete categories and items or make ony other changes</h4>
         <div id="base_managment">
             <div class="row">
                 <div class="col-sm-3"></div>
