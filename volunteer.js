@@ -10,66 +10,84 @@ function unloadItems(formId) {
   form.style.display = 'block';
   }
 
-  var map = L.map('map');
-  L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL', {
-    attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
-  }).addTo(map);
-  
-  var userLocationMarker;
-  var baseMarker = L.marker([38.29019669826742, 21.79566926942475]);
-  var popup1 = baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
-  var line = L.polyline([], { color: 'black' }).addTo(map); // Initialize an empty polyline
+var map = L.map('map');
+L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL', {
+  attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+}).addTo(map);
 
-  var RequestMarkers = [];
-  var RequestLines = [];
+var userLocationMarker;
+var baseMarker;
+var line = L.polyline([], { color: 'black' }).addTo(map); // Initialize an empty polyline
+var RequestMarkers = [];
+var RequestLines = [];
 
-  var OfferMarkers = [];
-  var OfferLines = [];
-  
-  if ('geolocation' in navigator) {
-    navigator.geolocation.getCurrentPosition(function (position) {
+var OfferMarkers = [];
+var OfferLines = [];
+
+
+// Fetch coordinates from the server and initialize the marker
+$.ajax({
+    url: 'get_location.php',
+    type: 'GET',
+    dataType: 'json',
+    success: function(response) {
+        if (response.error) {
+            console.error(response.error);
+            return;
+        }
+
+        var Lat = parseFloat(response.latitude);
+        var Lng = parseFloat(response.longitude);
+
+        initializeBaseMarker(Lat, Lng);
+        // Update polyline
+        updateLine();
+    },
+    error: function(xhr, status, error) {
+        console.error(error);
+    }
+});
+
+if ('geolocation' in navigator) {
+  navigator.geolocation.getCurrentPosition(function (position) {
       var userLat = position.coords.latitude;
       var userLng = position.coords.longitude;
       var geolocation = userLat + ", " + userLng;
-  
+
       map.setView([userLat, userLng], 13);
-  
-      initializeBaseMarker(38.29019669826742, 21.79566926942475);
+
       initializeUserLocationMarker(userLat, userLng);
-  
-      updateLine();
-  
+
       // Calculate distance between user's location and baseMarker's initial position
       var initialDistance = calculateDistance(userLocationMarker.getLatLng(), baseMarker.getLatLng());
       userLocationMarker.bindPopup(`Your Location - Distance: ${initialDistance.toFixed(2)} kilometers`).openPopup();
       // Update the value of the address input field
       document.getElementById("loadAddress").value = geolocation;
-  
-    });
-  } else {
-    console.log('Geolocation is not supported by your browser.');
-  }
-  
-  function initializeBaseMarker(Lat, Lng) {
-    var baseIcon = L.icon({
+  });
+} else {
+  console.log('Geolocation is not supported by your browser.');
+}
+
+function initializeBaseMarker(Lat, Lng) {
+  var baseIcon = L.icon({
       iconUrl: 'images/base.png',
       iconSize: [41, 41],
       iconAnchor: [20, 41],
       popupAnchor: [1, -34]
-    });
-  
-    baseMarker = L.marker([Lat, Lng]).addTo(map).setIcon(baseIcon);
-    baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
+  });
 
-    var circle = L.circle([Lat, Lng], {
+  baseMarker = L.marker([Lat, Lng]).addTo(map).setIcon(baseIcon);
+  baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
+
+  var circle = L.circle([Lat, Lng], {
       color: 'blue',
       fillColor: 'blue',
       fillOpacity: 0.5,
       radius: 100
-    }).addTo(map);
-  
-  }
-  
+  }).addTo(map);
+
+}
+
   function initializeUserLocationMarker(userLat, userLng) {
     var myTruck = L.icon({
       iconUrl: 'truck.png',

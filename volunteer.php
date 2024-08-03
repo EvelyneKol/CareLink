@@ -560,7 +560,7 @@ $conn->close();
             background-color: rgba(3, 128, 178, 0.7);
             color: rgb(217, 217, 217);
             }
-    </style>
+   </style>
 </head>
 
 
@@ -600,159 +600,159 @@ $conn->close();
         </div>
 
         <div class="Secondsection">
-            <h2 id="A">My Vehicle</h2>
-            <hr>
-            <div class="managmentection">
-                <div class="row">
-                    <div class="col4 col-sm-6">
-                    <button id="yourButtonId1" class="button1" disabled  onclick="loadItems('loadForm')" >
-                        <strong> Load items </strong></button>
-                    </div>
-                    <div class="col5 col-sm-6">
-                    <button id="yourButtonId2" class="button1" disabled  onclick="unloadItems('UnloadForm')">
-                        <strong> Unload items </strong></button>
+                <h2 id="A">My Vehicle</h2>
+                <hr>
+                <div class="managmentection">
+                    <div class="row">
+                        <div class="col4 col-sm-6">
+                        <button id="yourButtonId1" class="button1" disabled  onclick="loadItems('loadForm')" >
+                            <strong> Load items </strong></button>
+                        </div>
+                        <div class="col5 col-sm-6">
+                        <button id="yourButtonId2" class="button1" disabled  onclick="unloadItems('UnloadForm')">
+                            <strong> Unload items </strong></button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <br>
+                <br>
 
-            <div id="loadForm" style="display:none;">
+                <div id="loadForm" style="display:none;">
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-6">
+                            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" onsubmit="resetForm()">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label for="txtUsername" class="form-label">Username</label>
+                                        <input type="text" class="form-control p-2" id="txtUsername" name="username"
+                                        placeholder="Write your Username..." autocomplete="on" required value="<?php echo $defaultUsername; ?>" readonly>
+                                    </div>
+
+                                    <div class="col-sm-3">
+                                        <label for="loadAddress">Vehicle-Location</label>
+                                        <input type="text" class="form-control p-2" placeholder="Enter Your Address" id="loadAddress" name="loadAddress" autocomplete="on"
+                                        spellcheck="false" required readonly>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label for="Vehicle_name">Vehicle-Name</label>
+                                        <input type="text" class="form-control p-2" placeholder="Enter Your Vehicle name" id="Vehicle_name" name="Vehicle_name" spellcheck="false" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                            <label for="Cateload" class="form-label">Category</label>
+                                            <select id="Cateload" class="form-control p-2" name="Cateload">
+                                            <option value="">Select a category</option>
+                                                <?php
+                                                // Check if there are results
+                                                if ($result->num_rows > 0) {
+                                                    // Output data of each row
+                                                    while($row = $result->fetch_assoc()) {
+                                                        echo '<option value="' . htmlspecialchars($row["category_name"]) . '">' . htmlspecialchars($row["category_name"]) . '</option>';
+                                                    }
+                                                } else {
+                                                    echo '<option value="">No categories available</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                    </div>
+                                        
+                                    <div class="col-sm-6">
+                                        <label for="Prodload" class="form-label">Product</label>
+                                        <select id="Prodload" class="form-control p-2" name="Prodload">
+                                        </select>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                <div class="col-sm-6">
+                                    <label for="Quantload" class="form-label">Quantity</label>
+                                    <input type="number" class="form-control p-2" id="Quantload" name="Quantload"
+                                        placeholder="Insert the quantity of the product" autocomplete="off" required min="0">
+                                </div>
+                                    <div class="col-sm-6">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <button class="load" type="submit">Load</button>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <button class="hidebutton" type="button" onclick="hideForm('loadForm')">Hide Form</button>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div>
+                </div>
+
+                <br>
+
+                <div id="UnloadForm" style="display:none;">
                 <div class="row">
                     <div class="col-sm-3"></div>
                     <div class="col-sm-6">
                         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" onsubmit="resetForm()">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <label for="txtUsername" class="form-label">Username</label>
-                                <input type="text" class="form-control p-2" id="txtUsername" name="username"
-                                placeholder="Write your Username..." autocomplete="on" required value="<?php echo $defaultUsername; ?>" readonly>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label for="txtUsernameUnload" class="form-label">Username</label>
+                                    <input type="text" class="form-control p-2" id="txtUsernameUnload" name="username"
+                                        placeholder="Write your Username..." autocomplete="on" required value="<?php echo $defaultUsername; ?>" readonly>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="Vehicle_nameUnload">Vehicle-Name</label>
+                                    <input type="text" class="form-control p-2" placeholder="Enter Your Vehicle name" id="Vehicle_nameUnload" name="Vehicle_nameUnload" spellcheck="false" required>
+                                </div>
                             </div>
-
-                            <div class="col-sm-3">
-                                <label for="loadAddress">Vehicle-Location</label>
-                                <input type="text" class="form-control p-2" placeholder="Enter Your Address" id="loadAddress" name="loadAddress" autocomplete="on"
-                                spellcheck="false" required readonly>
-                            </div>
-                            <div class="col-sm-3">
-                                <label for="Vehicle_name">Vehicle-Name</label>
-                                <input type="text" class="form-control p-2" placeholder="Enter Your Vehicle name" id="Vehicle_name" name="Vehicle_name" spellcheck="false" required>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                    <label for="Cateload" class="form-label">Category</label>
-                                    <select id="Cateload" class="form-control p-2" name="Cateload">
-                                    <option value="">Select a category</option>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label for="CateUnload" class="form-label">Category</label>
+                                    <select id="CateUnload" class="form-control p-2" name="CateUnload">
+                                        <option value="">Select a category</option>
                                         <?php
                                         // Check if there are results
-                                        if ($result->num_rows > 0) {
+                                        if ($resultUnload->num_rows > 0) {
                                             // Output data of each row
-                                            while($row = $result->fetch_assoc()) {
-                                                echo '<option value="' . htmlspecialchars($row["category_name"]) . '">' . htmlspecialchars($row["category_name"]) . '</option>';
+                                            while($row = $resultUnload->fetch_assoc()) {
+                                                echo '<option value="' . htmlspecialchars($row["category"]) . '">' . htmlspecialchars($row["category"]) . '</option>';
                                             }
                                         } else {
                                             echo '<option value="">No categories available</option>';
                                         }
                                         ?>
                                     </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="Produnload" class="form-label">Product</label>
+                                    <select id="Produnload" class="form-control p-2" name="Produnload">
+                                    </select>
+                                </div>
                             </div>
-                                
-                            <div class="col-sm-6">
-                                <label for="Prodload" class="form-label">Product</label>
-                                <select id="Prodload" class="form-control p-2" name="Prodload">
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                        <div class="col-sm-6">
-                            <label for="Quantload" class="form-label">Quantity</label>
-                            <input type="number" class="form-control p-2" id="Quantload" name="Quantload"
-                                placeholder="Insert the quantity of the product" autocomplete="off" required min="0">
-                        </div>
-                            <div class="col-sm-6">
+                            <br>
                             <div class="row">
                                 <div class="col-sm-6">
-                                <button class="load" type="submit">Load</button>
+                                    <label for="Quantunload" class="form-label">Quantity</label>
+                                    <input type="number" class="form-control p-2" id="Quantunload" name="Quantunload"
+                                        placeholder="Insert the quantity of the product " autocomplete="off" required min="0">
                                 </div>
                                 <div class="col-sm-6">
-                                <button class="hidebutton" type="button" onclick="hideForm('loadForm')">Hide Form</button>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <button class="unload" type="submit">Unload</button>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <button class="hidebutton" type="button" onclick="hideForm('UnloadForm')">Hide Form</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            </div>
-                        </div>
                         </form>
                     </div>
                     <div class="col-sm-3"></div>
                 </div>
             </div>
-
-            <br>
-
-            <div id="UnloadForm" style="display:none;">
-            <div class="row">
-                <div class="col-sm-3"></div>
-                <div class="col-sm-6">
-                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" onsubmit="resetForm()">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <label for="txtUsernameUnload" class="form-label">Username</label>
-                                <input type="text" class="form-control p-2" id="txtUsernameUnload" name="username"
-                                    placeholder="Write your Username..." autocomplete="on" required value="<?php echo $defaultUsername; ?>" readonly>
-                            </div>
-                            <div class="col-sm-6">
-                                <label for="Vehicle_nameUnload">Vehicle-Name</label>
-                                <input type="text" class="form-control p-2" placeholder="Enter Your Vehicle name" id="Vehicle_nameUnload" name="Vehicle_nameUnload" spellcheck="false" required>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <label for="CateUnload" class="form-label">Category</label>
-                                <select id="CateUnload" class="form-control p-2" name="CateUnload">
-                                    <option value="">Select a category</option>
-                                    <?php
-                                    // Check if there are results
-                                    if ($resultUnload->num_rows > 0) {
-                                        // Output data of each row
-                                        while($row = $resultUnload->fetch_assoc()) {
-                                            echo '<option value="' . htmlspecialchars($row["category"]) . '">' . htmlspecialchars($row["category"]) . '</option>';
-                                        }
-                                    } else {
-                                        echo '<option value="">No categories available</option>';
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-                            <div class="col-sm-6">
-                                <label for="Produnload" class="form-label">Product</label>
-                                <select id="Produnload" class="form-control p-2" name="Produnload">
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <label for="Quantunload" class="form-label">Quantity</label>
-                                <input type="number" class="form-control p-2" id="Quantunload" name="Quantunload"
-                                    placeholder="Insert the quantity of the product " autocomplete="off" required min="0">
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <button class="unload" type="submit">Unload</button>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <button class="hidebutton" type="button" onclick="hideForm('UnloadForm')">Hide Form</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="col-sm-3"></div>
-            </div>
-        </div>
 
 
             <details id="myDetails">

@@ -1,42 +1,79 @@
-var map = L.map('map').setView([38.29019669826742, 21.79566926942475], 14);
-L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL', {
-  attribution:
-    '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
-}).addTo(map);
+var baseMarker;
 
+// Fetch coordinates from the server and initialize the marker
+$.ajax({
+    url: 'get_location.php',
+    type: 'GET',
+    dataType: 'json',
+    success: function(response) {
+        if (response.error) {
+            console.error(response.error);
+            return;
+        }
 
-var baseMarker = L.marker([38.29019669826742, 21.79566926942475], { draggable: true });
-var popup1 = baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
+        var Lat = parseFloat(response.latitude);
+        var Lng = parseFloat(response.longitude);
 
- if ('geolocation' in navigator) {
-  navigator.geolocation.getCurrentPosition(function (position) {
-
-    initializeBaseMarker(38.29019669826742, 21.79566926942475);
-
-  });
-} else {
-  console.log('Geolocation is not supported by your browser.');
-} 
+        initializeBaseMarker(Lat, Lng);
+    },
+    error: function(xhr, status, error) {
+        console.error(error);
+    }
+});
 
 function initializeBaseMarker(Lat, Lng) {
   var baseIcon = L.icon({
-    iconUrl: 'images/base.png',
-    iconSize: [41, 41],
-    iconAnchor: [20, 41],
-    popupAnchor: [1, -34]
+      iconUrl: 'images/base.png',
+      iconSize: [41, 41],
+      iconAnchor: [20, 41],
+      popupAnchor: [1, -34]
   });
 
-  baseMarker = L.marker([38.29019669826742, 21.79566926942475], { draggable: true }).addTo(map).setIcon(baseIcon);
+  var map = L.map('map').setView([Lat, Lng], 12);
+
+  L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL', {
+      attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> \
+      <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+  }).addTo(map);
+
+  baseMarker = L.marker([Lat, Lng], { draggable: true }).addTo(map).setIcon(baseIcon);
   baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
 
+  originalBasePosition = baseMarker.getLatLng();
+
   baseMarker.on('dragend', function (event) {
-    var position = baseMarker.getLatLng();
-    baseMarker.setLatLng(position);
-    baseMarker.getPopup().setContent('BASE, new Position: ' + position.toString()).update();
-    $("#Latitude").val(position.lat);
-    $("#Longitude").val(position.lng).keyup();
+      var newPosition = baseMarker.getLatLng();
+
+      if (confirm("Are you sure you want to move the base marker to this new location?")) {
+          baseMarker.setLatLng(newPosition);
+          baseMarker.getPopup().setContent('BASE, new Position: ' + newPosition.toString()).update();
+          $("#Latitude").val(newPosition.lat);
+          $("#Longitude").val(newPosition.lng).keyup();
+
+          // Make AJAX call to update the database
+          $.ajax({
+              url: 'update_location.php',
+              type: 'POST',
+              data: {
+                  latitude: newPosition.lat,
+                  longitude: newPosition.lng
+              },
+              success: function(response) {
+                  console.log(response);
+              },
+              error: function(xhr, status, error) {
+                  console.error(error);
+              }
+          });
+
+          originalBasePosition = newPosition; // Update original position to new position
+      } else {
+          baseMarker.setLatLng(originalBasePosition); // Revert to original position if the user cancels
+      }
   });
 }
+
+
 
 // Define global variables for layers
 var vehicles = [];

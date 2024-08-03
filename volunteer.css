@@ -66,6 +66,7 @@ body {
   color: #000000;
 }
 
+/*Second section*/
 .Secondsection h2 {
   margin: 10px 0px 5px 0px;
 }
@@ -77,6 +78,30 @@ body {
 
 .Secondsection h2 {
   margin: 10px 0px 5px 0px;
+}
+
+.unload,
+.load,
+.hidebutton{
+  background-color: #db3232;
+  border: none;
+  border-radius: 15px;
+  color: white;
+  padding: 8px 12px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  
+}
+
+.unload,
+.load,
+.hidebutton:hover{
+  background-color: #db3232;
+  color: rgb(255, 255, 255);
 }
 
 .Secondsection,
@@ -172,6 +197,7 @@ body {
   background: rgba(221, 221, 221, 0.363);
   color: #000;
 }
+
 
 
 #myDetails {
