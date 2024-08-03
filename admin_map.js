@@ -1,4 +1,9 @@
-var baseMarker;
+var map = L.map('map').setView([38.24663362118412, 21.734787451795558], 12);
+
+L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL', {
+    attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> \
+    <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+}).addTo(map);
 
 // Fetch coordinates from the server and initialize the marker
 $.ajax({
@@ -29,12 +34,6 @@ function initializeBaseMarker(Lat, Lng) {
       popupAnchor: [1, -34]
   });
 
-  var map = L.map('map').setView([Lat, Lng], 12);
-
-  L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL', {
-      attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> \
-      <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
-  }).addTo(map);
 
   baseMarker = L.marker([Lat, Lng], { draggable: true }).addTo(map).setIcon(baseIcon);
   baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
