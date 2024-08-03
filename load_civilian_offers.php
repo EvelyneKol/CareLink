@@ -10,7 +10,6 @@
   float: center;
 }
 
-.Secondsection h3,
 .Secondsection p {
   margin: 10px 0px 5px 0px;
   text-align: center;
@@ -50,10 +49,7 @@
   justify-content: space-between; /* Distribute space evenly */
 }
 
-.reminder-notes ul li a {
-  text-decoration: none; /* Remove underline from links */
-  color: inherit; /* Inherit text color */
-}
+
 
 .reminder-notes ul li h2 {
   font-size: 1.2em; /* Adjust title font size */
@@ -121,17 +117,19 @@
         // Loop through the records and generate HTML for each
         while ($stmt->fetch()) {
             echo '<li>';  
-            echo '<h2 class="title"> Your request from <strong>' . htmlspecialchars($offer_category) . '</strong></h2>';
+            echo '<h2 class="title"> Your Offer for <strong>' . htmlspecialchars($offer_category) . '</strong></h2>';
             echo '<p> Product: ' . htmlspecialchars($offer_product_name) . '</p>';
             echo '<p> Num of People: ' . htmlspecialchars($offer_quantity) . '</p>';
             echo '<p> Date Posted: ' . htmlspecialchars($offer_date_posted) . '</p>';
             echo '<p> Time Posted: ' . htmlspecialchars($offer_time_posted) . '</p>';
-            echo '<p> Time Completed: ' . htmlspecialchars($complete_offer) . '</p>';
             if($offer_status == "WAITING") {
-              echo '<p> offer_status: <strong>' . htmlspecialchars($offer_status) . '</strong></p>';
-              echo '<button class="delete" onclick="deleteRequest(' . $offer_id . ')">Delete</button>';
-            } else {
-              echo '<p> offer_status: <strong>' . htmlspecialchars($offer_status) . '</strong></p>';
+              echo '<p> Status of offer: <strong>' . htmlspecialchars($offer_status) . '</strong></p>';
+              echo '<button class="delete" onclick="deleteOffers(\'' . htmlspecialchars($offer_id) . '\', \'' . htmlspecialchars($offer_category) . '\', \'' . htmlspecialchars($offer_product_name) . '\', \'' . htmlspecialchars($offer_quantity) . '\')">Delete</button>';
+            } else if($offer_status == "ON THE WAY") {
+              echo '<p> Status of offer: <strong>' . htmlspecialchars($offer_status) . '</strong></p>';
+            }else{
+              echo '<p> Time Completed: ' . htmlspecialchars($complete_offer) . '</p>';
+              echo '<p> Status of offer: <strong>' . htmlspecialchars($offer_status) . '</strong></p>';
             }
             echo '</li>';
         }

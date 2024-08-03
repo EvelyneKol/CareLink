@@ -127,12 +127,16 @@
             echo '<p> Num of People: ' . htmlspecialchars($persons) . '</p>';
             echo '<p> Date Posted: ' . htmlspecialchars($request_date_posted) . '</p>';
             echo '<p> Time Posted: ' . htmlspecialchars($request_time_posted) . '</p>';
-            echo '<p> Time Completed: ' . htmlspecialchars($complete_request) . '</p>';
             if($state == "WAITING") {
-              echo '<p> State: <strong>' . htmlspecialchars($state) . '</strong></p>';
+              echo '<p> State of request: <strong>' . htmlspecialchars($state) . '</strong></p>';
               echo '<button class="delete" onclick="deleteRequest(' . $id_request . ')">Delete</button>';
-            } else {
-              echo '<p> State: <strong>' . htmlspecialchars($state) . '</strong></p>';
+            } else if($state == "ON THE WAY") {
+              echo '<p> State of request: <strong>' . htmlspecialchars($state) . '</strong></p>';
+            } else if($state == "CANCELED") {
+              echo '<p> State of request: <strong>' . htmlspecialchars($state) . '</strong></p>';
+            }else{
+              echo '<p> Time Completed: ' . htmlspecialchars($complete_request) . '</p>';
+              echo '<p> State of request: <strong>' . htmlspecialchars($state) . '</strong></p>';
             }
             echo '</li>';
         }

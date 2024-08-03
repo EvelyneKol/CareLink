@@ -17,37 +17,6 @@ if(isset($_COOKIE['username'])){
   $defaultUsername = "";
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $shortageId = $_POST['shortage_id'];
-  $category = $_POST['category'];
-  $productName = $_POST['product_name'];
-  $quantity = $_POST['quantity'];
-
-  // Get the current date and time
-  $datePosted = date('Y-m-d');
-  $timePosted = date('H:i:s');
-
-  // Assuming you have the username of the civilian making the offer
-  $offerCivilian = 'some_user'; // Replace with actual civilian username
-
-  $sql = "INSERT INTO offer (offer_civilian, offer_category, offer_product_name, offer_quantity, offer_date_posted, offer_time_posted, offer_status) VALUES (?, ?, ?, ?, ?, ?, 'WAITING')";
-
-  $stmt = $conn->prepare($sql);
-  $stmt->bind_param("sssiss", $offerCivilian, $category, $productName, $quantity, $datePosted, $timePosted);
-
-  if ($stmt->execute()) {
-      echo "Offer added successfully.";
-  } else {
-      echo "Error: " . $stmt->error;
-  }
-} 
-
-// Fetch shortage records from the database
-$shortageQuery = "SELECT * FROM shortage ORDER BY shortage_datetime DESC";
-$shortageResult = $conn->query($shortageQuery);
-
-
-// Close the database connection outside the if block
 $conn->close();
 ?>
 
@@ -84,8 +53,8 @@ $conn->close();
       </ul>
   </div>
 
-    <div class="Secondsection">
-        <h2 id="txtUsername" style="display: none;"><?php echo $defaultUsername; ?></h2>
+    <div class="Secondsection">   
+        <h2 id="txtUsername"><?php echo $defaultUsername; ?></h2>
     </div>
 
     <div class="thirdsection">
@@ -170,25 +139,37 @@ $conn->close();
         });
     
 
-        function deleteOffers(requestId) {
-    // You can use AJAX to send a request to a PHP file that will delete the row from the database
-    // Example using fetch API
-        fetch('delete.php?id=' + requestId, {
-               method: 'GET',
-        })
-        .then(data => {
-            // Handle the response if needed
-            console.log(data);
-            // Optionally, you can remove the HTML element for the deleted request
-            var cardElement = document.getElementById('card_' + requestId);
-            if (cardElement) {
-                cardElement.remove();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-  }
+        function deleteOffers(OfferId, category, product, quantity) {
+            // Get the username from the hidden h2 element
+
+            var url = "delete_offer.php";
+            var formData = new FormData();
+            formData.append("OfferId", OfferId);
+            formData.append("category", category);
+            formData.append("product", product);
+            formData.append("quantity", quantity);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    console.log("Success:", xhr.responseText);
+                    location.reload();
+
+                } else {
+                    console.error("Error:", xhr.statusText);
+                }
+            };
+
+            xhr.onerror = function () {
+                console.error("Network error");
+            };
+
+            xhr.send(formData);
+            console.log("AJAX request sent");
+        }
+
   </script>
     
 </body>
