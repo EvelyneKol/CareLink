@@ -9,7 +9,7 @@ body {
     overflow-y: scroll;
 }
 
-/*db3232*/
+/*ccs για το navigation bar*/
 .navbar {
     list-style-type: none;
     margin-top: 35px;
@@ -57,7 +57,7 @@ li a:focus {
 }
 
 
-/**/
+/*κεντρική εικόνα*/
 
 
 .donation-image {
@@ -98,6 +98,8 @@ li a:focus {
 .donation-image a{
     text-decoration: none;
 }
+
+/*κουμπιά πάνω στην κεντρική εικόνα*/
 
 .button {
     border: none;
@@ -334,7 +336,7 @@ li a:focus {
     width: 70%;
 }
 
-/* Place text to the right */
+/* τοποθέτηση κειμένου στα δεξιά */
 .right {
     text-align: right;
 }
@@ -346,7 +348,7 @@ li a:focus {
     clear: both;
 }
 
-/* The bar container */
+/*  bar container */
 .bar-container {
     width: 100%;
     background-color: #f1f1f1;
@@ -354,7 +356,7 @@ li a:focus {
     color: rgb(223, 214, 193);
 }
 
-/* Individual bars */
+/* ατομικά bars */
 .bar {
     width: 60%;
     height: 18px;
@@ -396,24 +398,23 @@ li a:focus {
 
 .column {
     overflow-wrap: break-word;
-    /* Added to handle long words in columns */
+    /* διαχείρηση μεγάλων λέξεων στις στήλες */
 }
 
 .email {
     word-wrap: break-word;
-    /* Added to allow email to break into next line */
+    /* το μειλ μπορεί να "σπάσει" στην επόμενη γραμμή */
 }
 
 .Footer .fa {
     padding: 2%;
-    /* Adjusted padding as a percentage for responsiveness */
     font-size: 20px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    /* Ensures that padding affects the layout */
+    /*  το padding επηρεάζει το layout */
     margin: 1%;
-    /* Added margin for spacing between links */
+    /* προσθήκη margin για κενό μεταξύ των links */
 }
 
 .fa-linkedin {
