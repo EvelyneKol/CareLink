@@ -1,6 +1,8 @@
 <?php
+//σύνδεση με βάση
 include 'Connection.php';
 
+//έλεγχος σύνδεσης
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -13,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
     $location = $_POST['address'];
 
-    // Insert user information into the 'civilian' table
+    // Insert τα δεδoμένα του χρήστη στο civilian table
     $stmt = $conn->prepare("INSERT INTO civilian (civilian_first_name, civilian_last_name, civilian_username, civilian_number, civilian_password, civilian_location) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("sssiss", $first_name, $last_name, $username, $phone, $password, $location);
     if ($stmt->execute()) {

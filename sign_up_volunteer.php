@@ -1,10 +1,13 @@
 <?php
+//σύνδεση με βάση
 include 'Connection.php';
 
+//έλεγχος σύνδεσης
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+//ξεκινάει session που κρατά τα credits
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -13,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Check if the username already exists in the 'volunteer' table
+    // έλεγχος με το select query αν ο εθελοντής υπάρχει στο volunteer table
     $check_query = "SELECT * FROM volunteer WHERE vol_username = ?";
     $check_stmt = $conn->prepare($check_query);
     $check_stmt->bind_param("s", $username);
@@ -21,27 +24,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = $check_stmt->get_result();
 
     if ($result->num_rows > 0) {
-        // Username exists, show alert and redirect back to sign_up_volunteer.php
+        // εάν το usernmae υπάρχει, εμφάνισε μήνυμα και ανακατεύθυνε στο sign_up_volunteer.php
         echo "<script>alert('Have already registered!'); window.location.href = 'sign_up_volunteer.php';</script>";
-        exit(); // Stop further execution
+        exit(); 
     } else {
-        // Username doesn't exist, proceed with insertion
+        // το Username δεν υπάρχει άρα κάνει insert 
         $insert_stmt = $conn->prepare("INSERT INTO volunteer (vol_first_name, vol_last_name, vol_username, vol_password) VALUES (?, ?, ?, ?)");
         $insert_stmt->bind_param("ssss", $first_name, $last_name, $username, $password);
 
         if ($insert_stmt->execute()) {
-            // Set a session variable with the success message
+            // μήνυμα επιτυχίας
             $_SESSION['success_message'] = "New volunteer has been successfully registered!";
-            header("Location: sign_up_volunteer.php");
+            header("Location: sign_up_volunteer.php"); 
             exit();
         } else {
             echo "Error: " . $insert_stmt->error;
         }
     }
 
-    // Close statements and the database connection
+    //Κλείσιμο statements 
     $check_stmt->close();
     $insert_stmt->close();
+    //τερματισμός σύνδεσης
     $conn->close();
 }
 ?>
@@ -61,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: green;
             text-align: center;
             margin: 10px 0;
-            display: none; /* Hidden by default */
+            display: none; 
         }
     </style>
 </head>
@@ -72,8 +76,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <i><a href="admin.php"><i class="fa fa-home" style="font-size:24px" ></i>Home</a></i>
       <div id="signup-tab" class="tab">
         <p>Add a volunteer to<strong>CareLink</strong> !</p>
+        <!-- Το action ορίζει τη διεύθυνση URL στην οποία θα σταλούν τα δεδομένα της φόρμας όταν υποβληθεί. -->
         <form id="signup-form" action="<?php echo $_SERVER['PHP_SELF']; ?>" onsubmit="return validatePassword()"
-          method="post">
+          method="post"> <!-- επιστροφή των δεδομένων στην ίδια σελίδα -->
+          <!-- φόρμα εγγραφής volunteer -->
           <label for="name">First Name</label>
                     <input type="text" placeholder="Enter Your First Name" id="name" name="name" autocomplete="on"
                         spellcheck="false" required>
@@ -85,18 +91,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         spellcheck="false" required>
                     <label for="password">Password</label>
                     <input type="password" placeholder="Enter Your Password" id="password" name="password"
-                        autocomplete="on" pattern="(?=.*\d)(?=.*[a-z]).{8,}"
-                        title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-                        required>
-                       <!-- Hidden field with a default value of 0 -->
-                    <input type="hidden" id="lastElement" name="lastElement" value="0">
+                    autocomplete="on" pattern="(?=.*\d)(?=.*[a-z]).{8,}"
+                    title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                    required>
                     <label for="showpass" id="rlabel">Show Password</label>
                     <input type="checkbox" id="showpass" name="showpass" onclick="passwordvisibility()">
                     <button class="button" type="reset" value="reset">Reset</button>
-                    <?php
+                    <?php  //με επιτυχημένο session προβάλει μήνυμα το οποίο μετά αφαιρεί για να μην ξανα εμφανιστεί
                     if (isset($_SESSION['success_message'])) {
                         echo "<p class='success-message' id='success-message'>" . $_SESSION['success_message'] . "</p>";
-                        unset($_SESSION['success_message']); // Unset the message after displaying it
+                        unset($_SESSION['success_message']); 
                     }
                     ?>
                     <div class="button-center">
@@ -108,16 +112,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
 
   <script>
-    var currentTab = 0; // Current tab is set to be the first tab (0)
-    showTab(currentTab); // Display the current tab
+    var currentTab = 0; // η τρέχουσα καρτέλα θέτεται ως 1η(0)
+    showTab(currentTab); // προβολή τρέχουσας καρτέλας
 
     function showTab(n) {
-      // This function will display the specified tab of the form...
+       //προβάλει την καρτέλα που παίρνει ως είσοδο
       var x = document.getElementsByClassName("tab");
       x[n].style.display = "block";
 
     }
 
+    //προβάλει τον κωδικό 
     function passwordvisibility() {
       var x = document.getElementById("password");
       if (x.type === "password") {
@@ -134,18 +139,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       var password = document.getElementById("password").value;
 
       if (name === "" || lastname === "" || username === "" || password === "") {
-        alert("Please fill in all fields.");
+        alert("Please fill in all fields.");  //εάν υπάρχουν κενά πεδία
         return false;
       } else if (password.length < 8 || password.length > 15 || !/[a-z]/.test(password)) {
         alert("Password must be 8-15 characters long and include at least one capital letter and one symbol.");
         return false;
       } else {
-        // Display the alert
+        // προβολή alert
         alert("Account created!");
         return true;
-        // Redirect to another page after alert
+        // ανακατεύθυνση πίσω στον admin.php
         window.location.href = "admin.php";
-        // Return false to prevent form submission
+        // Επιστρέφει false για να αποτρέψει το submission της φόρμας
         return false;
       }
     }
