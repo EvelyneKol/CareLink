@@ -42,31 +42,25 @@
     </div>
     <script>
         function sendVerificationCode() {
-            // Simulate sending a verification code via email
+            // προσομοίωση του να έρθει ένας κωδικός επιβεβαίωσης στο μειλ
             const email = document.getElementById("email").value;
-
-            // Replace the following lines with actual server-side logic to send an email
             console.log(`Verification code sent to ${email}`);
 
-            // Display the verification code input field
+            // input πεδίο για κωδικό επιβεβαίωσης
             document.getElementById("verification-code").style.display = "block";
         }
 
         function resendVerificationCode() {
-            // Simulate resending a verification code
+            // προσομοίωση του να ξανα σταλεί verification code
             const email = document.getElementById("email").value;
-
-            // Replace the following lines with actual server-side logic to resend the email
             console.log(`Verification code resent to ${email}`);
         }
 
         function createNewPassword() {
             const verificationCode = document.getElementById("verification-code").value;
 
-            // Replace the following lines with actual server-side logic to validate the verification code
             if (verificationCode === "123456") {
                 console.log("Verification code is correct. Proceed to create a new password.");
-                // Add logic to update the password in the database or perform other necessary actions
             } else {
                 alert("Incorrect verification code. Please enter the correct code.");
             }
