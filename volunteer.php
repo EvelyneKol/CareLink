@@ -1,23 +1,29 @@
 <?php
+//σύνδεση με mySQL βαση 
 include 'Connection.php';
 
+// Ξεκινάμε ένα session για τη διαχείριση των συνεδριών χρήστη
 session_start();
+// Ελέγχουμε αν ο χρήστης είναι συνδεδεμένος και αν ο ρόλος του είναι 'volunteer'
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'volunteer') {
     header('Location: sign_in.php');
     exit();
 }
 
-// Check connection
+// έλεγχος σύνδεσης 
 if ($conn->connect_error) {
     die("Failed to connect to MySQL: " . $conn->connect_error);
 }
-// Check if the username is set in cookies
+// Ελέγχουμε αν το όνομα χρήστη (username) είναι αποθηκευμένο στα cookies
 if(isset($_COOKIE['username'])){
+     // Αν είναι αποθηκευμένο, το χρησιμοποιούμε ως την προεπιλεγμένη τιμή για το username
     $defaultUsername = $_COOKIE['username'];
 } else {
+    // Αν δεν είναι αποθηκευμένο, ορίζουμε το προεπιλεγμένο username ως κενή τιμή
     $defaultUsername = "";
 }
-    //-----------------συνάρτηση για fetch waiting requests------------------------
+
+//-----------------συνάρτηση για ανάκτηση waiting requests------------------------
 function fetchRequests($conn) {
         $waitingRequest = "SELECT DISTINCT
             civilian.civilian_first_name,
@@ -42,11 +48,14 @@ function fetchRequests($conn) {
             LEFT JOIN 
             vehicle ON vehiclesOnAction.v_name = vehicle.vehicle_name
             WHERE  request.state = 'WAITING'";
-
+        // Αρχικοποίηση πίνακα για αποθήκευση των δεδομένων
         $waitingRequestdata = array();
+
+        // Εκτέλεση του query
         $sqlwaitingRequest = $conn->query($waitingRequest);
 
         if ($sqlwaitingRequest) {
+            // Διασχίζουμε τα αποτελέσματα και αποθηκεύουμε τα δεδομένα στον πίνακα waitingRequestdata
             while ($row = $sqlwaitingRequest->fetch_assoc()) {
                 $waitingRequestdata[] = array(
                     "civilian_first_name" => $row["civilian_first_name"],
@@ -63,20 +72,19 @@ function fetchRequests($conn) {
                 );
             }
 
-        // Encode $data4 array to JSON
+         // Κωδικοποίηση των δεδομένων σε JSON
         $json_data = json_encode($waitingRequestdata);
 
-        // Specify the path to store the JSON file
+        // Ορισμός του μονοπατιού για την αποθήκευση του JSON αρχείου
         $json_file = 'volWaitingRequests.json';
 
-        // Write JSON data to file
-        // Write JSON data to file
+        // Εγγραφή των δεδομένων στο JSON
         if (file_put_contents($json_file, $json_data)) {
-            
         } else {
+            // Εμφάνιση μηνύματος σφάλματος σε περίπτωση αποτυχίας εγγραφής
             echo "Unable to write JSON data to $json_file";
         }
-
+        // Κλείσιμο του sqlwaitingRequest
         $sqlwaitingRequest->close();
         } else {
             die("Error executing the SQL query: " . $conn->error);
@@ -84,7 +92,7 @@ function fetchRequests($conn) {
 
     }
 
-    // Check if this request is to update the JSON file
+    // Έλεγχος αν το αίτημα είναι για ενημέρωση του JSON αρχείου
     if (isset($_GET['volWaitingRequests_json'])) {
         echo fetchRequests($conn);
         exit();
@@ -92,8 +100,7 @@ function fetchRequests($conn) {
         fetchRequests($conn);
     }
 
-
-    //----------------------συνάρτηση για waiting offer (προσφορές)-------------------
+//-----------------συνάρτηση για ανάκτηση waiting offers------------------------
 function fetchOffers($conn) {
         $offers = "SELECT 
                     civilian.civilian_first_name,
@@ -121,13 +128,15 @@ function fetchOffers($conn) {
                     vehicle ON vehiclesOnAction.v_name = vehicle.vehicle_name
                     WHERE 
                     offer.offer_status = 'WAITING'";
-
+        // Αρχικοποίηση πίνακα για αποθήκευση των δεδομένων
         $waitingOffersData = array();
+
+        // Εκτέλεση του query
         $sqloffers = $conn->query($offers);
 
         if ($sqloffers) {
+            // Διασχίζουμε τα αποτελέσματα και αποθηκεύουμε τα δεδομένα στον πίνακα waitingOffersData
             while ($row = $sqloffers->fetch_assoc()) {
-                // Populate the $data array with data from the query
                 $waitingOffersData[] = array(
                     "civilian_first_name" => $row["civilian_first_name"],
                     "civilian_last_name" => $row["civilian_last_name"],
@@ -145,29 +154,28 @@ function fetchOffers($conn) {
                 );
             }
 
-            // Encode $data3 array to JSON
+            // Κωδικοποίηση των δεδομένων σε JSON
             $json_data = json_encode($waitingOffersData);
 
-            // Specify the path to store the JSON file
+            // Ορισμός του μονοπατιού για την αποθήκευση του JSON αρχείου
             $json_file = 'volWaitingOffers.json';
 
-            // Write JSON data to file
+            // Εγγραφή των δεδομένων στο JSON
             if (file_put_contents($json_file, $json_data)) {
-            
             } else {
+                // Εμφάνιση μηνύματος σφάλματος σε περίπτωση αποτυχίας εγγραφής
                 echo "Unable to write JSON data to $json_file";
             }
             
-            // Close the result set
+            // Κλείσιμο του sqloffers
             $sqloffers->close();
         } else {
             die("Error executing the SQL query: " . $conn->error);
         }
 
-
     }
 
-    // Check if this offer is to update the JSON file
+    // Έλεγχος αν το αίτημα είναι για ενημέρωση του JSON αρχείου
     if (isset($_GET['volWaitingOffers_json'])) {
         echo fetchOffers($conn);
         exit();
@@ -176,8 +184,7 @@ function fetchOffers($conn) {
     }
 
 
-
-    //-----------------------------fetch my Requests data--------------------------------------
+//-----------------συνάρτηση για ανάκτηση on-way Requests------------------------
 function fetchMyRequests($conn, $defaultUsername){
         $myrequest = "SELECT DISTINCT
                     civilian.civilian_first_name,
@@ -208,14 +215,15 @@ function fetchMyRequests($conn, $defaultUsername){
                                     SELECT task_request_id
                                     FROM task
                                     WHERE task_volunteer = '$defaultUsername') AND request.state = 'ON THE WAY'";
-
+        // Αρχικοποίηση πίνακα για αποθήκευση των δεδομένων
         $myRequestData = array();
 
+        // Εκτέλεση του query
         $sqlmyrequest = $conn->query($myrequest);
 
         if ($sqlmyrequest) {
+            // Διασχίζουμε τα αποτελέσματα και αποθηκεύουμε τα δεδομένα στον πίνακα myRequestData
             while ($row = $sqlmyrequest->fetch_assoc()) {
-
                 $myRequestData[] = array(
                     "civilian_first_name" => $row["civilian_first_name"],
                     "civilian_last_name" => $row["civilian_last_name"],
@@ -232,29 +240,29 @@ function fetchMyRequests($conn, $defaultUsername){
                     "longitude" => $row["longitude"]
                 );
             }
-            // Store  in a session variable
+            // Αποθήκευση των δεδομένων στη session
             $_SESSION['myRequests'] = $myRequestData;
     
-            // Encode $data1 array to JSON
+            // Κωδικοποίηση των δεδομένων σε JSON
             $json_data = json_encode($myRequestData);
 
-            // Specify the path to store the JSON file
+            // Ορισμός του μονοπατιού για την αποθήκευση του JSON αρχείου
             $json_file = 'myRequests.json';
 
-            // Write JSON data to file
+            // Εγγραφή των δεδομένων στο JSON
             if (file_put_contents($json_file, $json_data)) {
-                
             } else {
+                // Εμφάνιση μηνύματος σφάλματος σε περίπτωση αποτυχίας εγγραφής
                 return "Unable to write JSON data to $json_file";
             }
 
-            // Close the result set
+            // Κλείσιμο του sqlmyrequest
             $sqlmyrequest->close();
         } else {
             die("Error executing the SQL query: " . $conn->error);
         }
     }
-    // Check if this request is to update the JSON file
+    // Έλεγχος αν το αίτημα είναι για ενημέρωση του JSON αρχείου
     if (isset($_GET['myRequests_json'])) {
         echo fetchMyRequests($conn, $defaultUsername);
         exit();
@@ -263,8 +271,7 @@ function fetchMyRequests($conn, $defaultUsername){
     }
 
 
-
-//____________function to fetch volunteer's offerss_____________________________________
+//-----------------συνάρτηση για ανάκτηση on-way offerss------------------------
 function fetchMyOffers($conn,$defaultUsername){
         $myoffers = "SELECT DISTINCT
                     civilian.civilian_first_name,
@@ -295,14 +302,15 @@ function fetchMyOffers($conn,$defaultUsername){
                             SELECT task_offer_id
                             FROM task
                             WHERE task_volunteer = '$defaultUsername') AND offer.offer_status='ON THE WAY'";
-
+        // Αρχικοποίηση πίνακα για αποθήκευση των δεδομένων
         $myOffersData = array();
 
+        // Εκτέλεση του query
         $sqlmyoffers = $conn->query($myoffers);
 
         if ($sqlmyoffers) {
+            // Διασχίζουμε τα αποτελέσματα και αποθηκεύουμε τα δεδομένα στον πίνακα myOffersData
             while ($row = $sqlmyoffers->fetch_assoc()) {
-        
                 $myOffersData[] = array(
                     "civilian_first_name" => $row["civilian_first_name"],
                     "civilian_last_name" => $row["civilian_last_name"],
@@ -319,30 +327,29 @@ function fetchMyOffers($conn,$defaultUsername){
                     "vehicle_name" => $row["vehicle_name"]                   
                 );
             }
-            // Store $data3 in a session variable
+             // Αποθήκευση των δεδομένων στη session
             $_SESSION['myOffers'] = $myOffersData;
 
-            // Encode $data1 array to JSON
+            // Κωδικοποίηση των δεδομένων σε JSON
             $json_data = json_encode($myOffersData);
 
-            // Specify the path to store the JSON file
+            // Ορισμός του μονοπατιού για την αποθήκευση του JSON αρχείου
             $json_file = 'myOffers.json';
 
-            // Write JSON data to file
+           // Εγγραφή των δεδομένων στο JSON
             if (file_put_contents($json_file, $json_data)) {
-                
             } else {
+                // Εμφάνιση μηνύματος σφάλματος σε περίπτωση αποτυχίας εγγραφής
                 return "Unable to write JSON data to $json_file";
             }
 
-            // Close the result set
+            // Κλείσιμο του sqlmyoffers
             $sqlmyoffers->close();
-
         } else {
             die("Error executing the SQL query: " . $conn->error);
         }
     }
-    // Check if this request is to update the JSON file
+    // Έλεγχος αν το αίτημα είναι για ενημέρωση του JSON αρχείου
     if (isset($_GET['myOffers_json'])) {
         echo fetchMyOffers($conn,$defaultUsername);
         exit();
@@ -350,41 +357,44 @@ function fetchMyOffers($conn,$defaultUsername){
         fetchMyOffers($conn,$defaultUsername);
     }
 
+//-----------------συνάρτηση για ανάκτηση του πλήθους των task------------------------
 function fetchTaskCount($conn, $defaultUsername) {
         $taskCountQuery = "SELECT COUNT(task_volunteer) AS task_count FROM task WHERE task_volunteer = '$defaultUsername'";
-    
+
+        // Αρχικοποίηση πίνακα για αποθήκευση των δεδομένων
         $taskCountData = array();
     
+        // Εκτέλεση του query
         $sqltaskCount = $conn->query($taskCountQuery);
     
         if ($sqltaskCount) {
+            // Διασχίζουμε τα αποτελέσματα και αποθηκεύουμε τα δεδομένα στον πίνακα taskCountData
             while ($row = $sqltaskCount->fetch_assoc()) {
                 $taskCountData[] = array(
                     "task_count" => $row["task_count"]
                 );
             }
     
-            // Encode $taskCountData array to JSON
+            // Κωδικοποίηση των δεδομένων σε JSON
             $json_data = json_encode($taskCountData);
     
-            // Specify the path to store the JSON file
+            // Ορισμός του μονοπατιού για την αποθήκευση του JSON αρχείου
             $json_file = 'taskcount.json';
     
-            // Write JSON data to file
+            // Εγγραφή των δεδομένων στο JSON
             if (file_put_contents($json_file, $json_data)) {
-                return "JSON data successfully written to $json_file";
             } else {
+                // Εμφάνιση μηνύματος σφάλματος σε περίπτωση αποτυχίας εγγραφής
                 return "Unable to write JSON data to $json_file";
             }
     
-            // Close the result set
+            // Κλείσιμο του sqltaskCount
             $sqltaskCount->close();
         } else {
             die("Error executing the SQL query: " . $conn->error);
         }
     }
-    
-    // Check if this request is to update the JSON file
+    // Έλεγχος αν το αίτημα είναι για ενημέρωση του JSON αρχείου
     if (isset($_GET['taskcount_json'])) {
         echo fetchTaskCount($conn, $defaultUsername);
         exit();
@@ -394,9 +404,11 @@ function fetchTaskCount($conn, $defaultUsername) {
     
 
     
-//________________________________queries for load and unload_________________________________________
+//-----------------Διαχείρηση φόρμας για load & unload ------------------------
+// Ελέγχουμε αν η φόρμα έχει υποβληθεί
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
+    // Ελέγχουμε αν έχουν οριστεί όλα τα απαιτούμενα πεδία της φόρμας
     if (isset($_POST['Cateload']) && isset($_POST['Prodload']) && isset($_POST['Quantload']) && isset($_POST['loadAddress']) && isset($_POST['Vehicle_name'])) {
         $Category1 = $_POST['Cateload'];
         $Product1 = $_POST['Prodload'];
@@ -404,21 +416,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $location1 = $_POST['loadAddress'];
         $v_name = $_POST['Vehicle_name'];
 
+        //Ελέγχουμε αν το προιον είναι στο όχημα
         $stmtCheck = $conn->prepare("SELECT quantity FROM vehiclesOnAction WHERE category = ? AND products = ? AND driver = ?");
         $stmtCheck->bind_param("sss", $Category1, $Product1, $defaultUsername);
         $stmtCheck->execute();
         $stmtCheck->store_result();
-
+        //Αν ναι τότε:
         if ($stmtCheck->num_rows > 0) {
             $stmtCheck->bind_result($currentQuantity);
             $stmtCheck->fetch();
             $newQuantity = $currentQuantity + $Quantity1;
-
+            
+            // Ενημέρωση του ίδη υπάρχοντος προιον στο όχημα με την νέα ποσότητα
             $stmtUpdate = $conn->prepare("UPDATE vehiclesOnAction SET quantity = ?, vehicle_location = ?, v_name = ? WHERE category = ? AND products = ? AND driver = ?");
             $stmtUpdate->bind_param("isssss", $newQuantity, $location1, $v_name, $Category1, $Product1, $defaultUsername);
             $stmtUpdate->execute();
             $stmtUpdate->close();
+        //Αν όχι τότε:
         } else {
+            // Εισαγωγή του νέου προιοντος στο όχημα
             $stmtInsert = $conn->prepare("INSERT INTO vehiclesOnAction (v_name, driver, products, quantity, category, vehicle_location) VALUES (?, ?, ?, ?, ?, ?)");
             $stmtInsert->bind_param("sssiss", $v_name, $defaultUsername, $Product1, $Quantity1, $Category1, $location1);
             $stmtInsert->execute();
@@ -426,44 +442,54 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         $stmtCheck->close();
 
+        // Ανανέωση της βάσης για το προιόν που πήραμε
         $stmt2 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock - ?, quantity_on_truck = quantity_on_truck + ? WHERE category_name = ? AND products = ?");
         $stmt2->bind_param("iiss", $Quantity1, $Quantity1, $Category1, $Product1);
         $stmt2->execute();
         $stmt2->close();
     } 
 
+    // Ελέγχουμε αν έχουν οριστεί όλα τα απαιτούμενα πεδία της φόρμας
     if (isset($_POST['CateUnload']) && isset($_POST['Produnload']) && isset($_POST['Quantunload']) && isset($_POST['Vehicle_nameUnload'])) {
         $CategoryUnload = $_POST['CateUnload'];
         $ProductUnload = $_POST['Produnload'];
         $QuantityUnload = (int)$_POST['Quantunload'];
         $v_name = $_POST['Vehicle_nameUnload'];
-    
+
+        //Ελέγχουμε την ποσότητα του προιοντος που είναι στο όχημα
         $stmtCheck = $conn->prepare("SELECT quantity FROM vehiclesOnAction WHERE category = ? AND products = ? AND driver = ?");
         $stmtCheck->bind_param("sss", $CategoryUnload, $ProductUnload, $defaultUsername);
         $stmtCheck->execute();
         $stmtCheck->bind_result($existingQuantity);
         $stmtCheck->fetch();
         $stmtCheck->close();
-    
+
+        //Αν η ποσότητα που ξεφορτώνουμε ειναί μικρότερη ή ίση απο αυτή που υπάρχει τότε:
         if ($existingQuantity >= $QuantityUnload) {
             $newQuantity = $existingQuantity - $QuantityUnload;
-    
+            
+            // Αν η νέα ποσότητα ειναι διάφορη του μηδέν:
             if ($newQuantity != 0) {
+                // Ενημέρωση του ίδη υπάρχοντος προιον στο όχημα με την νέα ποσότητα
                 $stmtUpdate = $conn->prepare("UPDATE vehiclesOnAction SET quantity = ? WHERE category = ? AND products = ? AND driver = ?");
                 $stmtUpdate->bind_param("isss", $newQuantity, $CategoryUnload, $ProductUnload, $defaultUsername);
                 $stmtUpdate->execute();
                 $stmtUpdate->close();
+            // Αν η νέα ποσότητα ειναι μηδέν:
             } else {
+                // Διαγραφή του ίδη υπάρχοντος προιον στο όχημα
                 $stmtDelete = $conn->prepare("DELETE FROM vehiclesOnAction WHERE category = ? AND products = ? AND driver = ?");
                 $stmtDelete->bind_param("sss", $CategoryUnload, $ProductUnload, $defaultUsername);
                 $stmtDelete->execute();
                 $stmtDelete->close();
             }
-    
+            
+            // Ανανέωση της βάσης για το προιόν που πήραμε
             $stmtUnload1 = $conn->prepare("UPDATE categories SET quantity_on_stock = quantity_on_stock + ?, quantity_on_truck = quantity_on_truck - ? WHERE category_name = ? AND products = ?");
             $stmtUnload1->bind_param("iiss", $QuantityUnload, $QuantityUnload, $CategoryUnload, $ProductUnload);
             $stmtUnload1->execute();
             $stmtUnload1->close();
+        //Αν η ποσότητα που ξεφορτώνουμε ειναί μεγαλύτερη απο αυτή που υπάρχει τότε:
         } else {
             echo "Error: Not enough quantity to unload.";
         }
@@ -471,13 +497,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
 }
 
+//Ανάκτηση των κατηγοριών απο την βάση 
 $sql = "SELECT DISTINCT category_name FROM categories";
 $result = $conn->query($sql);
 
+//Ανάκτηση των κατηγοριών απο το όχημα
 $sqlUnload = "SELECT DISTINCT category FROM vehiclesOnAction";
 $resultUnload = $conn->query($sqlUnload);
 
-// Close the database connection
+// κλείσιμο της σύνδεσης με την βάση / τερματισμός σύνδεσης
 $conn->close();
 ?>
 
