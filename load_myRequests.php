@@ -90,11 +90,13 @@ h3, .h3 {
 <div class="album-container">
 
 <?php
+// Ξεκινάει η συνεδρία για να έχουμε πρόσβαση στα δεδομένα που έχουμε αποθηκεύσει
 session_start();
 
-// Retrieve data from session
+// Ανάκτηση των δεδομένων από τη συνεδρία
 $myRequests = isset($_SESSION['myRequests']) ? $_SESSION['myRequests'] : [];
 
+// Βρόχος για την εμφάνιση των δεδομένων κάθε αιτήματος σε μορφή καρτέλας
 foreach ($myRequests as $row) {
     echo '<div class="card">';
     echo '<div class="content">';

@@ -635,9 +635,9 @@ $conn->close();
                                             <select id="Cateload" class="form-control p-2" name="Cateload">
                                             <option value="">Select a category</option>
                                                 <?php
-                                                // Check if there are results
+                                                // ελέγχουμε αν υπάρχουν αποτελέσματα 
                                                 if ($result->num_rows > 0) {
-                                                    // Output data of each row
+                                                    //απεικόνηση δεδομένων 
                                                     while($row = $result->fetch_assoc()) {
                                                         echo '<option value="' . htmlspecialchars($row["category_name"]) . '">' . htmlspecialchars($row["category_name"]) . '</option>';
                                                     }
@@ -702,9 +702,9 @@ $conn->close();
                                     <select id="CateUnload" class="form-control p-2" name="CateUnload">
                                         <option value="">Select a category</option>
                                         <?php
-                                        // Check if there are results
+                                        // ελέγχουμε αν υπάρχουν αποτελέσματα 
                                         if ($resultUnload->num_rows > 0) {
-                                            // Output data of each row
+                                            //απεικόνηση δεδομένων 
                                             while($row = $resultUnload->fetch_assoc()) {
                                                 echo '<option value="' . htmlspecialchars($row["category"]) . '">' . htmlspecialchars($row["category"]) . '</option>';
                                             }
@@ -822,41 +822,51 @@ $conn->close();
   <script src="volunteer.js"></script>
    
   <script>
+    //συνάρητηση για να κρύψουμε την φόρμα μας
     function hideForm(formId) {
+            //Με βάση το id που λαμβάνει 
             var form = document.getElementById(formId);
+            //Αλλάζει το display σε none
             form.style.display = 'none';
             }
-
+    //Συνάρτηση για φόρτωση αυτοκινήτου        
     function LoadVehicle(username) {
+        // Δημιουργούμε ένα νέο αντικείμενο XMLHttpRequest για να διαχειριστούμε το AJAX αίτημα
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
+            // Έλεγχος αν το αίτημα έχει ολοκληρωθεί και η απάντηση του διακομιστή είναι επιτυχής
             if (this.readyState == 4 && this.status == 200) {
                 document.getElementById("vehiclestatus").innerHTML = this.responseText;
             }
         };
+        // Άνοιγμα του AJAX αιτήματος με τη μέθοδο GET και την κατάλληλη παράμετρο username
         xmlhttp.open("GET", "load_vehicle.php?q=" + username, true);
         xmlhttp.send();
     }
 
+    // Εκτέλεση της συνάρτησης μόλις φορτωθεί η σελίδα
     document.addEventListener("DOMContentLoaded", function () {
-        // Get the default username value
+        // Λήψη της προεπιλεγμένης τιμής του username
         var defaultUsername = document.getElementById("txtUsername").value;
 
-        // Call LoadVehicle to fetch and display user requests
+        // Κλήση της συνάρτησης LoadVehicle
         LoadVehicle(defaultUsername);
     });
 
     $(document).ready(function() {
+        // Ελέγχουμε τις αλλαγές στην επιλογή του στοιχείου με ID 'Cateload'
             $('#Cateload').change(function() {
                 var category_name = $(this).val();
+                // Δημιουργείτε ένα AJAX αίτημα για να ανακτήσει προϊόντα βάσει της κατηγορίας
                 $.ajax({
                     type: 'POST',
-                    url: 'fetch_products.php',
+                    url: 'fetch_products.php',// Το URL στο οποίο στέλνεται το αίτημα
                     data: {category_name: category_name},
                     dataType: 'json',
                     success: function(data) {
+                        // Αδειάζει το περιεχόμενο του στοιχείου με ID 'Prodload'
                         $('#Prodload').empty();
-                        $('#Prodload').append('<option value="">Select Product</option>');
+                        // Επανάληψη σε κάθε προϊόν που επιστράφηκε από το αίτημα και προσθήκη ως επιλογή στη λίστα
                         $.each(data, function(index, value) {
                             $('#Prodload').append('<option value="'+ value +'">'+ value +'</option>');
                         });
@@ -866,16 +876,19 @@ $conn->close();
         });
   
     $(document).ready(function() {
+        // Ελέγχουμε τις αλλαγές στην επιλογή του στοιχείου με ID 'CateUnload'
         $('#CateUnload').change(function() {
             var category = $(this).val();
+            // Δημιουργείτε ένα AJAX αίτημα για να ανακτήσει προϊόντα βάσει της κατηγορίας
             $.ajax({
-                type: 'POST',
-                url: 'fetch_unload_products.php',
+                type: 'POST', 
+                url: 'fetch_unload_products.php', // Το URL στο οποίο στέλνεται το αίτημα
                 data: {category: category},
                 dataType: 'json',
                 success: function(data) {
+                    // Αδειάζει το περιεχόμενο του στοιχείου με ID 'Produnload'
                     $('#Produnload').empty();
-                    $('#Produnload').append('<option value="">Select Product</option>');
+                    // Επανάληψη σε κάθε προϊόν που επιστράφηκε από το αίτημα και προσθήκη ως επιλογή στη λίστα
                     $.each(data, function(index, value) {
                         $('#Produnload').append('<option value="'+ value +'">'+ value +'</option>');
                     });
@@ -884,75 +897,84 @@ $conn->close();
         });
     });
 
-    // JavaScript functions
+    //Συνάρτηση διαχείρησης Requests
     function handle_requests(id_request) {
+        // Λήψη του ονόματος χρήστη από το στοιχείο με ID "txtUsername"
         var username = document.getElementById("txtUsername").value;
+        // Ορισμός του URL για το αίτημα POST
         var url = "addrequest_volunteer.php";
 
-        // Create a FormData object and append the data you want to send
+        // Δημιουργία αντικειμένου FormData και προσθήκη των δεδομένων που θέλουμε να στείλουμε
         var formData = new FormData();
         formData.append("id_request", id_request);
         formData.append("username", username);
 
-        // Create the XMLHttpRequest object
+        // Δημιουργία αντικειμένου XMLHttpRequest για τη διαχείριση του AJAX αιτήματος
         var xhr = new XMLHttpRequest();
-
-        // Setup the AJAX request
         xhr.open("POST", url, true);
 
-        // Set up the onload and onerror functions
+        // Ορισμός της συνάρτησης που θα εκτελείται όταν το αίτημα ολοκληρωθεί
         xhr.onload = function () {
             if (xhr.status == 200) {
-                // Handle the success response
                 console.log(xhr.responseText);
-                // After handling the request, update the JSON file
+
+                // Κλήση των συναρτήσεων για την ενημέρωση των δεδομένων
                 updateRequests();
                 updateMyRequests();
                 updatetasks(); 
                 location.reload();
             } else {
-                // Handle the error response
+                // Σε περίπτωση λάθους, εμφάνιση του σφάλματος
                 console.error("Error: " + xhr.statusText);
             }
         };
 
         xhr.onerror = function () {
-            // Handle the network error
+            // Εμφάνιση μηνύματος σφάλματος δικτύου
             console.error("Network error");
         };
 
-        // Send the AJAX request with the form data
+        // Αποστολή του AJAX αιτήματος με τα δεδομένα από το FormData
         xhr.send(formData);
     }
 
-
+    //Ανανέωση json για τα waiting requests
     function updateRequests() {
         var xhr = new XMLHttpRequest();
+        // Προετοιμασία του αιτήματος με τη διεύθυνση της τρέχουσας σελίδας και παράμετρο που ζητά το JSON αρχείο
         xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?volWaitingRequests_json=true", true);
         xhr.onload = function () {
             if (xhr.status == 200) {
+                // Εμφάνιση μηνύματος επιτυχίας
                 console.log("JSON file updated successfully");
             } else {
+                 // Σε περίπτωση σφάλματος, εμφάνιση του statusText στο console
                 console.error("Failed to update JSON file: " + xhr.statusText);
             }
         };
         xhr.onerror = function () {
+             // Εμφάνιση μηνύματος σφάλματος δικτύου στο console
             console.error("Network error while updating JSON file");
         };
         xhr.send();
     }
 
+    //Ανανέωση json για τα my requests
     function updateMyRequests() {
         var xhr = new XMLHttpRequest();
+        // Προετοιμασία του αιτήματος με τη διεύθυνση της τρέχουσας σελίδας και παράμετρο που ζητά το JSON αρχείο
         xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?myRequests_json=true", true);
         xhr.onload = function () {
             if (xhr.status == 200) {
+                // Εμφάνιση μηνύματος επιτυχίας
                 console.log("JSON file updated successfully");
             } else {
+                // Σε περίπτωση σφάλματος, εμφάνιση του statusText στο console
                 console.error("Failed to update JSON file: " + xhr.statusText);
             }
         };
         xhr.onerror = function () {
+            // Εμφάνιση μηνύματος σφάλματος δικτύου στο console
             console.error("Network error while updating JSON file");
         };
         xhr.send();
@@ -961,116 +983,136 @@ $conn->close();
         
 
     function handle_offers(offerId) {
+        // Λήψη του ονόματος χρήστη από το στοιχείο με ID "txtUsername"
         var username = document.getElementById("txtUsername").value;
+        // Ορισμός του URL για το αίτημα POST
         var url = "addoffer_volunteer.php";
 
-        // Create a FormData object and append the data you want to send
+        // Δημιουργία αντικειμένου FormData και προσθήκη των δεδομένων που θέλουμε να στείλουμε
         var formData = new FormData();
         formData.append("offerId", offerId);
         formData.append("username", username);
 
-        // Create the XMLHttpRequest object
+        // Δημιουργία αντικειμένου XMLHttpRequest για τη διαχείριση του AJAX αιτήματος
         var xhr = new XMLHttpRequest();
-
-        // Setup the AJAX request
         xhr.open("POST", url, true);
 
-        // Set up the onload and onerror functions
+        // Ορισμός της συνάρτησης που θα εκτελείται όταν το αίτημα ολοκληρωθεί
         xhr.onload = function () {
             if (xhr.status == 200) {
-                // Handle the success response
                 console.log(xhr.responseText);
-                // After handling the request, update the JSON file
+
+                // Κλήση των συναρτήσεων για την ενημέρωση των δεδομένων
                 updateOffers();
                 updateMyOffers();
                 updatetasks();
                 location.reload();
             } else {
-                // Handle the error response
+                // Σε περίπτωση λάθους, εμφάνιση του σφάλματος
                 console.error("Error: " + xhr.statusText);
             }
         };
         xhr.onerror = function () {
-            // Handle the network error
+            // Εμφάνιση μηνύματος σφάλματος δικτύου
             console.error("Network error");
         };
-
-        // Send the AJAX request with the form data
+        // Αποστολή του AJAX αιτήματος με τα δεδομένα από το FormData
         xhr.send(formData);
     }
 
+    //Ανανέωση json για τα waiting Offers
     function updateOffers() {
         var xhr = new XMLHttpRequest();
+        // Προετοιμασία του αιτήματος με τη διεύθυνση της τρέχουσας σελίδας και παράμετρο που ζητά το JSON αρχείο
         xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?volWaitingOffers=true", true);
         xhr.onload = function () {
             if (xhr.status == 200) {
+                // Εμφάνιση μηνύματος επιτυχίας
                 console.log("JSON file updated successfully");
             } else {
+                // Σε περίπτωση σφάλματος, εμφάνιση του statusText στο console
                 console.error("Failed to update JSON file: " + xhr.statusText);
             }
         };
         xhr.onerror = function () {
+            // Εμφάνιση μηνύματος σφάλματος δικτύου στο console
             console.error("Network error while updating JSON file");
         };
         xhr.send();
     }
 
+    //Ανανέωση json για τα my Offers
     function updateMyOffers() {
         var xhr = new XMLHttpRequest();
+        // Προετοιμασία του αιτήματος με τη διεύθυνση της τρέχουσας σελίδας και παράμετρο που ζητά το JSON αρχείο
         xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?myOffers=true", true);
         xhr.onload = function () {
             if (xhr.status == 200) {
+                // Εμφάνιση μηνύματος επιτυχίας
                 console.log("JSON file updated successfully");
             } else {
+                // Σε περίπτωση σφάλματος, εμφάνιση του statusText στο console
                 console.error("Failed to update JSON file: " + xhr.statusText);
             }
         };
         xhr.onerror = function () {
+            // Εμφάνιση μηνύματος σφάλματος δικτύου στο console
             console.error("Network error while updating JSON file");
         };
         xhr.send();
     }
 
+    //Ανανέωση json για τα task του διασώστη
     function updatetasks() {
         var xhr = new XMLHttpRequest();
+        // Προετοιμασία του αιτήματος με τη διεύθυνση της τρέχουσας σελίδας και παράμετρο που ζητά το JSON αρχείο
         xhr.open("GET", "<?php echo $_SERVER['PHP_SELF']; ?>?taskcount_json=true", true);
         xhr.onload = function () {
             if (xhr.status == 200) {
+                // Εμφάνιση μηνύματος επιτυχίας
                 console.log("JSON file updated successfully");
             } else {
+                // Σε περίπτωση σφάλματος, εμφάνιση του statusText στο console
                 console.error("Failed to update JSON file: " + xhr.statusText);
             }
         };
         xhr.onerror = function () {
+            // Εμφάνιση μηνύματος σφάλματος δικτύου στο console
             console.error("Network error while updating JSON file");
         };
         xhr.send();
     }
-
+    //Συνάρτηση των αιτημάτων του διασώστη
     function showMyRequests(username) {
+            // Δημιουργούμε ένα νέο αντικείμενο XMLHttpRequest για να διαχειριστούμε το AJAX αίτημα
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function () {
+                // Έλεγχος αν το αίτημα έχει ολοκληρωθεί και η απάντηση του διακομιστή είναι επιτυχής
                 if (this.readyState == 4 && this.status == 200) {
                     document.getElementById("myRequests").innerHTML = this.responseText;
                 }
             };
+            // Άνοιγμα του AJAX αιτήματος με τη μέθοδο GET και την κατάλληλη παράμετρο username
             xmlhttp.open("GET", "load_myRequests.php?q=" + username, true);
             xmlhttp.send();
         }
-
+        // Εκτέλεση της συνάρτησης μόλις φορτωθεί η σελίδα
         document.addEventListener("DOMContentLoaded", function () {
-            // Get the default username value
+            // Λήψη της προεπιλεγμένης τιμής του username
             var defaultUsername = document.getElementById("txtUsername").value;
 
-            // Call showMyRequests to fetch and display user requests
+            // Κλήση της συνάρτησης LoadVehicle
             showMyRequests(defaultUsername);
         });
 
+    //Συνάρτηση παράδωσης αιτιμάτων
     function deliver_requests(requestId, category, product, quantity) {
-            var username = document.getElementById("txtUsername").value;  // Get the username from PHP and escape it
+            // Λήψη του ονόματος χρήστη από το στοιχείο με ID "txtUsername"
+            var username = document.getElementById("txtUsername").value;
+            // Ορισμός του URL για το αίτημα POST
             var url = "deliver_request_volunteer.php";
 
-            // Create a FormData object and append the data you want to send
+            // Δημιουργία αντικειμένου FormData και προσθήκη των δεδομένων που θέλουμε να στείλουμε
             var formData = new FormData();
             formData.append("requestId", requestId);
             formData.append("category", category);
@@ -1078,101 +1120,102 @@ $conn->close();
             formData.append("quantity", quantity);
             formData.append("username", username);
 
-            // Create the XMLHttpRequest object
+            // Δημιουργία αντικειμένου XMLHttpRequest για τη διαχείριση του AJAX αιτήματος
             var xhr = new XMLHttpRequest();
-
-            // Setup the AJAX request
             xhr.open("POST", url, true);
 
-            // Set up the onload and onerror functions
+            // Ορισμός της συνάρτησης που θα εκτελείται όταν το αίτημα ολοκληρωθεί
             xhr.onload = function () {
                 if (xhr.status == 200) {
-                    // Handle the success response
                     console.log(xhr.responseText);
-                    // Update the UI or perform other actions if needed
+
+                    // Κλήση των συναρτήσεων για την ενημέρωση των δεδομένων
                     updateRequests();
                     updateMyRequests();
                     updatetasks();
-
                     location.reload();
                 
                 } else {
-                    // Handle the error response
+                    // Σε περίπτωση λάθους, εμφάνιση του σφάλματος
                     console.error("Error: " + xhr.statusText);
                 }
             };
 
             xhr.onerror = function () {
-                // Handle the network error
+                 // Εμφάνιση μηνύματος σφάλματος δικτύου
                 console.error("Network error");
             };
 
-            // Send the AJAX request with the form data
+            // Αποστολή του AJAX αιτήματος με τα δεδομένα από το FormData
             xhr.send(formData);
         }
 
-
+  //Συνάρτηση διαγραφής αιτιμάτων
   function delete_request(requestId) {
+        // Ορισμός του URL για το αίτημα POST
         var url = "delete_request_volunteer.php";
 
-        // Create a FormData object and append the data you want to send
+        // Δημιουργία αντικειμένου FormData και προσθήκη των δεδομένων που θέλουμε να στείλουμε
         var formData = new FormData();
         formData.append("requestId", requestId);
 
-        // Create the XMLHttpRequest object
+        // Δημιουργία αντικειμένου XMLHttpRequest για τη διαχείριση του AJAX αιτήματος
         var xhr = new XMLHttpRequest();
-
-        // Setup the AJAX request
         xhr.open("POST", url, true);
 
-        // Set up the onload and onerror functions
+        // Ορισμός της συνάρτησης που θα εκτελείται όταν το αίτημα ολοκληρωθεί
         xhr.onload = function () {
             if (xhr.status == 200) {
-                // Handle the success response
                 console.log(xhr.responseText);
+                // Κλήση των συναρτήσεων για την ενημέρωση των δεδομένων
                 updateRequests();
                 updateMyRequests();
                 updatetasks(); 
                 location.reload();
             } else {
-                // Handle the error response
+                // Σε περίπτωση λάθους, εμφάνιση του σφάλματος
                 console.error("Error: " + xhr.statusText);
             }
         };
         xhr.onerror = function () {
-            // Handle the network error
+            // Εμφάνιση μηνύματος σφάλματος δικτύου
             console.error("Network error");
         };
-        // Send the AJAX request with the form data
+       // Αποστολή του AJAX αιτήματος με τα δεδομένα από το FormData
         xhr.send(formData);
     }
 
-
+    //Συνάρτηση των προσφορών του διασώστη
     function showMyOffers(username) {
+            // Δημιουργούμε ένα νέο αντικείμενο XMLHttpRequest για να διαχειριστούμε το AJAX αίτημα
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function () {
+                // Έλεγχος αν το αίτημα έχει ολοκληρωθεί και η απάντηση του διακομιστή είναι επιτυχής
                 if (this.readyState == 4 && this.status == 200) {
                     document.getElementById("myOffers").innerHTML = this.responseText;
                 }
             };
+            // Άνοιγμα του AJAX αιτήματος με τη μέθοδο GET και την κατάλληλη παράμετρο username
             xmlhttp.open("GET", "load_myOffers.php?q=" + username, true);
             xmlhttp.send();
         }
-
+         // Εκτέλεση της συνάρτησης μόλις φορτωθεί η σελίδα
         document.addEventListener("DOMContentLoaded", function () {
-            // Get the default username value
+            // Λήψη της προεπιλεγμένης τιμής του username
             var defaultUsername = document.getElementById("txtUsername").value;
 
-            // Call showMyOffers to fetch and display user offers
+            // Κλήση της συνάρτησης LoadVehicle
             showMyOffers(defaultUsername);
         });
 
-       
+    //Συνάρτηση αποδοχής προσφορών  
     function accept_offer(offerId, category, product, quantity,latitude,longitude) {
-            var username = document.getElementById("txtUsername").value;  // Get the username from PHP and escape it
+            // Λήψη του ονόματος χρήστη από το στοιχείο με ID "txtUsername"
+            var username = document.getElementById("txtUsername").value;
+            // Ορισμός του URL για το αίτημα POST  
             var url = "accept_offer_volunteer.php";
 
-            // Create a FormData object and append the data you want to send
+            // Δημιουργία αντικειμένου FormData και προσθήκη των δεδομένων που θέλουμε να στείλουμε
             var formData = new FormData();
                 formData.append("offerId", offerId);
                 formData.append("category", category);
@@ -1182,75 +1225,67 @@ $conn->close();
                 formData.append("longitude", longitude);
                 formData.append("username", username);
 
-            // Create the XMLHttpRequest object
+            // Δημιουργία αντικειμένου XMLHttpRequest για τη διαχείριση του AJAX αιτήματος
             var xhr = new XMLHttpRequest();
-
-            // Setup the AJAX request
             xhr.open("POST", url, true);
 
-            // Set up the onload and onerror functions
+            // Ορισμός της συνάρτησης που θα εκτελείται όταν το αίτημα ολοκληρωθεί
             xhr.onload = function () {
                 if (xhr.status == 200) {
-                    // Handle the success response
                     console.log(xhr.responseText);
-                    // Update the UI or perform other actions if needed
+
+                   // Κλήση των συναρτήσεων για την ενημέρωση των δεδομένων
                     updateOffers();
                     updateMyOffers();
                     updatetasks();
-
                     location.reload();
 
                 } else {
-                    // Handle the error response
+                    // Σε περίπτωση λάθους, εμφάνιση του σφάλματος
                     console.error("Error: " + xhr.statusText);
-                    alert("Error occurred: " + xhr.statusText);
                 }
             };
 
             xhr.onerror = function () {
-                // Handle the network error
+                // Εμφάνιση μηνύματος σφάλματος δικτύου
                 console.error("Network error");
-                alert("Network error. Please try again later.");
             };
 
-            // Send the AJAX request with the form data
+            // Αποστολή του AJAX αιτήματος με τα δεδομένα από το FormData
             xhr.send(formData);
         }
-
+    //Συνάρτηση διαγραφής προσφορών
     function delete_offer(offerId) {
+        // Ορισμός του URL για το αίτημα POST
         var url = "delete_offer_volunteer.php";
 
-        // Create a FormData object and append the data you want to send
+        // Δημιουργία αντικειμένου FormData και προσθήκη των δεδομένων που θέλουμε να στείλουμε
         var formData = new FormData();
         formData.append("offerId", offerId);
 
-        // Create the XMLHttpRequest object
+        // Δημιουργία αντικειμένου XMLHttpRequest για τη διαχείριση του AJAX αιτήματος
         var xhr = new XMLHttpRequest();
-
-        // Setup the AJAX request
         xhr.open("POST", url, true);
 
-        // Set up the onload and onerror functions
+        // Ορισμός της συνάρτησης που θα εκτελείται όταν το αίτημα ολοκληρωθεί
         xhr.onload = function () {
             if (xhr.status == 200) {
-                // Handle the success response
                 console.log(xhr.responseText);
-
+                // Κλήση των συναρτήσεων για την ενημέρωση των δεδομένων
                 updateOffers();
                 updateMyOffers();
                 updatetasks();
-                // You can update the UI or perform other actions if needed
                 location.reload();
             } else {
-                // Handle the error response
+                // Σε περίπτωση λάθους, εμφάνιση του σφάλματος
                 console.error("Error: " + xhr.statusText);
             }
         };
         xhr.onerror = function () {
-            // Handle the network error
+            // Εμφάνιση μηνύματος σφάλματος δικτύου
             console.error("Network error");
         };
-        // Send the AJAX request with the form data
+        // Αποστολή του AJAX αιτήματος με τα δεδομένα από το FormData
         xhr.send(formData);
     }
 

@@ -1,26 +1,26 @@
 <?php
+//σύνδεση με mySQL βαση
 include 'Connection.php';
 
-// Check connection
+// Έλεγχος αν η σύνδεση με τη βάση δεδομένων ήταν επιτυχής
 if ($conn->connect_error) {
     die("Failed to connect to MySQL: " . $conn->connect_error);
 }
 
-// Get data from the AJAX request
+// Λήψη παραμέτρων
 $requestId = $_POST['requestId'];
 
-// Check if the username matches the request_civilian
-// Prepare and execute the insert query
+// Διαγραφή αιτήματος απο τα task του εθελοντή 
 $deleteoffer = $conn->prepare("DELETE FROM task where task_request_id = ? ");
 $deleteoffer->bind_param("i",  $requestId);
 $deleteoffer->execute();
 
-// Prepare and execute the update query
+//Ενημέρωση του  αιτήματος σε WAITING 
 $updateoffer = $conn->prepare("UPDATE request SET state = 'WAITING' WHERE id_request = ?");
 $updateoffer->bind_param("i", $requestId);
 $updateoffer->execute();
 
 
-// Close the database connection
+// κλείσιμο της σύνδεσης με την βάση 
 $conn->close();
 ?>
