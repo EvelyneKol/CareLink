@@ -1,15 +1,16 @@
+// Συνάρτηση για την εμφάνιση της φόρμας load
 function loadItems(formId) {
   var form = document.getElementById(formId);
-  // Add your logic for showing the form and handling Load Items here
-  form.style.display = 'block';
-  }
-  
-function unloadItems(formId) {
-  var form = document.getElementById(formId);
-  // Add your logic for showing the form and handling Unload Items here
   form.style.display = 'block';
   }
 
+// Συνάρτηση για την εμφάνιση της φόρμας unload
+function unloadItems(formId) {
+  var form = document.getElementById(formId);
+  form.style.display = 'block';
+  }
+
+//Δημιουργεία χάρτη
 var map = L.map('map');
 L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL', {
   attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
@@ -17,7 +18,7 @@ L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbX
 
 var userLocationMarker;
 var baseMarker;
-var line = L.polyline([], { color: 'black' }).addTo(map); // Initialize an empty polyline
+var line = L.polyline([], { color: 'black' }).addTo(map);
 var RequestMarkers = [];
 var RequestLines = [];
 
@@ -27,28 +28,31 @@ var OfferLines = [];
 
 // Fetch coordinates from the server and initialize the marker
 $.ajax({
-    url: 'get_location.php',
+    url: 'get_location.php',// URL που περιέχει τις συντεταγμενεσ τησ βάσης 
     type: 'GET',
-    dataType: 'json',
+    dataType: 'json',// Μορφή των δεδομένων που αναμένονται από τον διακομιστή
     success: function(response) {
         if (response.error) {
             console.error(response.error);
             return;
         }
 
+         // Ανάκτηση και μετατροπή των συντεταγμένων από την απόκριση
         var Lat = parseFloat(response.latitude);
         var Lng = parseFloat(response.longitude);
 
+        // Κλήση συνάρτησης για την αρχικοποίηση του marker της βάσης
         initializeBaseMarker(Lat, Lng);
-        // Update polyline
+        // Ενημέρωση της γραμμής
         updateLine();
     },
-    error: function(xhr, status, error) {
+    error: function(xhr, status, error) { // Συνάρτηση που καλείται όταν προκύπτει σφάλμα κατά την αίτηση
         console.error(error);
     }
 });
 
 if ('geolocation' in navigator) {
+   // Λήψη της τρέχουσας θέσης του χρήστη
   navigator.geolocation.getCurrentPosition(function (position) {
       var userLat = position.coords.latitude;
       var userLng = position.coords.longitude;
@@ -58,10 +62,10 @@ if ('geolocation' in navigator) {
 
       initializeUserLocationMarker(userLat, userLng);
 
-      // Calculate distance between user's location and baseMarker's initial position
+       // Υπολογισμός της απόστασης μεταξύ της θέσης του χρήστη και της αρχικής θέσης του baseMarker
       var initialDistance = calculateDistance(userLocationMarker.getLatLng(), baseMarker.getLatLng());
+       // Εμφάνιση της απόστασης
       userLocationMarker.bindPopup(`Your Location - Distance: ${initialDistance.toFixed(2)} kilometers`).openPopup();
-      // Update the value of the address input field
       document.getElementById("loadAddress").value = geolocation;
   });
 } else {
@@ -69,6 +73,7 @@ if ('geolocation' in navigator) {
 }
 
 function initializeBaseMarker(Lat, Lng) {
+  // Δημιουργία του εικονιδίου για τον δείκτη βάσης
   var baseIcon = L.icon({
       iconUrl: 'images/base.png',
       iconSize: [41, 41],
@@ -76,9 +81,11 @@ function initializeBaseMarker(Lat, Lng) {
       popupAnchor: [1, -34]
   });
 
+  // Δημιουργία του δείκτη βάσης με τις συντεταγμένες και το εικονίδιο που καθορίστηκε
   baseMarker = L.marker([Lat, Lng]).addTo(map).setIcon(baseIcon);
   baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
 
+  // Δημιουργία ενός κύκλου γύρω από τη θέση του δείκτη βάσης
   var circle = L.circle([Lat, Lng], {
       color: 'blue',
       fillColor: 'blue',
@@ -89,6 +96,7 @@ function initializeBaseMarker(Lat, Lng) {
 }
 
   function initializeUserLocationMarker(userLat, userLng) {
+    // Δημιουργία εικονιδίου για τον δείκτη της θέσης του χρήστη
     var myTruck = L.icon({
       iconUrl: 'truck.png',
       iconSize: [41, 41],
@@ -96,20 +104,22 @@ function initializeBaseMarker(Lat, Lng) {
       popupAnchor: [1, -34]
     });
 
-  
+    // Δημιουργία του δείκτη θέσης του χρήστη με τις συντεταγμένες και το εικονίδιο που καθορίστηκε
     userLocationMarker = L.marker([userLat, userLng], { draggable: true }).addTo(map).setIcon(myTruck);
     userLocationMarker.bindPopup('Your Location').openPopup();
   
     userLocationMarker.on('dragend', function (event) {
+      // Ανάκτηση της νέας θέσης του δείκτη μετά τη μετακίνηση
       var position = userLocationMarker.getLatLng();
       userLocationMarker.setLatLng(position);
       userLocationMarker.getPopup().setContent('Your Location, new Position: ' + position.toString()).update();
   
-      // Calculate distance between userLocationMarker and baseMarker
+      // Υπολογισμός της απόστασης μεταξύ του δείκτη θέσης του χρήστη και του βασικού δείκτη
       var distance = calculateDistance(position, baseMarker.getLatLng());
       userLocationMarker.setPopupContent(`Your Location - Distance: ${distance.toFixed(2)} kilometers`).update();
   
-      updateLine(); // Add this line to update offer lines
+      // Ενημέρωση
+      updateLine();
       updateRequestLines();
       updateOfferLines();
       checkDistancesforRequests();
@@ -120,11 +130,14 @@ function initializeBaseMarker(Lat, Lng) {
   
   
   function updateLine() {
+     // Υπολογισμός της απόστασης μεταξύ του δείκτη βάσης και του δείκτη θέσης του χρήστη
     var distance = calculateDistance(baseMarker.getLatLng(), userLocationMarker.getLatLng());
   
+    // Ανάκτηση των στοιχείων των κουμπιών
     var loadItemsButton = document.getElementById('yourButtonId1');
     var unloadItemsButton = document.getElementById('yourButtonId2');
-  
+
+    // Ενεργοποίηση ή απενεργοποίηση των κουμπιών με βάση την απόσταση
     if (distance < 0.1) {
       loadItemsButton.disabled = false;
       unloadItemsButton.disabled = false;
@@ -132,12 +145,16 @@ function initializeBaseMarker(Lat, Lng) {
       loadItemsButton.disabled = true;
       unloadItemsButton.disabled = true;
     }
-  
+
+    // Ενημέρωση της γραμμής που συνδέει τον δείκτη βάσης με τον δείκτη θέσης του χρήστη
     line.setLatLngs([baseMarker.getLatLng(), userLocationMarker.getLatLng()]);
   }
   
   function calculateDistance(pointA, pointB) {
-    var earthRadius = 6371; // Earth's radius in kilometers
+    // Ακτίνα της Γης σε χιλιόμετρα
+    var earthRadius = 6371;
+
+    // Υπολογισμός της διαφοράς του γεωγραφικού πλάτους και του μήκους
     var latDiff = (pointB.lat - pointA.lat) * (Math.PI / 180);
     var lngDiff = (pointB.lng - pointA.lng) * (Math.PI / 180);
   
@@ -147,7 +164,8 @@ function initializeBaseMarker(Lat, Lng) {
   
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   
-    var distance = earthRadius * c; // Distance in kilometers
+    // Υπολογισμός της απόστασης σε χιλιόμετρα
+    var distance = earthRadius * c;
     return distance;
   }
 
@@ -158,7 +176,7 @@ function initializeBaseMarker(Lat, Lng) {
   var myOffers = 0; 
 
  
-  //__________________________Fetch the JSON data from the file__________________________
+  // Ανάκτηση δεδομένων απο τα αρχεία json
   fetch('volWaitingRequests.json')
     .then(response => response.json())
     .then(data => {
@@ -194,14 +212,15 @@ function initializeBaseMarker(Lat, Lng) {
     })
     .catch(error => console.error('Error fetching the taskcount JSON data:', error));
  
-//__________________active layers__________________________________________
+//Ενεργά επίπεδα (layers)
+// Δημιουργία ενός αντικειμένου για την αποθήκευση ενεργών επιπέδων (layers)
 const activeLayers = {};
 
-// Create a global marker cluster group
+// Δημιουργία ενός global marker cluster group για την ομαδοποίηση των σημείων
 const allMarkersClusterGroup = L.markerClusterGroup();
 map.addLayer(allMarkersClusterGroup);
 
-// Store all markers by layer
+// Δημιουργία ενός αντικειμένου για την αποθήκευση σημείων ανά επίπεδο
 const layerMarkers = {
   layer1: [],
   layer2: [],
@@ -210,8 +229,7 @@ const layerMarkers = {
   layer5: []
 };
 
-
-//___________________________________volWaitingRequests___________________________________
+// Markers για τα Request & offers
 function Waiting_requests_markers(data) {
   // Clear existing markers for the layer
   layerMarkers.layer1 = [];
