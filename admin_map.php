@@ -49,7 +49,7 @@ function baseLocation($conn) {
         }
     }
 
-//οχηματα
+//query για οχηματα
     $vehicles = "SELECT 
                     vehicle.vehicle_name,
                     SUBSTRING_INDEX(vehicle.vehicle_location, ',', 1) AS latitude,
@@ -70,11 +70,11 @@ function baseLocation($conn) {
     $sqlVehicle = $conn->query($vehicles);
     
     if ($sqlVehicle) {
-        // Initialize an empty array to hold the data
+        // αρχικοποίηση πίνακα για αποθήκευση δεδομένων
         $data2 = array();
     
         while ($row = $sqlVehicle->fetch_assoc()) {        
-            // Populate the $data2 array with data from the query
+            // αντιστοίχηση $data2 πίνακα με τα δεδομένα query
             $data2[] = array(
                 "vehicle_name" => $row["vehicle_name"],
                 "quantity" => $row["quantity"],
@@ -85,10 +85,10 @@ function baseLocation($conn) {
             );
         }
        
-        // Encode $data3 array to JSON
+        // αποκωδικοποίηση $data3 σε JSON 
         $json_data = json_encode($data2);
     
-        // Specify the path to store the JSON file
+        // όνομα JSON file για αποθήκευση
         $json_file = 'vehicles.json';
     
         // Write JSON data to file
@@ -132,10 +132,12 @@ $waitingRequest = "SELECT
             vehicle ON vehiclesOnAction.v_name = vehicle.vehicle_name
             WHERE  request.state = 'WAITING'";
 
+ // αρχικοποίηση πίνακα για αποθήκευση δεδομένων
 $waitingRequestdata = array();
 $sqlwaitingRequest = $conn->query($waitingRequest);
 
 if ($sqlwaitingRequest) {
+     // αντιστοίχηση $data2 πίνακα με τα δεδομένα query
     while ($row = $sqlwaitingRequest->fetch_assoc()) {
         $waitingRequestdata[] = array(
             "civilian_first_name" => $row["civilian_first_name"],
@@ -151,13 +153,13 @@ if ($sqlwaitingRequest) {
         );
     }
 
-// Encode $data4 array to JSON
+// αποκωδικοποίηση $waitingRequestdata σε JSON
 $json_data = json_encode($waitingRequestdata);
 
-// Specify the path to store the JSON file
+// όνομα JSON file για αποθήκευση
 $json_file = 'waitingRequests.json';
 
-// Write JSON data to file
+// γράφει το JSON αρχείο με τα δεδομένα
 file_put_contents($json_file, $json_data);
 
 $sqlwaitingRequest->close();
@@ -165,7 +167,7 @@ $sqlwaitingRequest->close();
 return "Error executing the SQL query: " . $conn->error;
 }
 
-
+// query για select offers
 $offers = "SELECT distinct
             civilian.civilian_first_name,
             civilian.civilian_last_name,
@@ -192,12 +194,14 @@ $offers = "SELECT distinct
             WHERE 
             offer.offer_status NOT IN ('CANCELED', 'COMPLETED')";
 
+ // αρχικοποίηση πίνακα για αποθήκευση δεδομένων
 $data = array();
+//αποθηκευση αποτελεσμάτων
 $sqloffers = $conn->query($offers);
 
 if ($sqloffers) {
     while ($row = $sqloffers->fetch_assoc()) {
-        // Populate the $data array with data from the query
+         // αντιστοίχηση $data2 πίνακα με τα δεδομένα query
         $data[] = array(
             "civilian_first_name" => $row["civilian_first_name"],
             "civilian_last_name" => $row["civilian_last_name"],
@@ -214,20 +218,20 @@ if ($sqloffers) {
         );
     }
 
-    // Encode $data3 array to JSON
+    // αποκωδικοποίηση $data3 array σε JSON
     $json_data = json_encode($data);
 
-    // Specify the path to store the JSON file
+    // όνομα JSON file για αποθήκευση
     $json_file = 'Offers.json';
 
-    // Write JSON data to file
+    // γράφει το JSON αρχείο με τα δεδομένα
     if (file_put_contents($json_file, $json_data)) {
     
     } else {
         echo "Unable to write JSON data to $json_file";
     }
     
-    // Close the result set
+    // κλείσιμο του result set
     $sqloffers->close();
 } else {
     die("Error executing the SQL query: " . $conn->error);
@@ -261,13 +265,14 @@ $onTheWayRequests = "SELECT distinct
                 vehicle ON vehiclesOnAction.v_name = vehicle.vehicle_name
                 WHERE  request.state = 'ON THE WAY'";
 
+ // αρχικοποίηση πίνακα για αποθήκευση δεδομένων
 $onTheWayRequestData = array();
 
 $sqlOnTheWayRequest = $conn->query($onTheWayRequests);
 
 if ($sqlOnTheWayRequest) {
     while ($row = $sqlOnTheWayRequest->fetch_assoc()) {
-       
+        // αντιστοίχηση $data2 πίνακα με τα δεδομένα query
         $onTheWayRequestData[] = array(
             "civilian_first_name" => $row["civilian_first_name"],
             "civilian_last_name" => $row["civilian_last_name"],
@@ -285,18 +290,18 @@ if ($sqlOnTheWayRequest) {
         );
     }
     
-    // Encode $data1 array to JSON
+    // αποκωδικοποίηση $data1 πίνακα σε JSON
     $json_data = json_encode($onTheWayRequestData);
 
-    // Specify the path to store the JSON file
+    // όνομα JSON file για αποθήκευση
     $json_file = 'OnWayRequests.json';
 
-    // Write JSON data to file
+    // γράφει το JSON αρχείο με τα δεδομένα
     if (file_put_contents($json_file, $json_data)) {
     } else {
         return "Unable to write JSON data to $json_file";
     }
-    // Close the result set
+    // κλείσιμο σύνδεσης για αποτελέσματα
     $sqlOnTheWayRequest->close();
 } else {
     die("Error executing the SQL query: " . $conn->error);
@@ -325,20 +330,21 @@ $conn->close();
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@latest/dist/MarkerCluster.Default.css" />
     <script src="https://unpkg.com/leaflet.markercluster@latest/dist/leaflet.markercluster.js"></script>
     <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <!-- Leaflet Routing Machine CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
-  <!-- Leaflet Routing Machine JavaScript -->
-  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css" />
-  <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <!-- Leaflet Routing Machine JavaScript -->
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 </head>
 <body>
+   <!-- nav bar -->
     <div class="navbar">
         <img src="images/logo1.png" alt="Logo" >
         <ul class="nav">
@@ -355,6 +361,7 @@ $conn->close();
     </div>
 
 
+    <!-- χάρτης με φίλτρα σε μορφή checkbox -->
     <div class="Firstsection">
         <h2> Map </h2>
         <br>
