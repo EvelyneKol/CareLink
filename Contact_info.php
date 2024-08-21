@@ -1,4 +1,5 @@
 <?php
+//σύνδεση και έλεγχος
 include 'Connection.php';
 
 if ($conn->connect_error) {
@@ -15,18 +16,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt = $conn->prepare("INSERT INTO contact_info (info_fname , info_lname , info_mail , info_phone, comments) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("sssis", $firstname, $Lastname, $Email, $Phone, $Comments); // Fixed order of parameters
     if ($stmt->execute()) {
-      // Redirect to a different page after successful form submission
+      // επιστροφή στην ίδια σελίδα μετά το INSERT
       header('Location: Contact_info.php');
-      exit(); // Make sure to exit to prevent further execution of the script
+      exit(); // exit από το execution 
     } else {
       echo "Error: " . $stmt->error;
     }
 
-    // Close the statement
+    //  κλείσιμο prepared statement 
     $stmt->close();
 }
 
-// Close the database connection outside the if block
+// κλέισιμο σύνδεσης
 $conn->close();
 ?>
 
@@ -97,6 +98,7 @@ $conn->close();
             <div class="row">
                 <div class="col1 col-sm-7">
                     <h3>Contact Us</h3>
+                    <!-- όταν υποβάλλεται η φόρμα, τα δεδομένα θα σταλούν στο ίδιο το αρχείο -->
                     <form  action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" onsubmit="resetForm()">
                         <div class="row">
                             <div class="col-sm-6">
@@ -111,6 +113,7 @@ $conn->close();
                                     placeholder="Enter your Last Name.." pattern="[a-zA-Z]{0-25}" required>
                             </div>
                         </div>
+                        <!-- πεδία φόρμας -->
                         <br>
                         <label for="Email" class="form-label">Email:</label>
                         <input type="email" id="Email" class="form-control p-2" name="Email"
@@ -125,7 +128,7 @@ $conn->close();
                         <textarea id="Comments" class="form-control p-2" name="Comments" rows="3" cols="20"
                             placeholder="Enter your comments..." required></textarea>
                         <button class="submit" type="submit">Submit</button>
-                        <button class="reset" type="reset" onclick="resetForm()">Reset</button>
+                        <button class="reset" type="reset" onclick="resetForm()">Reset</button><!-- κουμπί για καθαρισμό πεδίων φόρμας -->
                     </form>
                 </div>
                 <div class="col2 col-sm-5">
@@ -173,19 +176,19 @@ $conn->close();
 
 <script>
 
-    // Initialize the map
-    var map = L.map('map').setView([38.247368, 21.736798], 16); // Set your preferred coordinates and zoom level
+    // αρχικοποίηση χάρτη με την τοποθεσία των γραφείων 
+    var map = L.map('map').setView([38.247368, 21.736798], 16); // συντεταγμένες και επίπεδο zoom 
 
-    // Add the tile layer (replace with your desired map provider)
+    //προσθήκη tile layer χάρτη
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
     }).addTo(map);
 
-    // Add a marker for your headquarters
-    var headquartersMarker = L.marker([38.247368, 21.736798]).addTo(map); // Set your headquarters coordinates
+    // προσθήκη marker για τα headquarters
+    var headquartersMarker = L.marker([38.247368, 21.736798]).addTo(map); // προσθήκη συντεταγμένων διεύθυνσης
 
-    // Add a popup to the marker
-    headquartersMarker.bindPopup("<b>Headquarters: </b><br>Agiou Nikolaou 38").openPopup(); // Set your headquarters address 
+    // προσθήκη popup στον marker
+    headquartersMarker.bindPopup("<b>Headquarters: </b><br>Agiou Nikolaou 38").openPopup(); // περιεχόμενο popup
 
 
 </script>

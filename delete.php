@@ -5,11 +5,11 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if the request ID is provided in the URL
+// εέλγχος ύπαρξης του request ID
 if (isset($_GET['id'])) {
     $requestId = $_GET['id'];
 
-    // Prepare and execute the SQL query to delete the row
+    // επιλογή και εκτέλεση του query για διαραφή της εγγραφής απο τον πίνακα request
     $sql = "DELETE FROM request WHERE id_request = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $requestId);
@@ -17,7 +17,7 @@ if (isset($_GET['id'])) {
     $result = $stmt->execute();
     $stmt->close();
 } else {
-    // Return an error message if the request ID is not provided
+    // μήνυμα λάθους αν το request ID δεν δωθεί 
     echo json_encode(['success' => false, 'message' => 'Request ID not provided.']);
 }
 

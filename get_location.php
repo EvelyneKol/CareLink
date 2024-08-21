@@ -1,12 +1,12 @@
 <?php
 include 'Connection.php';
 
-// Check connection
+//έλεγχος σύνδεσης
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Get the coordinates for the base with ID 1
+// πάρε τις συντεταγμένες απο την βάση με ID 1 για εμφάνιση στον χάρτη
 $base_id = 1;
 $sql = "SELECT base_location FROM base WHERE base_id = $base_id";
 $result = $conn->query($sql);

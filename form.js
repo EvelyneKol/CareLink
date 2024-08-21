@@ -1,4 +1,4 @@
-// Function to switch between tabs
+// συνάρτηση για εναλλαγή ανέμεσα στα tabs
 function showTab(tabName) {
     var tabs = document.getElementsByClassName("tab");
     for (var i = 0; i < tabs.length; i++) {
@@ -14,22 +14,21 @@ function showTab(tabName) {
     event.currentTarget.classList.add("active");
 }
 
-// Function to handle login
+// συνάρτηση για διαχείρηση login
 function login() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
 
     if (username === "" || password === "") {
         alert("Please fill in all fields.");
-    } else if (password.length < 8 || password.length > 15 || !/[A-Z]/.test(password) || !/[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password)) {
-        alert("Password must be 8-15 characters long and include at least one capital letter and one symbol.");
-    } else {
-        // Add your login logic here
-        alert("Logging in...");
-    }
+    } else if (password.length < 8 || password.length > 15 || !/[A-Z]/.test(password) || !/[a-z]/.test(password)) {
+        alert("Password must be 8-15 characters long and include at least one number and one uppercase and lowercase letter.");
+    } 
 }
 
-// Function to validate password during signup
+
+
+// συνάρτηση για έλεγχο έγκυρου κωδικού κατα το signup
 function validatePassword() {
     var name = document.getElementById("name").value;
     var lastname = document.getElementById("lastname").value;
@@ -38,15 +37,15 @@ function validatePassword() {
 
     if (name === "" || lastname === "" || email === "" || password === "") {
         alert("Please fill in all fields.");
-    } else if (password.length < 8 || password.length > 15 || !/[A-Z]/.test(password) || !/[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password)) {
-        alert("Password must be 8-15 characters long and include at least one capital letter and one symbol.");
+    } else if (password.length < 8 || password.length > 15 || !/[A-Z]/.test(password) || !/[a-z]/.test(password)) {
+        alert("Password must be 8-15 characters long and include at least one number and one uppercase and lowercase letter.");
     } else {
-        // Add your signup logic here
+        // μήνυμα επιτυχούς εγγραφής
         alert("Account created!");
     }
 }
 
-
+//συνάρτηση για εμφάνιση κωδικού 
 function passwordvisibility() {
     var x = document.getElementById("password");
     if (x.type === "password") {
