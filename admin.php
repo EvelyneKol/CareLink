@@ -1,13 +1,17 @@
 <?php
+// Σύνδεση με τη βάση δεδομένων
 include 'Connection.php';
 
+// Έναρξη του session για τη διαχείριση της σύνδεσης χρήστη
 session_start();
+
+// Έλεγχος αν ο χρήστης είναι συνδεδεμένος και αν έχει τον ρόλο "admin"
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'admin') {
     header('Location: sign_in.php');
     exit();
 }
 
-// Fetch unique category names
+// Λήψη μοναδικών ονομάτων κατηγοριών από τη βάση δεδομένων
 $sql = "SELECT DISTINCT category_name FROM categories";
 $result = $conn->query($sql);
 
@@ -95,6 +99,7 @@ $result = $conn->query($sql);
         </div>
     </div>
 
+    <!-- section για την κατάσταση της βάσης και τη φόρμα επιλογής κατηγορίας -->
     <div class="Secondsection">
         <div id='C'>
             <hr>
@@ -103,6 +108,7 @@ $result = $conn->query($sql);
                 <select name="category" id="categorySelect">
                     <option value="">Select a category</option>
                     <?php
+                    // Εμφάνιση των κατηγοριών στη φόρμα
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
                             echo "<option value='" . $row["category_name"] . "'>" . $row["category_name"] . "</option>";
@@ -118,6 +124,7 @@ $result = $conn->query($sql);
         </div>
     </div>
 
+    <!-- στατιστικά και φίλτρα -->
     <div id="D" class="Fifthsection">
         <h2>Service statistics</h2>
         <h6>Find the number of New (Waiting) and Completed Requests and Offers in a specific time period</h6>
@@ -134,6 +141,7 @@ $result = $conn->query($sql);
         </div>
     </div>
 
+    <!-- footer -->
     <div class="Footer container-fluid">
         <div class="row">
           <div class="column col-sm-3">
@@ -167,13 +175,13 @@ $result = $conn->query($sql);
 
 
 <script>
-
+        // επιλογή κατηγορίας και εμφάνιση αποτελεσμάτων μέσω AJAX
         $(document).ready(function() {
             $("#categoryForm").on("submit", function(e) {
                 e.preventDefault();
                 var selectedCategory = $("#categorySelect").val();
                 if (selectedCategory) {
-                    $.ajax({
+                    $.ajax({ //κληση αρχέιου για fetch των δεδομένων στην μορφή πίνακα
                         type: "POST",
                         url: "load_json_data.php",
                         data: { category: selectedCategory },
@@ -187,11 +195,12 @@ $result = $conn->query($sql);
             });
         });
 
+        // διαχείρηση φόρμας για φίλτρα και ενημέρωση γραφήματος μέσω AJAX
         $(document).ready(function() {
             var ctx = document.getElementById('statisticsChart').getContext('2d');
             var statisticsChart = new Chart(ctx, {
                 type: 'bar',
-                data: {
+                data: { //ετικέτες και χρώματα γραφήματος
                     labels: ['Waiting Offers', 'Completed Offers', 'Waiting Requests', 'Completed Requests'],
                     datasets: [{
                         label: 'Count',
@@ -220,11 +229,12 @@ $result = $conn->query($sql);
                 }
             });
 
+            // Ενημέρωση γραφήματος όταν ο χρήστης υποβάλει χρονική περίοδο αναζήτησης 
             $('#filterForm').on('submit', function(e) {
                 e.preventDefault();
                 var startDate = $('#start_date').val();
                 var endDate = $('#end_date').val();
-                $.ajax({
+                $.ajax({ //κλήση αρχέιου fetch_statistics_data.php για να φέρει τα δεδομένα για τις επιλεγόμενες ημερομηνίες
                     type: 'POST',
                     url: 'fetch_statistics_data.php',
                     data: {
