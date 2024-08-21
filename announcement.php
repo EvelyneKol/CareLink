@@ -1,4 +1,5 @@
 <?php
+//σύνδεση και έλεγχος 
 include 'Connection.php';
 
 
@@ -6,62 +7,64 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-date_default_timezone_set('Europe/Athens');
+date_default_timezone_set('Europe/Athens'); // Ορισμός τοπικής ζώνης ώρας
 
+// Έλεγχος αν το αίτημα υποβλήθηκε
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-if (isset($_POST['categorySelect']) && isset($_POST['productSelect']) && isset($_POST['quantity'])&& isset($_POST['datetime'])) {
-        // Get the submitted form data
+    // Έλεγχος αν όλα τα απαιτούμενα πεδία είναι συμπληρωμένα
+    if (isset($_POST['categorySelect']) && isset($_POST['productSelect']) && isset($_POST['quantity'])&& isset($_POST['datetime'])) {
+        // Λήψη των δεδομένων από τη φόρμα
         $category = $_POST["categorySelect"];
         $product = $_POST["productSelect"];
         $quantity = max(0, intval($_POST["quantity"])); // Ensure quantity is non-negative
         $datetime = $_POST["datetime"];
 
-        // Check if the same entry already exists
+        // Έλεγχος αν υπάρχει ήδη καταχωρημένη η ίδια εγγραφή
         $existing_entry_query = "SELECT * FROM shortage WHERE shortage_category = ? AND shortage_product_name = ?";
         $stmt = $conn->prepare($existing_entry_query);
         $stmt->bind_param("ss", $category, $product);
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if ($result->num_rows == 0) { // If no duplicate entry found, insert new data
-            // Prepare and execute the SQL statement to insert data into the shortage table
+        // Αν δεν βρεθεί εγγραφή, εισάγει νέα
+        if ($result->num_rows == 0) { 
             $insert_query = "INSERT INTO shortage (shortage_category, shortage_product_name, shortage_quantity, shortage_datetime) VALUES (?, ?, ?, ?)";
             $stmt = $conn->prepare($insert_query);
             $stmt->bind_param("ssis", $category, $product, $quantity, $datetime);
 
+            // Έλεγχος αν η εισαγωγή ήταν επιτυχής
             if ($stmt->execute()) {
-                
             } else {
                 echo "Error inserting data: " . $conn->error;
             }
         } 
 
-        $stmt->close(); }
+        $stmt->close(); } // Κλείσιμο του statement
 } 
 
 //new page
-// Define the number of announcements per page
+// Καθορισμός του αριθμού των ανακοινώσεων ανά σελίδα
 $announcementsPerPage = 20;
 
-// Fetch the total number of announcements
+// Λήψη του συνολικού αριθμού ανακοινώσεων
 $totalAnnouncementsQuery = "SELECT COUNT(*) AS total FROM shortage";
 $totalAnnouncementsResult = $conn->query($totalAnnouncementsQuery);
 $totalAnnouncements = $totalAnnouncementsResult->fetch_assoc()['total'];
 
-// Calculate the total number of pages
+// Υπολογισμός του συνολικού αριθμού σελίδων
 $totalPages = ceil($totalAnnouncements / $announcementsPerPage);
 
-// Determine the current page number (default to 1 if not provided)
+// Καθορισμός του τρέχοντος αριθμού σελίδας (αν δεν δοθεί, ορίζεται στο 1)
 $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 
-// Calculate the offset for pagination
+// Υπολογισμός του offset για το pagination
 $offset = ($currentPage - 1) * $announcementsPerPage;
 
-// Fetch data from the shortage table for the current page
+// Λήψη δεδομένων από τον πίνακα shortage για την τρέχουσα σελίδα
 $shortage = "SELECT * FROM shortage ORDER BY shortage_datetime DESC LIMIT $offset, $announcementsPerPage";
 $resultShortage = $conn->query($shortage); 
 
-// Fetch categories from the database
+// Λήψη κατηγοριών από τη βάση δεδομένων
 $sql = "SELECT distinct category_name FROM categories";
 $result = $conn->query($sql);
 
@@ -104,7 +107,7 @@ $result = $conn->query($sql);
                         <select id="categorySelect" class="form-control p-2" name="categorySelect">
                         <option value="">Select a category</option>
                             <?php
-                            // Check if there are results
+                            // Έλεγχος αν υπάρχουν αποτελέσματα για τις κατηγορίες
                             if ($result->num_rows > 0) {
                                 // Output data of each row
                                 while($row = $result->fetch_assoc()) {
@@ -136,7 +139,7 @@ $result = $conn->query($sql);
 
                 </div>
 
-                <!-- datetime field will be automatically filled with current datetime -->
+                <!-- Το πεδίο ημερομηνίας και ώρας συμπληρώνεται αυτόματα με την τρέχουσα ημερομηνία και ώρα -->
                 <input type="hidden" id="datetime" name="datetime" value="<?php echo date('Y-m-d\TH:i:s'); ?>">
                 
                 <button class="submit" type="submit">Submit</button>
@@ -162,12 +165,12 @@ $result = $conn->query($sql);
                         </thead>
                         <tbody>
                             <?php
-                            // Fetch data from the shortage table
+                            // Έλεγχος αν υπάρχουν δεδομένα στον πίνακα έλλειψης
                             $shortage = "SELECT * FROM shortage ORDER BY shortage_datetime DESC";
                             $resultShortage = $conn->query($shortage);
 
                             if ($resultShortage->num_rows > 0) {
-                                // Output data of each row
+                                // Εμφάνιση δεδομένων κάθε εγγραφή
                                 while ($row = $resultShortage->fetch_assoc()) {
                                     echo "<tr>";
                                     echo "<td>" . $row["id_shortage"] . "</td>";
@@ -196,6 +199,7 @@ $result = $conn->query($sql);
     
     <script>
         $(document).ready(function() {
+            // Ανάκτηση προϊόντων με βάση την επιλεγμένη κατηγορία
             $('#categorySelect').change(function() {
                 var category_name = $(this).val();
                 $.ajax({

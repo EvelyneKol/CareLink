@@ -1,4 +1,5 @@
 <?php
+//σύνδεση και έλεγχος
 include 'Connection.php';
 
 if ($conn->connect_error) {
@@ -6,48 +7,25 @@ if ($conn->connect_error) {
 }
 
 session_start();
+
+// Έλεγχος αν ο χρήστης είναι συνδεδεμένος και έχει τον ρόλο "civilian"
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'civilian') {
     header('Location: sign_in.php');
     exit(); }
 
-// Check if the username is set in cookies
+// Έλεγχος αν το όνομα χρήστη είναι αποθηκευμένο στα cookies
 if(isset($_COOKIE['username'])){
-  $defaultUsername = $_COOKIE['username'];
+  $defaultUsername = $_COOKIE['username']; // Χρήση του ονόματος χρήστη από το cookie
 } else {
-  $defaultUsername = "";
+  $defaultUsername = ""; // Αν δεν υπάρχει, το όνομα χρήστη ορίζεται ως κενό
 }
 
-/* if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $shortageId = $_POST['shortage_id'];
-  $category = $_POST['category'];
-  $productName = $_POST['product_name'];
-  $quantity = $_POST['quantity'];
-
-  // Get the current date and time
-  $datePosted = date('Y-m-d');
-  $timePosted = date('H:i:s');
-
-  // Assuming you have the username of the civilian making the offer
-  $offerCivilian = 'some_user'; // Replace with actual civilian username
-
-  $sql = "INSERT INTO offer (offer_civilian, offer_category, offer_product_name, offer_quantity, offer_date_posted, offer_time_posted, offer_status) VALUES (?, ?, ?, ?, ?, ?, 'WAITING')";
-
-  $stmt = $conn->prepare($sql);
-  $stmt->bind_param("sssiss", $offerCivilian, $category, $productName, $quantity, $datePosted, $timePosted);
-
-  if ($stmt->execute()) {
-      echo "Offer added successfully.";
-  } else {
-      echo "Error: " . $stmt->error;
-  }
-} */
-
-// Fetch shortage records from the database
+// Ανάκτηση εγγραφών shortage από την database
 $shortageQuery = "SELECT * FROM shortage ORDER BY shortage_datetime DESC";
 $shortageResult = $conn->query($shortageQuery);
 
 
-// Close the database connection outside the if block
+// Κλείσιμο της σύνδεσης με τη βάση δεδομένων
 $conn->close();
 ?>
 
@@ -121,6 +99,7 @@ $conn->close();
       <hr>
       <div class="reminder-notes">
         <?php
+        // Έλεγχος αν υπάρχουν εγγραφές για ελλείψεις
         if ($shortageResult->num_rows > 0) {
             echo '<ul>';
             while($row = $shortageResult->fetch_assoc()) {
@@ -129,11 +108,13 @@ $conn->close();
                 echo '<p>Product Name: ' . htmlspecialchars($row["shortage_product_name"]) . '</p>';
                 echo '<p>Quantity: ' . htmlspecialchars($row["shortage_quantity"]) . '</p>';
                 echo '<p>Date & Time: ' . htmlspecialchars($row["shortage_datetime"]) . '</p>';  
+                // Κουμπί που επιτρέπει στο χρήστη να κάνει προσφορά για την έλλειψη
                 echo '<button class="delete"  onclick="addOffer(\'' . htmlspecialchars($row["id_shortage"]) . '\', \'' . htmlspecialchars($row["shortage_category"]) . '\', \'' . htmlspecialchars($row["shortage_product_name"]) . '\', \'' . htmlspecialchars($row["shortage_quantity"]) . '\')">Make an Offer</button>';
                 echo '</li>';
             }
             echo '</ul>';
         } else {
+          // Μήνυμα για όταν δεν υπάρχουν καταχωρήσεις
             echo '<p>No reminders available.</p>';
         }
         ?>
@@ -173,11 +154,11 @@ $conn->close();
 
   <script>
     function addOffer(shortageId, category, product, quantity) {
-    // Get the username from the hidden h2 element
+    // Λήψη του ονόματος χρήστη από το κρυφό h2 (κρυφό)
     var usernameElement = document.getElementById("txtUsername");
     var username = usernameElement ? usernameElement.textContent : null;
 
-    var url = "add_offer_civilian.php";
+    var url = "add_offer_civilian.php"; // αρχέείο στο οποίο θα γίνει το αίτημα POST
     var formData = new FormData();
     formData.append("shortageId", shortageId);
     formData.append("category", category);
@@ -191,7 +172,7 @@ $conn->close();
     xhr.onload = function () {
         if (xhr.status === 200) {
             console.log("Success:", xhr.responseText);
-            location.reload();
+            location.reload(); // Ανανεώνει τη σελίδα μετά από επιτυχή αποστολή
 
         } else {
             console.error("Error:", xhr.statusText);
@@ -204,10 +185,7 @@ $conn->close();
 
     xhr.send(formData);
     console.log("AJAX request sent");
-}
-
-
-
+   }
   </script>
 </body>
 

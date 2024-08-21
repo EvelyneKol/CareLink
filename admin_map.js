@@ -1,3 +1,4 @@
+//αρχικοποίηση χάρτη, συντεταγμένων, zoom και διαμόρφωσης
 var map = L.map('map').setView([38.24663362118412, 21.734787451795558], 12);
 
 L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbXQs3EHCi0XzzkL', {
@@ -5,28 +6,34 @@ L.tileLayer('https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}.png?key=dVhthbX
     <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
 }).addTo(map);
 
-// Fetch coordinates from the server and initialize the marker
+// Χρήση AJAX για ανάκτηση συντεταγμένων από την βάση μέσω του αρχείου get_location.php για αρχικοποίηση του marker
 $.ajax({
     url: 'get_location.php',
     type: 'GET',
-    dataType: 'json',
+    dataType: 'json',  // Τύπος δεδομένων που αναμένεται να επιστραφεί (JSON)
     success: function(response) {
+       // Έλεγχος αν υπάρχει σφάλμα στην απόκριση
         if (response.error) {
             console.error(response.error);
             return;
         }
 
+        // Μετατροπή των συντεταγμένων σε αριθμητικές τιμές
         var Lat = parseFloat(response.latitude);
         var Lng = parseFloat(response.longitude);
 
+        // Κλήση της συνάρτησης για να δημιουργηθεί ο αρχικός marker
         initializeBaseMarker(Lat, Lng);
     },
     error: function(xhr, status, error) {
+        // Εμφάνιση μηνύματος σφάλματος αν αποτύχει η AJAX κλήση
         console.error(error);
     }
 });
 
+// Συνάρτηση για αρχικοποίηση του base marker με τις δεδομένες συντεταγμένες
 function initializeBaseMarker(Lat, Lng) {
+  // Δημιουργία προσαρμοσμένου εικονιδίου για το marker (διαστάσεις εικονιδίου και popup)
   var baseIcon = L.icon({
       iconUrl: 'images/base.png',
       iconSize: [41, 41],
@@ -35,25 +42,31 @@ function initializeBaseMarker(Lat, Lng) {
   });
 
 
+  // Δημιουργία του marker με δυνατότητα μεταφοράς (draggable)
   baseMarker = L.marker([Lat, Lng], { draggable: true }).addTo(map).setIcon(baseIcon);
+  // Προσθήκη popup με πληροφορίες για την τοποθεσία
   baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
 
+  // Αποθήκευση της αρχικής θέσης του marker
   originalBasePosition = baseMarker.getLatLng();
 
+  // Διαχείριση του event μεταφοράς του marker
   baseMarker.on('dragend', function (event) {
       var newPosition = baseMarker.getLatLng();
 
+      // Επιβεβαίωση από τον χρήστη για την αλλαγή θέσης
       if (confirm("Are you sure you want to move the base marker to this new location?")) {
+          // Ενημέρωση της θέσης του marker
           baseMarker.setLatLng(newPosition);
           baseMarker.getPopup().setContent('BASE, new Position: ' + newPosition.toString()).update();
           $("#Latitude").val(newPosition.lat);
           $("#Longitude").val(newPosition.lng).keyup();
 
-          // Make AJAX call to update the database
+          // AJAX κλήση για ενημέρωση της βάσης δεδομένων με τις νέες συντεταγμένες
           $.ajax({
-              url: 'update_location.php',
+              url: 'update_location.php', //url αρχέιου όπου θα γίνει η ενημέρωση των συντεταγμένων
               type: 'POST',
-              data: {
+              data: { //νέες συντεταγμενες 
                   latitude: newPosition.lat,
                   longitude: newPosition.lng
               },
@@ -65,23 +78,23 @@ function initializeBaseMarker(Lat, Lng) {
               }
           });
 
-          originalBasePosition = newPosition; // Update original position to new position
+          originalBasePosition = newPosition; // Ενημέρωση της αρχικής θέσης με τη νέα θέση
       } else {
-          baseMarker.setLatLng(originalBasePosition); // Revert to original position if the user cancels
+          baseMarker.setLatLng(originalBasePosition); // Αν ο χρήστης ακυρώσει, επαναφορά του marker στην αρχική θέση
       }
   });
 }
 
 
 
-// Define global variables for layers
+// ορισμός global μεταβλητών για τα layers
 var vehicles = [];
 var Offers = [];
 var WaitingRequests = [];
 var OnWayRequests = [];
 
 
-// Fetch the JSON data from the file
+// Ανάκτηση δεδομένων από JSON αρχείο για τα οχήματα
 fetch('vehicles.json')
 .then(response => response.json())
 .then(data => {
@@ -89,6 +102,7 @@ fetch('vehicles.json')
 })
 .catch(error => console.error('Error fetching the JSON data:', error));
 
+// Ανάκτηση δεδομένων από JSON αρχείο για τις προσφορές
 fetch('Offers.json')
 .then(response => response.json())
 .then(data => {
@@ -96,6 +110,7 @@ fetch('Offers.json')
 })
 .catch(error => console.error('Error fetching the JSON data:', error));
 
+// Ανάκτηση δεδομένων από JSON αρχείο για τις αναμονές
 fetch('waitingRequests.json')
 .then(response => response.json())
 .then(data => {
@@ -103,6 +118,7 @@ fetch('waitingRequests.json')
 })
 .catch(error => console.error('Error fetching the JSON data:', error));
 
+// Ανάκτηση δεδομένων από JSON αρχείο για τα ενεργά αιτήματα
 fetch('OnWayRequests.json')
 .then(response => response.json())
 .then(data => {
@@ -110,29 +126,29 @@ fetch('OnWayRequests.json')
 })
 .catch(error => console.error('Error fetching the JSON data:', error));
 
-// active layers
+// Ενεργά επίπεδα φίλτρων του χάρτη
 const activeLayers = {};
 
-// Create a global marker cluster group
+// δημιουργία global marker cluster group
 const allMarkersClusterGroup = L.markerClusterGroup();
 map.addLayer(allMarkersClusterGroup);
 
-// Store all markers by layer
+// Αποθήκευση όλων των markers ανά επίπεδο (layer)
 const layerMarkers = {
-  layer1: [],
-  layer2: [],
+  layer1: [], // εν αναμονή οχήματα
+  layer2: [], // Οχήματα καθ' οδόν
   layer3: [],
   layer4: [],
   layer5: [],
   layer6: []
 };
 
-// Function to initialize markers for waiting vehicles
+// Συνάρτηση για αρχικοποίηση markers για τα οχήματα σε αναμονή
 function Waiting_vehicles_markers(data) {
-  // Clear existing markers for the layer
+  // Εκκαθάριση υπαρχόντων markers για το συγκεκριμένο επίπεδο
   layerMarkers.layer1 = [];
 
-  // Loop through the data and create markers
+  // Δημιουργία markers για κάθε όχημα στα δεδομένα
   for (let i = 0; i < data.length; i++) {
     const location = new L.LatLng(data[i].latitude, data[i].longitude);
         var vehicle_name = data[i].vehicle_name;
@@ -141,11 +157,13 @@ function Waiting_vehicles_markers(data) {
         var task_count = data[i].task_count;
         var state= 'Waiting';
         
+    // Μήνυμα popup με τις πληροφορίες του οχήματος
     const message = '<strong>Vehicle:</strong> ' + vehicle_name + '<br>' +
                     '<strong>State:</strong> ' + state + '<br>' +
                     '<strong>Products:</strong> ' +products +'<br>'+'<strong>Quantity:</strong> ' +
                      + quantity +'<br>'+ '<strong>No of Active Tasks: </strong> ' + task_count;
-    // Create a new marker with a custom icon
+    
+    // Δημιουργία marker με προσαρμοσμένο εικονίδιο για τα φορτηγά
     const marker = L.marker(location, {
       icon: L.icon({
         iconUrl: 'truck.png',
@@ -155,23 +173,23 @@ function Waiting_vehicles_markers(data) {
       })
     });
 
-    // Bind popup content to the marker
+    // Σύνδεση του popup με τον marker
     marker.bindPopup(message);
     if(task_count==0){
-    // Add marker to the layerMarkers array
+    // Προσθήκη του marker στο array του επιπέδου
     layerMarkers.layer1.push(marker);
   }
 }
-  // Update the marker cluster group
+  // Ενημέρωση του marker cluster group
   updateClusterGroup();
 }
 
-// Function to initialize markers for on the way vehicles
+// Συνάρτηση για αρχικοποίηση markers για τα οχήματα καθ' οδόν
 function on_the_way_vehicles_markers(data) {
-    // Clear existing markers for the layer
+  // καθαρισμός
   layerMarkers.layer2 = [];
   
-  // Loop through the data and create markers
+  // Loop στα data και δημιουργία markers
   for (let i = 0; i < data.length; i++) {
     const location = new L.LatLng(data[i].latitude, data[i].longitude);
         var vehicle_name = data[i].vehicle_name;
@@ -180,12 +198,13 @@ function on_the_way_vehicles_markers(data) {
         var task_count = data[i].task_count;
         var state= 'Active';
 
+    // Μήνυμα popup με τις πληροφορίες του οχήματος
     const message = '<strong>Vehicle:</strong> ' + vehicle_name + '<br>' +
                     '<strong>State:</strong> ' + state + '<br>' +
                     '<strong>Products:</strong> ' +products +'<br>'+'<strong>Quantity:</strong> ' +
                     + quantity +'<br>'+ '<strong>No of Active Tasks: </strong> ' + task_count;
 
-    // Create a new marker with a custom icon
+    // Δημιουργία marker με προσαρμοσμένο εικονίδιο
     const marker = L.marker(location, {
       icon: L.icon({
         iconUrl: 'truck.png',
@@ -195,11 +214,11 @@ function on_the_way_vehicles_markers(data) {
       })
     });
 
-    // Bind popup content to the marker
+    // Σύνδεση του popup με τον marker
     marker.bindPopup(message);
 
     if(task_count>0){
-    // Add marker to the layerMarkers array
+    // προσθήκη marker sto layerMarkers array
     layerMarkers.layer2.push(marker);
     }
   }
@@ -207,16 +226,16 @@ function on_the_way_vehicles_markers(data) {
   updateClusterGroup();
 }
 
-
-// Function to initialize markers for waiting requests
+// Function για αρχικοποίηση markers για αιτήματα σε αναμονή
 function Waiting_requests_markers(data) {
-  // Clear existing markers for the layer
+  // Καθαρίζει τα υπάρχοντα markers για το επίπεδο
   layerMarkers.layer4 = [];
 
-  // Loop through the data and create markers
+  // Διατρέχει τα δεδομένα και δημιουργεί markers
   for (let i = 0; i < data.length; i++) {
     const location = new L.LatLng(data[i].latitude, data[i].longitude);
 
+    // αποθήκευση των λεπτομεριών του αιτήματος σε μεταβλητές
           var civilian_first_name = data[i].civilian_first_name;
           var civilian_last_name = data[i].civilian_last_name;
           var civilian_number = data[i].civilian_number;
@@ -226,6 +245,7 @@ function Waiting_requests_markers(data) {
           var request_product_name = data[i].request_product_name;
           var persons = data[i].persons;
 
+    // popup του marker
     const message = '<strong>' + civilian_first_name + ' ' + civilian_last_name + 
                 ' requests: </strong><br>' + '<strong> ' + 
                 request_category + '</strong>: ' + request_product_name + '<br><strong>For</strong>: ' +
@@ -233,7 +253,7 @@ function Waiting_requests_markers(data) {
                 request_date_posted + '<br><strong>Number: </strong> ' + '+30'+ civilian_number + 
                 '<br><strong>State:</strong> ' + state ;
                  
-    // Create a new marker with a custom icon
+    // δημιουργία νέου marker 
     const marker = L.marker(location, {
       icon: L.icon({
         iconUrl: 'pin1.png',
@@ -243,22 +263,21 @@ function Waiting_requests_markers(data) {
       })
     });
 
-    // Bind popup content to the marker
+    // σύνδεση popup με marker
     marker.bindPopup(message);
 
-    // Add marker to the layerMarkers array
+    // προσθήκη layerMarkers array
     layerMarkers.layer4.push(marker);
   }
-  // Update the marker cluster group
   updateClusterGroup();
 }
 
-// Function to initialize markers for on the way requests
+// συνάρτηση για την αρχικοποίηση markers για αιτήματα on the way
 function on_the_way_requests_markers(data) {
   // Clear existing markers for the layer
   layerMarkers.layer5 = [];
 
-  // Loop through the data and create markers
+  // Διατρέχει τα δεδομένα και δημιουργεί markers
   for (let i = 0; i < data.length; i++) {
     const location = new L.LatLng(data[i].latitude, data[i].longitude);
     var civilian_first_name = data[i].civilian_first_name;
@@ -281,7 +300,6 @@ function on_the_way_requests_markers(data) {
                 '<br><strong>Date Accepted </strong> ' + task_date + 
                 '<br><strong>State:</strong> ' + state ;
                  
-    // Create a new marker with a custom icon
     const marker = L.marker(location, {
       icon: L.icon({
         iconUrl: 'pin1.png',
@@ -291,21 +309,17 @@ function on_the_way_requests_markers(data) {
       })
     });
 
-    // Bind popup content to the marker
     marker.bindPopup(message);
 
-    // Add marker to the layerMarkers array
     layerMarkers.layer5.push(marker);
   }
-  // Update the marker cluster group
   updateClusterGroup();
 }
 
-// Function to initialize markers for offers
+// συνάρτηση για αρχικοποίηση markers για τα offers
 function offers_markers(data) {
   layerMarkers.layer3 = [];
 
-  // Loop through the data and create markers
   for (let i = 0; i < data.length; i++) {
     const location = new L.LatLng(data[i].latitude, data[i].longitude);
       var civilian_first_name = data[i].civilian_first_name ;
@@ -319,22 +333,19 @@ function offers_markers(data) {
       var task_date = data[i].task_date ;
       var vehicle_name = data[i].vehicle_name;
 
-      /* In JavaScript, the let keyword is used to declare variables that are block-scoped, meaning the variable is only accessible within the block 
-      (e.g., within a function, loop, or conditional statement) where it is defined. This is in contrast to the var keyword, 
-      which declares variables that are function-scoped or globally-scoped if declared outside a function. */
-
-      let message;
+      let message; //προσβάσιμες μεταβλητες μόνο απο τον βρόχο
       let marker;
 
+    // Δημιουργία του μηνύματος και του marker ανάλογα με το αν υπάρχει όχημα
     if (vehicle_name == null) {
        message = '<strong>' + civilian_first_name + ' ' + civilian_last_name + ' Offers: </strong><br>' + '<strong>From ' + 
                   offer_category + '</strong>: ' + offer_product_name + '<br><strong>For</strong>: ' +
                   offer_quantity + ' persons' + '<br><strong>Date posted</strong>: ' + 
                   offer_date_posted + '<br><strong>Number:+30 </strong> ' + civilian_number + '<br><strong>State:</strong> ' + offer_status ;
-                  // Create a new marker with a custom icon
+                
       marker = L.marker(location, {
         icon: L.icon({
-          iconUrl: 'pin1.png',
+          iconUrl: 'pin1.png', //pin1 marker
           iconSize: [32, 32],
           iconAnchor: [16, 32],
           popupAnchor: [0, -32]
@@ -349,10 +360,9 @@ function offers_markers(data) {
                   '<br><strong>Date Accepted </strong> ' + task_date + 
                   '<br><strong>State:</strong> ' + offer_status ;
 
-                  // Create a new marker with a custom icon
       marker = L.marker(location, {
         icon: L.icon({
-          iconUrl: 'pin2.png',
+          iconUrl: 'pin2.png', //pin2 marker
           iconSize: [32, 32],
           iconAnchor: [16, 32],
           popupAnchor: [0, -32]
@@ -360,26 +370,24 @@ function offers_markers(data) {
       });
     }
 
-    // Bind popup content to the marker
     marker.bindPopup(message);
 
-    // Add marker to the layerMarkers array
     layerMarkers.layer3.push(marker);
   }
 
-  // Update the marker cluster group
   updateClusterGroup();
 }
 
 
 let layerLines = [];
 
-// Function to draw lines between layers
+// συνάρτηση για ευθέιες γραμμές
 function drawLinesforOffersandRequest() {
-  // Clear existing lines
+  // καθαρισμός παλιών γραμμών
   layerLines.forEach(line => map.removeLayer(line));
   layerLines = [];
 
+  // Σχεδίαση γραμμών ανάμεσα στα ενεργά επίπεδα
   if (activeLayers.layer2 && activeLayers.layer3 && activeLayers.layer5) {
     layerMarkers.layer2.forEach(vehicleMarker => {
       const vehicleName = vehicleMarker.getPopup().getContent().match(/<strong>Vehicle:<\/strong> (.+?)<br>/)[1];
@@ -436,25 +444,25 @@ function drawLinesforOffersandRequest() {
   
 }
 
-// Function to clear lines between layers
+// συνάρτηση για την διαγραφή γραμμών μεταξύ layers
 function clearLinesBetweenLayers() {
   layerLines.forEach(line => map.removeLayer(line));
   layerLines = [];
 }
 
-// Function to toggle layers
+// Λειτουργία για την ενεργοποίηση/απενεργοποίηση layer
 function toggleLayer(layer) {
   if (activeLayers[layer]) {
-    // Remove the layer if it is active
+    // Απενεργοποίηση του επιπέδου αν είναι ενεργό
     activeLayers[layer] = false;
     if (layer === 'layer6' || layer === 'layer2' || layer === 'layer3' || layer === 'layer5') {
       clearLinesBetweenLayers();
     }
   } else {
-    // Add the layer if it is not active
+    // Ενεργοποίηση του επιπέδου αν είναι ανενεργό
     activeLayers[layer] = true;
 
-    // Initialize markers for the layer if not already done
+    // Αρχικοποίηση markers για το κάθε επίπεδο (φίλτρο)
     if (layer === 'layer1' && layerMarkers.layer1.length === 0) {
       Waiting_vehicles_markers(vehicles);
     } else if (layer === 'layer2' && layerMarkers.layer2.length === 0) {
@@ -467,26 +475,25 @@ function toggleLayer(layer) {
       on_the_way_requests_markers(OnWayRequests);
     }
 
-    // Draw lines if layer 6 is being enabled
+    // Σχεδίαση γραμμών αν το layer 6 ενεργοποιηθεί
     if (layer === 'layer6') {
-      //drawLinesforOffersandRequest();
       drawLinesforOffersandRequest();
     }
   }
 
-  // Update the marker cluster group
+  // Ενημέρωση του marker cluster group
   updateClusterGroup();
 
-  // Enable/disable the layer6 toggle button based on the state of layer2 and layer3
+  // Ενεργοποίηση/απενεργοποίηση του κουμπιού toggle για το layer6 με βάση την κατάσταση των layer2 και layer3
   document.getElementById('layer6').disabled = !(activeLayers['layer2']);
 }
 
-// Function to update the marker cluster group based on active layers
+// Function για την ενημέρωση του marker cluster group με βάση τα ενεργά επίπεδα
 function updateClusterGroup() {
-  // Clear all markers from the cluster group
+  // Καθαρίζει όλους τους markers από το cluster group
   allMarkersClusterGroup.clearLayers();
 
-  // Add markers from active layers
+  // Προσθήκη markers από τα ενεργά επίπεδα
   for (const layer in activeLayers) {
     if (activeLayers[layer]) {
       allMarkersClusterGroup.addLayers(layerMarkers[layer]);

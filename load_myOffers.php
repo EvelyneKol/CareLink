@@ -2,7 +2,7 @@
 <html>
 <head>
 <style>
-/* Your existing CSS */
+
 .album-container {
   display: flex;
   flex-wrap: wrap;
@@ -17,11 +17,11 @@
 .card {
   border-radius: 4px;
   box-shadow: 0 2px 2px rgba(204, 197, 185, 0.5);
-  background-color: #ffe28c; /* Yellow color */
+  background-color: #ffe28c; 
   color: #252422;
   margin-bottom: 20px;
   position: relative;
-  margin: 0 10px; /* Added margin to each card for spacing */
+  margin: 0 10px; 
   padding-right: 20px;
   padding-bottom: 50px;
   padding-left: 20px;
@@ -32,13 +32,13 @@ h3, .h3 {
   font-size: 1.5em;
   font-weight: 600;
   line-height: 1.2em;
-  margin: 10px 0; /* Adjusted margin to separate the heading from other content */
+  margin: 10px 0; 
 }
 
 .card .description {
   font-size: 16px;
   color: #66615b;
-  margin-bottom: 10px; /* Adjusted margin to separate the description from other content */
+  margin-bottom: 10px; 
 }
 
 .card button{
