@@ -1,24 +1,30 @@
 <?php
-include 'Connection.php';
+include 'Connection.php'; // αρχείο για σύνδεση με τη βάση δεδομένων
 
+
+//έλεγχος συνδεσης
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Έλεγχος αν το αίτημα είναι POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Έλεγχος αν έχουν υποβληθεί όλα τα απαραίτητα δεδομένα για την εισαγωγή
     if (isset($_POST['Insert']) && isset($_POST['Category']) && isset($_POST['Product']) && isset($_POST['Quantity']) && isset($_POST['Details'])) {
-        // Handle the insert logic
+        // μεταβλητές
         $category = $_POST['Category'];
         $product = $_POST['Product'];
         $quantity = (int)$_POST['Quantity'];
         $details = $_POST['Details'];
 
+        // Έλεγχος αν το προϊόν υπάρχει ήδη στη βάση δεδομένων
         $Checkprod = $conn->prepare("SELECT quantity_on_stock FROM categories WHERE category_name = ? AND products = ? ");
         $Checkprod->bind_param("ss", $category, $product);
         $Checkprod->execute();
         $Checkprod->store_result();
 
         if ($Checkprod->num_rows > 0) {
+            // Αν το προϊόν υπάρχει, ενημέρωση της ποσότητας στο απόθεμα
             $Checkprod->bind_result($currentQuantity);
             $Checkprod->fetch();
             $newQuantity = $currentQuantity + $quantity;
@@ -28,6 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmtUpdate->execute();
             $stmtUpdate->close();
         } else {
+            // Αν το προϊόν δεν υπάρχει, εισαγωγή του στη βάση δεδομένων
             $stmtInsert = $conn->prepare("INSERT INTO categories (base_id_categories, category_id, category_name, products, quantity_on_stock, details)VALUES (1, null , ?, ?, ?, ?)");
             $stmtInsert->bind_param("ssis", $category, $product, $quantity, $details);
             $stmtInsert->execute();
@@ -36,18 +43,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $Checkprod->close();
 
     } elseif (isset($_POST['Delete']) && isset($_POST['Category']) && isset($_POST['Product']) && isset($_POST['Quantity']) && isset($_POST['Details'])) {
-        // Handle the delete logic
+        // διαγραφή
         $category = $_POST['Category'];
         $product = $_POST['Product'];
         $quantity = (int)$_POST['Quantity'];
         $details = $_POST['Details'];
 
+        // Έλεγχος αν το προϊόν υπάρχει στη βάση δεδομένων
         $Checkprod = $conn->prepare("SELECT quantity_on_stock FROM categories WHERE category_name = ? AND products = ? ");
         $Checkprod->bind_param("ss", $category, $product);
         $Checkprod->execute();
         $Checkprod->store_result();
 
         if ($Checkprod->num_rows > 0) {
+            // Αν το προϊόν υπάρχει, έλεγχος αν η ποσότητα είναι επαρκής για διαγραφή
             $Checkprod->bind_result($currentQuantity);
             $Checkprod->fetch();
             $newQuantity = $currentQuantity - $quantity;
@@ -57,16 +66,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmtUpdate->execute();
                 $stmtUpdate->close();
             }else{
+                // Εμφάνιση μηνύματος σφάλματος αν η ποσότητα δεν είναι επαρκής
                 echo "Error: Not enough quantity to delete.";
             }
         } else {
+            // Εμφάνιση μηνύματος σφάλματος αν το προϊόν δεν υπάρχει στη βάση δεδομένων
             echo "Error: Not such product to delete.";
         }
         $Checkprod->close();
 
     }
 }
-// Close the database connection
+
 ?>
 
 <!DOCTYPE html>
@@ -169,12 +180,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </thead>
             <tbody>
                 <?php
-                // Fetch data from the shortage table
+                // Λήψη δεδομένων από τον πίνακα shortage
                 $sql = "SELECT * FROM categories ORDER BY category_name";
                 $result = $conn->query($sql);
 
                 if ($result->num_rows > 0) {
-                    // Output data of each row
+                    // Εμφάνιση των δεδομένων 
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>";
                         echo "<td>" . $row["category_name"] . "</td>";
@@ -184,6 +195,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         echo "</tr>";
                     }
                 } else {
+                    // Εμφάνιση μηνύματος αν δεν υπάρχουν δεδομένα
                     echo "<tr><td colspan='5'>No data available in Product table</td></tr>";
                 }
                 $conn->close();
@@ -196,28 +208,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         document.getElementById("category_name").addEventListener("change", function() {
             var categoryId = this.value;
             var productDropdown = document.getElementById("product_name");
-            productDropdown.innerHTML = ""; // Clear existing options
+            productDropdown.innerHTML = ""; // Εκκαθάριση των προηγούμενων επιλογών
 
-            // Fetch products for the selected category using AJAX
+             // Λήψη προϊόντων για την επιλεγμένη κατηγορία μέσω AJAX
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "fetch_products.php", true);
+            xhr.open("POST", "fetch_products.php", true); // Αποστολή αιτήματος POST στο αρχείο fetch_products.php
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200) {
-                        var products = JSON.parse(xhr.responseText);
+                        var products = JSON.parse(xhr.responseText); // Μετατροπή του JSON σε αντικείμενο JavaScript
                         products.forEach(function(product) {
                             var option = document.createElement("option");
                             option.text = product;
                             option.value = product;
-                            productDropdown.add(option);
+                            productDropdown.add(option); // Προσθήκη επιλογής στο dropdown προϊόντων
                         });
                     } else {
                         console.error("Error fetching products");
                     }
                 }
             };
-            xhr.send("category_name=" + categoryId);
+            xhr.send("category_name=" + categoryId); // Αποστολή της επιλεγμένης κατηγορίας στο fetch_products.php
         });
     </script>
 </body>

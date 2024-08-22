@@ -1,22 +1,27 @@
 <?php
-include 'Connection.php';
+include 'Connection.php'; // αρχείο για σύνδεση με τη βάση δεδομένων
 
+//έλεγχος συνδεσης
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-session_start();
+
+session_start(); // Εκκίνηση session
+
+// Έλεγχος αν ο χρήστης είναι συνδεδεμένος και αν έχει τον ρόλο του "civilian"
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'civilian') {
     header('Location: sign_in.php');
     exit(); }
 
-// Check if the username is set in cookies
+// Έλεγχος αν το όνομα χρήστη είναι αποθηκευμένο στα cookies
 if(isset($_COOKIE['username'])){
-  $defaultUsername = $_COOKIE['username'];
+  $defaultUsername = $_COOKIE['username']; //αποθήκευση του ονόματος αν υπάρχει στην μεταβλητή
 } else {
-  $defaultUsername = "";
+  $defaultUsername = ""; //αλλιώς κενό
 }
 
+// Κλείσιμο της σύνδεσης με τη βάση δεδομένων
 $conn->close();
 ?>
 
@@ -99,75 +104,69 @@ $conn->close();
 
   <script>
         function showOffers(username) {
-            var xmlhttp = new XMLHttpRequest();
+            var xmlhttp = new XMLHttpRequest(); // Δημιουργία νέου αιτήματος AJAX
             xmlhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
-                    document.getElementById("userOffers").innerHTML = this.responseText;
+                    document.getElementById("userOffers").innerHTML = this.responseText; // Ενημέρωση του περιεχομένου με τις προσφορές του χρήστη
                 }
             };
-            xmlhttp.open("GET", "load_civilian_offers.php?q=" + username, true);
-            xmlhttp.send();
+            xmlhttp.open("GET", "load_civilian_offers.php?q=" + username, true); // Αποστολή αιτήματος GET με το όνομα χρήστη
+            xmlhttp.send(); // Εκτέλεση του αιτήματος
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            // Get the default username value
-            //var defaultUsername = document.getElementById("txtUsername");
-            var defaultUsername = document.getElementById('txtUsername').innerText;
-      
-            // Call showOffers to fetch and display user requests
+
+            var defaultUsername = document.getElementById('txtUsername').innerText;  // Απόκτηση του ονόματος χρήστη από το h2
+            // Κλήση της συνάρτησης για την εμφάνιση των προσφορών του χρήστη
             showOffers(defaultUsername);
         });
 
         function showPastOffers(username) {
-            var xmlhttp = new XMLHttpRequest();
+            var xmlhttp = new XMLHttpRequest(); // Δημιουργία νέου αιτήματος AJAX
             xmlhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
-                    document.getElementById("pastOffers").innerHTML = this.responseText;
+                    document.getElementById("pastOffers").innerHTML = this.responseText; // Ενημέρωση του περιεχομένου με τις ολοκληρωμένες προσφορές του χρήστη
                 }
             };
-            xmlhttp.open("GET", "load_past_Offers_civilian.php?q=" + username, true);
-            xmlhttp.send();
+            xmlhttp.open("GET", "load_past_Offers_civilian.php?q=" + username, true); // Αποστολή αιτήματος GET με το όνομα χρήστη
+            xmlhttp.send(); // Εκτέλεση του αιτήματος
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            // Get the default username value
-            //var defaultUsername = document.getElementById("txtUsername");
-            var defaultUsername = document.getElementById('txtUsername').innerText;
-      
-            // Call showOffers to fetch and display user requests
+            var defaultUsername = document.getElementById('txtUsername').innerText; // Απόκτηση του ονόματος χρήστη από το txtUsername
+            // Κλήση της συνάρτησης για την εμφάνιση των ολοκληρωμένων προσφορών του χρήστη
             showPastOffers(defaultUsername);
         });
     
 
         function deleteOffers(OfferId, category, product, quantity) {
-            // Get the username from the hidden h2 element
 
-            var url = "delete_offer.php";
-            var formData = new FormData();
+            var url = "delete_offer.php"; // Ορισμός της διεύθυνσης για τη διαγραφή προσφοράς
+            var formData = new FormData(); // Δημιουργία αντικειμένου FormData για αποστολή δεδομένων μέσω POST
             formData.append("OfferId", OfferId);
             formData.append("category", category);
             formData.append("product", product);
             formData.append("quantity", quantity);
 
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", url, true);
+            xhr.open("POST", url, true); // Αποστολή POST αιτήματος
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    console.log("Success:", xhr.responseText);
-                    location.reload();
+                    console.log("Success:", xhr.responseText); //μήνυμα επιτυχίας
+                    location.reload(); // Ανανέωση της σελίδας μετά τη διαγραφή
 
                 } else {
-                    console.error("Error:", xhr.statusText);
+                    console.error("Error:", xhr.statusText); // Εμφάνιση μηνύματος σφάλματος 
                 }
             };
 
             xhr.onerror = function () {
-                console.error("Network error");
+                console.error("Network error"); // Εμφάνιση μηνύματος σφάλματος δικτύου
             };
 
-            xhr.send(formData);
-            console.log("AJAX request sent");
+            xhr.send(formData); // Αποστολή των δεδομένων
+            console.log("AJAX request sent"); // Εμφάνιση μηνύματος επιβεβαίωσης
         }
 
   </script>

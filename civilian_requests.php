@@ -1,63 +1,62 @@
 <?php
-include 'Connection.php';
+include 'Connection.php'; // αρχείο για σύνδεση με τη βάση δεδομένων
 
+// Έλεγχος σύνδεσης 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-session_start();
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'civilian') {
-    header('Location: sign_in.php');
-    exit(); }
+session_start(); // Ξεκινάει το session για τον έλεγχο σύνδεσης του χρήστη
 
-// Check if the username is set in cookies
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'civilian') {
+    header('Location: sign_in.php'); // Αν ο χρήστης δεν είναι συνδεδεμένος ή δεν είναι πολιτης, ανακατευθύνεται στη σελίδα σύνδεσης
+    exit(); // Διακόπτεται η εκτέλεση του υπόλοιπου κώδικα }
+
+// Έλεγχος αν το όνομα χρήστη είναι αποθηκευμένο στα cookies
 if(isset($_COOKIE['username'])){
-  $defaultUsername = $_COOKIE['username'];
+  $defaultUsername = $_COOKIE['username']; // Αν είναι αποθηκευμένο, το ονομα χρήστη τίθεται ως προεπιλογή
 } else {
-  $defaultUsername = "";
+  $defaultUsername = ""; // Αν δεν είναι αποθηκευμένο, η προεπιλογή είναι κενή
 }
 
+// Έλεγχος αν το αίτημα είναι POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $username = $_POST['username'];
   $people = (int)$_POST['People']; 
   $Category = $_POST['categorySelect'];
   $product = $_POST['productSelect'];
-  $date = date("Y-m-d"); // Change the format to match the database column type
-  date_default_timezone_set("Europe/Athens");
-  $time = date("H:i:s"); // Format as "hour:minute:second
+  $date = date("Y-m-d"); // Λήψη της τρέχουσας ημερομηνίας
+  date_default_timezone_set("Europe/Athens"); // Ορισμός ζώνης ώρας για την Αθήνα
+  $time = date("H:i:s"); // Λήψη της τρέχουσας ώρας
 
-  // Debugging statement
   echo "Category: " . $Category;
 
-  // Insert requests into 'requests' table
+  // Εισαγωγή αιτήματος στον πίνακα 'request'
   $stmt = $conn->prepare("INSERT INTO request (request_civilian, request_category, request_product_name, persons, request_date_posted, request_time_posted) VALUES (?, ?, ?, ?, ?, ?)");
   $stmt->bind_param("sssiss", $username, $Category, $product, $people, $date, $time);
 
-  // Execute the statement
+  // Εκτέλεση της δήλωσης
   if ($stmt->execute()) {
-      $success_message = "Request was made successfully";
-      // Redirect to a different page after successful form submission
+      $success_message = "Request was made successfully"; // Μήνυμα επιτυχίας αν το αίτημα καταχωρηθεί
+      // Ανακατεύθυνση στη σελίδα αιτημάτων μετά την επιτυχημένη υποβολή
       header("Location: civilian_requests.php");
-      exit(); // Make sure to exit to prevent further execution of the script
+      exit(); //exit για να μην υπάρχει περαιτέρω execution 
   } else {
-      // Handle the error
-      echo "Error: " . $stmt->error;
+      echo "Error: " . $stmt->error; // Εμφάνιση μηνύματος σφάλματος αν η εισαγωγή αποτύχει
   }
 
-  // Close the statement
+  // κλείσιμο του statement
   $stmt->close();
 }
 
-// Fetch categories from the database
+// ανάκτηση categories αποπ την database
 $sql = "SELECT distinct category_name FROM categories";
 $result = $conn->query($sql);
 
-// Fetch shortage records from the database
+// ανάκτηση shortage records απο την database
 $shortageQuery = "SELECT * FROM shortage ORDER BY shortage_datetime DESC";
 $shortageResult = $conn->query($shortageQuery);
 
-
-// Close the database connection outside the if block
 
 ?>
 
@@ -124,22 +123,22 @@ $shortageResult = $conn->query($shortageQuery);
                     <select id="categorySelect" class="form-control p-2" name="categorySelect">
                     <option value="">Select a category</option>
                         <?php
-                        // Check if there are results
+                        // Έλεγχος αν υπάρχουν αποτελέσματα από το ερώτημα για τις κατηγορίες
                         if ($result->num_rows > 0) {
-                            // Output data of each row
                             while($row = $result->fetch_assoc()) {
                                 echo '<option value="' . htmlspecialchars($row["category_name"]) . '">' . htmlspecialchars($row["category_name"]) . '</option>';
                             }
                         } else {
                             echo '<option value="">No categories available</option>';
                         }
-                        $conn->close();
+                        $conn->close(); // Κλείσιμο της σύνδεσης με τη βάση δεδομένων
                         ?>
                     </select>
                     
                     <br>
                     
                     <div class="col-sm-6">
+                      <!-- Επιλογή προϊόντος από την επιλεγμένη κατηγορία-->
                         <label for="productSelect" class="form-label">Product</label>
                         <select id="productSelect" class="form-control p-2" name="productSelect">
                         <option value="">Select a category First</option>
@@ -165,7 +164,6 @@ $shortageResult = $conn->query($shortageQuery);
     <div class="thirdsection">
         <h3 id="B" >My requests</h3>
         <hr>
-        <!-- Add a div to display the user requests -->
         <div id="userRequests"></div>
     </div>
 
@@ -201,16 +199,19 @@ $shortageResult = $conn->query($shortageQuery);
   <script>
         $(document).ready(function() {
             $('#categorySelect').change(function() {
+              // Όταν αλλάζει η επιλεγμένη κατηγορία, λαμβάνεται η νέα τιμή
                 var category_name = $(this).val();
                 $.ajax({
-                    type: 'POST',
-                    url: 'fetch_products.php',
-                    data: {category_name: category_name},
+                    type: 'POST', // τύπος αιτήματος: POST
+                    url: 'fetch_products.php', // Το URL στο οποίο θα σταλεί το αίτημα
+                    data: {category_name: category_name}, // Δεδομένα που θα σταλούν είναι το όνομα της κατηγορίας)
                     dataType: 'json',
                     success: function(data) {
-                        $('#productSelect').empty();
-                        $('#productSelect').append('<option value="">Select Product</option>');
+                      // Ενέργειες όταν η αίτηση ολοκληρωθεί επιτυχώς
+                        $('#productSelect').empty(); // Αδειάζει η λίστα των προϊόντων
+                        $('#productSelect').append('<option value="">Select Product</option>'); // προστίθενται η επιλογή "Select Product"
                         $.each(data, function(index, value) {
+                          // Για κάθε προϊόν που επιστρέφεται, προστίθεται μια επιλογή στη λίστα
                             $('#productSelect').append('<option value="'+ value +'">'+ value +'</option>');
                         });
                     }
@@ -219,40 +220,44 @@ $shortageResult = $conn->query($shortageQuery);
         });
     
         function showRequests(username) {
-            var xmlhttp = new XMLHttpRequest();
+            // συνάρτηση για την εμφάνιση των αιτημάτων του χρήστη
+            var xmlhttp = new XMLHttpRequest(); // Δημιουργία αντικειμένου XMLHttpRequest για αποστολή AJAX αιτήματος
             xmlhttp.onreadystatechange = function () {
+              // Όταν αλλάζει η κατάσταση του αιτήματος
                 if (this.readyState == 4 && this.status == 200) {
-                    document.getElementById("userRequests").innerHTML = this.responseText;
+                    // Αν το αίτημα ολοκληρωθεί επιτυχώς (readyState 4 σημαίνει ολοκληρωμένο, status 200 σημαίνει επιτυχής απάντηση)
+                    document.getElementById("userRequests").innerHTML = this.responseText; // Τοποθέτηση του περιεχομένου της απάντησης στο στοιχείο "userRequests"
                 }
             };
-            xmlhttp.open("GET", "load_civilian_requests.php?q=" + username, true);
-            xmlhttp.send();
+            xmlhttp.open("GET", "load_civilian_requests.php?q=" + username, true);  // Άνοιγμα αιτήματος GET με παράμετρο το username
+            xmlhttp.send(); // Αποστολή του αιτήματος
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            // Get the default username value
+            // Λήψη της προεπιλεγμένης τιμής για το username
             var defaultUsername = document.getElementById("txtUsername").value;
 
-            // Call showRequests to fetch and display user requests
+            // Κλήση της showRequests για να φορτωθούν και να εμφανιστούν τα αιτήματα του χρήστη
             showRequests(defaultUsername);
         });
     
 
+        // συνάρτηση για τη διαγραφή αιτήματος με βάση το ID του
         function deleteRequest(requestId) {
-          // Example using fetch API
           fetch('delete.php?id=' + requestId, {
-              method: 'GET',
+              method: 'GET', // Χρήση της μεθόδου GET για την αποστολή του αιτήματος
           })
           .then(response => {
               if (response.ok) {
-                  // Reload the page if the request was successful
-                  location.reload();
+                  // Αν η απάντηση είναι επιτυχής (status 200)
+                  location.reload(); // Φόρτωσεε ξανά την σελίδα
               } else {
-                  // Handle non-200 responses
+                  // Διαχείριση μη επιτυχών απαντήσεων (σφάλματα/non-200 responses)
                   console.error('Error:', response.statusText);
               }
           })
           .catch(error => {
+            // Διαχείριση σφαλμάτων κατά την αποστολή του αιτήματος
               console.error('Error:', error);
           });
       }

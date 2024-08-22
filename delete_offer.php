@@ -1,38 +1,40 @@
 <?php
 include 'Connection.php';
 
-// Check connection
+// ελεγχος σύνδεσης
 if ($conn->connect_error) {
     die("Failed to connect to MySQL: " . $conn->connect_error);
 }
 
-// Get data from the AJAX request
+// Λήψη δεδομένων με χρήση AJAX
+//μεταβλητές για αποθήκευση δεδομένων
 $OfferId = (int)$_POST['OfferId'];
 $offerCategory = $_POST['category'];
 $offerProduct = $_POST['product'];
-$offerQuantity = (int)$_POST['quantity']; // Ensure quantity is an integer
+$offerQuantity = (int)$_POST['quantity']; // διασφάλιση της ποσότητας ως ακέραιος
 
-// Set date and time
+// τοπική ώρα/ημερομηνία
 date_default_timezone_set("Europe/Athens");
 $date = date("Y-m-d");
 $time = date("H:i:s"); 
 
-// Combine date and time into a single DateTime object
+// Συνδυασμός ημερομηνίας και ώρας σε μια ενιαία μεταβλητή 
 $dateTime = $date . ' ' . $time;
 
-// Insert the offer into the database
+// Εκτέλεση ερώτησης για διαγραφή της προσφοράς από τη βάση δεδομένων
 $insertQuery = $conn->prepare("DELETE FROM offer WHERE offer_id =?");
 $insertQuery->bind_param("i", $OfferId);
 
 if ($insertQuery->execute()) {
-    // Delete the shortage entry
+    // Αν η διαγραφή της προσφοράς ήταν επιτυχής, εκτέλεση ερώτησης για εισαγωγή της έλλειψης στη βάση δεδομένων
     $deleteQuery = $conn->prepare("INSERT INTO shortage VALUES (NULL, ?, ?, ?, ?)");
     $deleteQuery->bind_param("ssis", $offerCategory,$offerProduct,$offerQuantity,$dateTime);
     $deleteQuery->execute();
 } else {
+    //σφάλμα
     echo "Error: " . $insertQuery->error;
 }
 
-// Close the database connection
+// κλέισιμο σύνδεσης
 $conn->close();
 ?>
