@@ -10,7 +10,8 @@ session_start(); // Ξεκινάει το session για τον έλεγχο σ�
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['role'] !== 'civilian') {
     header('Location: sign_in.php'); // Αν ο χρήστης δεν είναι συνδεδεμένος ή δεν είναι πολιτης, ανακατευθύνεται στη σελίδα σύνδεσης
-    exit(); // Διακόπτεται η εκτέλεση του υπόλοιπου κώδικα }
+    exit(); // Διακόπτεται η εκτέλεση του υπόλοιπου κώδικα 
+    }
 
 // Έλεγχος αν το όνομα χρήστη είναι αποθηκευμένο στα cookies
 if(isset($_COOKIE['username'])){

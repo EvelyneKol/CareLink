@@ -116,11 +116,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       if (name === "" || lastname === "" || username === "" || address === "" || phone === "" || password === "") {
         alert("Please fill in all fields.");
         return false;
-      } else if (password.length < 8 || password.length > 15 || !/[A-Z]/.test(password) || !/[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password)) {
-        alert("Password must be 8-15 characters long and include at least one capital letter and one symbol.");
+      } else if (password.length < 8 || password.length > 15 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) ) {
+        alert("Password must be 8-15 characters long and include at least one capital letter and one small letter.");
       } else {
-        // Add your signup logic here
-        // Inserted data successfully, now redirect to sign_in.html
         alert("Account created!");
         return true;
         window.location.href = "sign_in.php";

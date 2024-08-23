@@ -45,7 +45,7 @@ function initializeBaseMarker(Lat, Lng) {
   // Δημιουργία του marker με δυνατότητα μεταφοράς (draggable)
   baseMarker = L.marker([Lat, Lng], { draggable: true }).addTo(map).setIcon(baseIcon);
   // Προσθήκη popup με πληροφορίες για την τοποθεσία
-  baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
+  baseMarker.bindPopup('Base <br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
 
   // Αποθήκευση της αρχικής θέσης του marker
   originalBasePosition = baseMarker.getLatLng();
@@ -345,7 +345,7 @@ function offers_markers(data) {
                 
       marker = L.marker(location, {
         icon: L.icon({
-          iconUrl: 'pin1.png', //pin1 marker
+          iconUrl: 'pin2.png', //pin2 marker
           iconSize: [32, 32],
           iconAnchor: [16, 32],
           popupAnchor: [0, -32]

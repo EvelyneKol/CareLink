@@ -22,17 +22,17 @@ $time = date("H:i:s");
 $dateTime = $date . ' ' . $time;
 
 // Εκτέλεση ερώτησης για διαγραφή της προσφοράς από τη βάση δεδομένων
-$insertQuery = $conn->prepare("DELETE FROM offer WHERE offer_id =?");
-$insertQuery->bind_param("i", $OfferId);
+$deleteQuery = $conn->prepare("DELETE FROM offer WHERE offer_id =?");
+$deleteQuery->bind_param("i", $OfferId);
 
-if ($insertQuery->execute()) {
+if ($deleteQuery->execute()) {
     // Αν η διαγραφή της προσφοράς ήταν επιτυχής, εκτέλεση ερώτησης για εισαγωγή της έλλειψης στη βάση δεδομένων
-    $deleteQuery = $conn->prepare("INSERT INTO shortage VALUES (NULL, ?, ?, ?, ?)");
-    $deleteQuery->bind_param("ssis", $offerCategory,$offerProduct,$offerQuantity,$dateTime);
-    $deleteQuery->execute();
+    $deleteQueryData = $conn->prepare("INSERT INTO shortage VALUES (NULL, ?, ?, ?, ?)");
+    $deleteQueryData->bind_param("ssis", $offerCategory,$offerProduct,$offerQuantity,$dateTime);
+    $deleteQueryData->execute();
 } else {
     //σφάλμα
-    echo "Error: " . $insertQuery->error;
+    echo "Error: " . $deleteQuery->error;
 }
 
 // κλέισιμο σύνδεσης

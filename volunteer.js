@@ -83,51 +83,51 @@ function initializeBaseMarker(Lat, Lng) {
 
   // Δημιουργία του δείκτη βάσης με τις συντεταγμένες και το εικονίδιο που καθορίστηκε
   baseMarker = L.marker([Lat, Lng]).addTo(map).setIcon(baseIcon);
-  baseMarker.bindPopup('Address: 25th March, Patras Greece<br>Postcode: 265 04<br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
+  baseMarker.bindPopup('Base <br>Phone: +30 2610 529 090<br>Email: carelink@gmail.com').openPopup();
 
   // Δημιουργία ενός κύκλου γύρω από τη θέση του δείκτη βάσης
   var circle = L.circle([Lat, Lng], {
       color: 'blue',
       fillColor: 'blue',
       fillOpacity: 0.5,
-      radius: 100
+      radius: 50
   }).addTo(map);
 
 }
 
-  function initializeUserLocationMarker(userLat, userLng) {
-    // Δημιουργία εικονιδίου για τον δείκτη της θέσης του χρήστη
-    var myTruck = L.icon({
-      iconUrl: 'truck.png',
-      iconSize: [41, 41],
-      iconAnchor: [20, 41],
-      popupAnchor: [1, -34]
-    });
+function initializeUserLocationMarker(userLat, userLng) {
+  // Δημιουργία εικονιδίου για τον δείκτη της θέσης του χρήστη
+  var myTruck = L.icon({
+    iconUrl: 'truck.png',
+    iconSize: [41, 41],
+    iconAnchor: [20, 41],
+    popupAnchor: [1, -34]
+  });
 
-    // Δημιουργία του δείκτη θέσης του χρήστη με τις συντεταγμένες και το εικονίδιο που καθορίστηκε
-    userLocationMarker = L.marker([userLat, userLng], { draggable: true }).addTo(map).setIcon(myTruck);
-    userLocationMarker.bindPopup('Your Location').openPopup();
-  
-    userLocationMarker.on('dragend', function (event) {
-      // Ανάκτηση της νέας θέσης του δείκτη μετά τη μετακίνηση
-      var position = userLocationMarker.getLatLng();
-      userLocationMarker.setLatLng(position);
-      userLocationMarker.getPopup().setContent('Your Location, new Position: ' + position.toString()).update();
-  
-      // Υπολογισμός της απόστασης μεταξύ του δείκτη θέσης του χρήστη και του βασικού δείκτη
-      var distance = calculateDistance(position, baseMarker.getLatLng());
-      userLocationMarker.setPopupContent(`Your Location - Distance: ${distance.toFixed(2)} kilometers`).update();
-  
-      // Ενημέρωση
-      updateLine();
-      updateRequestLines();
-      updateOfferLines();
-      checkDistancesforRequests();
-      checkDistancesforOffers();
-    });
- 
-  }
-  
+  // Δημιουργία του δείκτη θέσης του χρήστη με τις συντεταγμένες και το εικονίδιο που καθορίστηκε
+  userLocationMarker = L.marker([userLat, userLng], { draggable: true }).addTo(map).setIcon(myTruck);
+  userLocationMarker.bindPopup('Your Location').openPopup();
+
+  userLocationMarker.on('dragend', function (event) {
+    // Ανάκτηση της νέας θέσης του δείκτη μετά τη μετακίνηση
+    var position = userLocationMarker.getLatLng();
+    userLocationMarker.setLatLng(position);
+    userLocationMarker.getPopup().setContent('Your Location, new Position: ' + position.toString()).update();
+
+    // Υπολογισμός της απόστασης μεταξύ του δείκτη θέσης του χρήστη και του βασικού δείκτη
+    var distance = calculateDistance(position, baseMarker.getLatLng());
+    userLocationMarker.setPopupContent(`Your Location - Distance: ${distance.toFixed(2)} kilometers`).update();
+
+    // Ενημέρωση
+    updateLine();
+    updateRequestLines();
+    updateOfferLines();
+    checkDistancesforRequests();
+    checkDistancesforOffers();
+  });
+
+}
+
   
   function updateLine() {
      // Υπολογισμός της απόστασης μεταξύ του δείκτη βάσης και του δείκτη θέσης του χρήστη
@@ -138,7 +138,7 @@ function initializeBaseMarker(Lat, Lng) {
     var unloadItemsButton = document.getElementById('yourButtonId2');
 
     // Ενεργοποίηση ή απενεργοποίηση των κουμπιών με βάση την απόσταση
-    if (distance < 0.1) {
+    if (distance < 0.05) {
       loadItemsButton.disabled = false;
       unloadItemsButton.disabled = false;
     } else {

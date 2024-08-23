@@ -58,7 +58,7 @@ $conn->close();
       </ul>
   </div>
 
-    <div class="Secondsection">   
+    <div class="Secondsection" style="display: none;">   
         <h2 id="txtUsername"><?php echo $defaultUsername; ?></h2>
     </div>
 
