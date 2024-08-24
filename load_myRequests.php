@@ -17,8 +17,7 @@
 .card {
   border-radius: 4px;
   box-shadow: 0 2px 2px rgba(204, 197, 185, 0.5);
-  background-color: #ffe28c; 
-  color: #252422;
+  background-color: #faf3cd; 
   margin-bottom: 20px;
   position: relative;
   margin: 0 10px; 
@@ -33,11 +32,11 @@ h3, .h3 {
   font-weight: 600;
   line-height: 1.2em;
   margin: 10px 0; 
+  color: black;
 }
 
 .card .description {
   font-size: 16px;
-  color: #66615b;
   margin-bottom: 10px; 
 }
 

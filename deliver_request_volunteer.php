@@ -37,7 +37,7 @@ if ($existingQuantity >= $quantity) {
         $updatetasks->execute();
     //Αν η ποσότητα δεν είνια ίδια με αυτή του οχήματος τότε
     if ($newQuantity != 0) {
-        //Ενημέρωση της πσοσότητας του προιόντος στο όχημα 
+        //Ενημέρωση της πoσοσότητας του προιόντος στο όχημα 
         $stmtUpdate = $conn->prepare("UPDATE vehiclesOnAction SET quantity = ? WHERE category = ? AND products = ? AND driver = ?");
         $stmtUpdate->bind_param("isss", $newQuantity, $category, $product, $username);
         $stmtUpdate->execute();

@@ -51,7 +51,8 @@ $.ajax({
     }
 });
 
-if ('geolocation' in navigator) {
+document.addEventListener('DOMContentLoaded', function() {
+  if ('geolocation' in navigator) {
    // Λήψη της τρέχουσας θέσης του χρήστη
   navigator.geolocation.getCurrentPosition(function (position) {
       var userLat = position.coords.latitude;
@@ -71,6 +72,9 @@ if ('geolocation' in navigator) {
 } else {
   console.log('Geolocation is not supported by your browser.');
 }
+});
+
+
 
 function initializeBaseMarker(Lat, Lng) {
   // Δημιουργία του εικονιδίου για τον δείκτη βάσης
@@ -129,89 +133,74 @@ function initializeUserLocationMarker(userLat, userLng) {
 }
 
   
-  function updateLine() {
-     // Υπολογισμός της απόστασης μεταξύ του δείκτη βάσης και του δείκτη θέσης του χρήστη
-    var distance = calculateDistance(baseMarker.getLatLng(), userLocationMarker.getLatLng());
-  
-    // Ανάκτηση των στοιχείων των κουμπιών
-    var loadItemsButton = document.getElementById('yourButtonId1');
-    var unloadItemsButton = document.getElementById('yourButtonId2');
+function updateLine() {
+    // Υπολογισμός της απόστασης μεταξύ του δείκτη βάσης και του δείκτη θέσης του χρήστη
+  var distance = calculateDistance(baseMarker.getLatLng(), userLocationMarker.getLatLng());
 
-    // Ενεργοποίηση ή απενεργοποίηση των κουμπιών με βάση την απόσταση
-    if (distance < 0.05) {
-      loadItemsButton.disabled = false;
-      unloadItemsButton.disabled = false;
-    } else {
-      loadItemsButton.disabled = true;
-      unloadItemsButton.disabled = true;
-    }
+  // Ανάκτηση των στοιχείων των κουμπιών
+  var loadItemsButton = document.getElementById('yourButtonId1');
+  var unloadItemsButton = document.getElementById('yourButtonId2');
 
-    // Ενημέρωση της γραμμής που συνδέει τον δείκτη βάσης με τον δείκτη θέσης του χρήστη
-    line.setLatLngs([baseMarker.getLatLng(), userLocationMarker.getLatLng()]);
-  }
-  
-  function calculateDistance(pointA, pointB) {
-    // Ακτίνα της Γης σε χιλιόμετρα
-    var earthRadius = 6371;
-
-    // Υπολογισμός της διαφοράς του γεωγραφικού πλάτους και του μήκους
-    var latDiff = (pointB.lat - pointA.lat) * (Math.PI / 180);
-    var lngDiff = (pointB.lng - pointA.lng) * (Math.PI / 180);
-  
-    var a = Math.sin(latDiff / 2) * Math.sin(latDiff / 2) +
-      Math.cos(pointA.lat * (Math.PI / 180)) * Math.cos(pointB.lat * (Math.PI / 180)) *
-      Math.sin(lngDiff / 2) * Math.sin(lngDiff / 2);
-  
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  
-    // Υπολογισμός της απόστασης σε χιλιόμετρα
-    var distance = earthRadius * c;
-    return distance;
+  // Ενεργοποίηση ή απενεργοποίηση των κουμπιών με βάση την απόσταση
+  if (distance < 50) {
+    loadItemsButton.disabled = false;
+    unloadItemsButton.disabled = false;
+  } else {
+    loadItemsButton.disabled = true;
+    unloadItemsButton.disabled = true;
   }
 
-  var volWaitingRequests = [];
-  var volWaitingOffers = [];
-  var myRequests = [];
-  var myOffers = [];
-  var myOffers = 0; 
+  // Ενημέρωση της γραμμής που συνδέει τον δείκτη βάσης με τον δείκτη θέσης του χρήστη
+  line.setLatLngs([baseMarker.getLatLng(), userLocationMarker.getLatLng()]);
+}
 
- 
-  // Ανάκτηση δεδομένων απο τα αρχεία json
-  fetch('volWaitingRequests.json')
-    .then(response => response.json())
-    .then(data => {
-      volWaitingRequests = data;
-    })
-    .catch(error => console.error('Error fetching the JSON data:', error));
-  
-  fetch('volWaitingOffers.json')
-    .then(response => response.json())
-    .then(data => {
-      volWaitingOffers = data;
-    })
-    .catch(error => console.error('Error fetching the JSON data:', error));
-  
-  fetch('myRequests.json')
-    .then(response => response.json())
-    .then(data => {
-      myRequests = data;
-    })
-    .catch(error => console.error('Error fetching the JSON data:', error));
-  
-  fetch('myOffers.json')
-    .then(response => response.json())
-    .then(data => {
-      myOffers = data;
-    })
-    .catch(error => console.error('Error fetching the JSON data:', error));
+function calculateDistance(pointA, pointB) {
+  return pointA.distanceTo(pointB);
+}
 
-  fetch('taskcount.json')
-    .then(response => response.json())
-    .then(data => {
-        taskCount = parseInt(data[0].task_count, 10);
-    })
-    .catch(error => console.error('Error fetching the taskcount JSON data:', error));
- 
+var volWaitingRequests = [];
+var volWaitingOffers = [];
+var myRequests = [];
+var myOffers = [];
+var myOffers = 0; 
+
+
+// Ανάκτηση δεδομένων απο τα αρχεία json
+fetch('volWaitingRequests.json')
+  .then(response => response.json())
+  .then(data => {
+    volWaitingRequests = data;
+  })
+  .catch(error => console.error('Error fetching the JSON data:', error));
+
+fetch('volWaitingOffers.json')
+  .then(response => response.json())
+  .then(data => {
+    volWaitingOffers = data;
+  })
+  .catch(error => console.error('Error fetching the JSON data:', error));
+
+fetch('myRequests.json')
+  .then(response => response.json())
+  .then(data => {
+    myRequests = data;
+  })
+  .catch(error => console.error('Error fetching the JSON data:', error));
+
+fetch('myOffers.json')
+  .then(response => response.json())
+  .then(data => {
+    myOffers = data;
+  })
+  .catch(error => console.error('Error fetching the JSON data:', error));
+
+fetch('taskcount.json')
+  .then(response => response.json())
+  .then(data => {
+      taskCount = parseInt(data[0].task_count, 10);
+  })
+  .catch(error => console.error('Error fetching the taskcount JSON data:', error));
+
 //Ενεργά επίπεδα (layers)
 // Δημιουργία ενός αντικειμένου για την αποθήκευση ενεργών επιπέδων (layers)
 const activeLayers = {};
@@ -285,12 +274,11 @@ function Waiting_requests_markers(data) {
 }
 
 
-
 //____________________________offersss_______________________________
 function offers_markers(data) {
   layerMarkers.layer2 = [];
 
-  // Loop through the data and create markers
+  // Loop στα data για δημιουργια markers
   for (let i = 0; i < data.length; i++) {
     const location = new L.LatLng(data[i].latitude, data[i].longitude);
       var civilian_first_name = data[i].civilian_first_name ;
@@ -305,6 +293,7 @@ function offers_markers(data) {
 
       var offerbutton;
 
+      //ελεγχος για να μην μπορεί ένας εθελοντήσ να εχει πανω απο 4 tasks
       if (taskCount < 4) {
         offerbutton = '<button class="Acceptbut" onclick="handle_offers(' + offer_id + ')">Accept</button>';
       } else {
@@ -318,7 +307,7 @@ function offers_markers(data) {
                 offer_date_posted + '<br><strong>Number: </strong> ' + '+30'+ civilian_number + 
                 '<br><strong>State:</strong> ' + offer_status + '<br>' + offerbutton;
                  
-    // Create a new marker with a custom icon
+    // marker προσφοράς
     const marker = L.marker(location, {
       icon: L.icon({
         iconUrl: 'pin2.png',
@@ -329,26 +318,25 @@ function offers_markers(data) {
     });
 
     
-
-    // Bind popup content to the marker
+    // Bind popup με marker
     marker.bindPopup(message);
 
-    // Add marker to the layerMarkers array
+    // δέικτησ με φίλτρο
     layerMarkers.layer2.push(marker);
   }
 
-  // Update the marker cluster group
+  // Update marker cluster group
   updateClusterGroup();
 } 
 
 //___________________________________myRequests___________________________________
-let RequestCircles = []; // Array to store the circles
+let RequestCircles = []; // Array για αποθήκευση του κύκλου γύρω απο το αίτημα
 
 function my_requests(data) {
   layerMarkers.layer3 = [];
-  RequestCircles = []; // Clear any existing circles
+  RequestCircles = []; 
 
-  // Loop through the data and create markers
+  // Loop στα data και δημιουργία markers
   for (let i = 0; i < data.length; i++) {
     const location = new L.LatLng(data[i].latitude, data[i].longitude);
     var civilian_first_name = data[i].civilian_first_name;
@@ -372,7 +360,6 @@ function my_requests(data) {
       '<br><strong>Date Accepted </strong> ' + task_date +
       '<br><strong>State:</strong> ' + state;
 
-    // Create a new marker with a custom icon
     const marker = L.marker(location, {
       icon: L.icon({
         iconUrl: 'pin1.png',
@@ -382,48 +369,47 @@ function my_requests(data) {
       })
     });
 
-    // Bind popup content to the marker
+    // Bind popup με marker αιτήματος
     marker.bindPopup(message);
 
-    // Create a circle around the marker
+    // δημιουργία κύκλου
     const circle = L.circle(location, {
       color: 'blue',
       fillColor: 'blue',
       fillOpacity: 0.5,
-      radius: 50 // Radius in meters
+      radius: 50 // μέτρα κύκλου
     });
 
-    // Add the marker and circle to the map
+    // προσθήκη στον χάρτη
     marker.addTo(map);
     circle.addTo(map);
 
-    // Store the marker and circle
+    // αποθήκευση του marker και του circle
     layerMarkers.layer3.push(marker);
-    RequestMarkers.push(marker); // Add to RequestMarkers array
-    RequestCircles.push(circle); // Add to RequestCircles array
+    RequestMarkers.push(marker); 
+    RequestCircles.push(circle); 
   }
 
-  // Update the marker cluster group
+  // ενημέρωση του marker cluster group
   updateClusterGroup();
-// Check distances and enable buttons
 
 }
 
 function checkDistancesforRequests() {
-  if (!userLocationMarker) return; // Check if userLocationMarker exists
+  if (!userLocationMarker) return; //έλεγχος της τοποθεσίας χρήστη
 
   RequestMarkers.forEach(marker => {
     var distance = calculateDistance(marker.getLatLng(), userLocationMarker.getLatLng());
-    // Check if distance is less than 500 meters
+    // έλεγχος αν η αποσταση ειναι <50 μέτρα
     if (distance < 50) {
-      // Find the associated button and enable it
-      const id_request = marker.options.id_request; // Ensure id_request is stored in marker options
+      //enable το κουμπί για παράδωση
+      const id_request = marker.options.id_request; // επιβεβαόωση ότι το id_request ειναι συνδεδεμενο με τον marker 
       document.querySelectorAll('button.DeliverReq').forEach(button => {
         button.disabled = false;
 
       });
     } else {
-      // Disable the button if the distance is greater than 500 meters
+      // Disable το κουμπί αν η αποσταση ειναι μεγαλυτερη απο 50 μετρα
       const id_request = marker.options.id_request; // Ensure id_request is stored in marker options
       document.querySelectorAll('button.DeliverReq').forEach(button => {
         button.disabled = true;
@@ -433,7 +419,7 @@ function checkDistancesforRequests() {
 }
 
 function drawRequestLines() {
-  if (!userLocationMarker || !activeLayers.layer3) return; // Check if userLocationMarker exists and layer3 is active
+  if (!userLocationMarker || !activeLayers.layer3) return; // ελεχγος αν υπαρχει το userLocationMarker και το layer3 ειναι πατημενο
 
   RequestMarkers.forEach(marker => {
     var line = L.polyline([marker.getLatLng(), userLocationMarker.getLatLng()], { color: 'red' }).addTo(map);
@@ -442,25 +428,23 @@ function drawRequestLines() {
 }
 
 function updateRequestLines() {
-  if (!userLocationMarker || !activeLayers.layer3) return; // Check if userLocationMarker exists and layer3 is active
+  if (!userLocationMarker || !activeLayers.layer3) return; //  ελεχγος αν υπαρχει το userLocationMarker και το layer3 ειναι πατημενο
 
-  RequestLines.forEach(line => map.removeLayer(line)); // Remove all lines from the map
-  RequestLines = []; // Clear the lines array
+  RequestLines.forEach(line => map.removeLayer(line)); // αφαίρεση γραμμων
+  RequestLines = []; // άδειος πίνακας γραμμων
 
-  // Draw new lines connecting the markers to the user location marker
+  // κλήση συνάρτησης για εμφάνιση γραμμων
   drawRequestLines();
 }
 
 
-
 //_______________________________my_offers__________________________________
-
 let OfferCircles = [];
 function my_offers(data) {
   layerMarkers.layer4 = [];
-  OfferCircles = []; // Clear any existing circles
+  OfferCircles = []; 
+ 
 
-  // Loop through the data and create markers
   for (let i = 0; i < data.length; i++) {
     const location = new L.LatLng(data[i].latitude, data[i].longitude);
     var civilian_first_name = data[i].civilian_first_name;
@@ -484,7 +468,6 @@ function my_offers(data) {
       '<br><strong>Date Accepted </strong> ' + task_date +
       '<br><strong>State:</strong> ' + offer_status;
 
-    // Create a new marker with a custom icon
     const marker = L.marker(location, {
       icon: L.icon({
         iconUrl: 'pin2.png',
@@ -494,56 +477,49 @@ function my_offers(data) {
       })
     });
 
-    // Bind popup content to the marker
     marker.bindPopup(message);
 
-    // Create a circle around the marker
+    // κύκλος προσφορών
     const circle = L.circle(location, {
       color: 'blue',
       fillColor: 'blue',
       fillOpacity: 0.5,
-      radius: 50 // Radius in meters
+      radius: 50 // κύκλος σε μετρα
     });
 
     marker.addTo(map);
     circle.addTo(map);
 
-    // Add marker to the layerMarkers array
+    // προσθήκη marker ατο layerMarkers array
     layerMarkers.layer4.push(marker);
-    OfferMarkers.push(marker); // Add to OfferMarkers array
-    OfferCircles.push(circle); // Add to RequestCircles array
+    OfferMarkers.push(marker); // προσθηκη στο OfferMarkers array
+    OfferCircles.push(circle); // προσθηκη στο RequestCircles array
   }
 
-  // Update the marker cluster group
   updateClusterGroup();
 }
 
 function checkDistancesforOffers() {
-  if (!userLocationMarker) return; 
+  if (!userLocationMarker) return; // ελεγχος userLocationMarker 
 
-  OfferMarkers.forEach(marker => {
-    var distance = calculateDistance(marker.getLatLng(), userLocationMarker.getLatLng());
-    // Check if distance is less than 500 meters
-    if (distance < 50) {
-      // Find the associated button and enable it
-      const id_request = marker.options.id_request; // Ensure id_request is stored in marker options
-      document.querySelectorAll('button.AcceptOffer').forEach(button => {
-        button.disabled = false;
+  let isWithinAnyCircle = false;
 
-      });
-    } else {
-      // Disable the button if the distance is greater than 500 meters
-      const id_request = marker.options.id_request; // Ensure id_request is stored in marker options
-      document.querySelectorAll('button.AcceptOffer').forEach(button => {
-        button.disabled = true;
-      });
+  // ελεγχος αν ο χρηστης ειναι εντος του κύκλου 
+  OfferCircles.forEach(circle => {
+    const distance = calculateDistance(userLocationMarker.getLatLng(), circle.getLatLng());
+    if (distance < circle.getRadius()) {
+      isWithinAnyCircle = true;
     }
+  });
+
+  // disable το κουμπί για φόρτωση προιόντων προσφοράς
+  document.querySelectorAll('button.AcceptOffer').forEach(button => {
+    button.disabled = !isWithinAnyCircle;
   });
 }
 
-
 function drawOfferLines() {
-  if (!userLocationMarker || !activeLayers.layer4) return; // Check if userLocationMarker exists and layer4 is active
+  if (!userLocationMarker || !activeLayers.layer4) return; 
 
   OfferMarkers.forEach(marker => {
     var line = L.polyline([marker.getLatLng(), userLocationMarker.getLatLng()], { color: 'green' }).addTo(map);
@@ -552,68 +528,65 @@ function drawOfferLines() {
 }
 
 function updateOfferLines() {
-  if (!userLocationMarker || !activeLayers.layer4) return; // Check if userLocationMarker exists and layer4 is active
+  if (!userLocationMarker || !activeLayers.layer4) return; 
 
-  OfferLines.forEach(line => map.removeLayer(line)); // Remove all lines from the map
-  OfferLines = []; // Clear the lines array
+  OfferLines.forEach(line => map.removeLayer(line)); // αφαιρεση γραμμων απο τον χαρτη
+  OfferLines = []; // κενος πίνακας γραμμων 
 
-  // Draw new lines connecting the markers to the user location marker
-  
+  // σχεδιασμός γραμμων 
   drawOfferLines();
 }
 
-
-
-//_________________Function to toggle layers_________________________________
+//_________________ Συνάρτηση για toggle layers_________________________________
 function toggleLayer(layer) {
   if (activeLayers[layer]) {
-    // Remove the layer if it is active
+    // αφαίρεση του layer αν ειναι ενεργό
     activeLayers[layer] = false;
 
     if (layer === 'layer3') {
-      RequestLines.forEach(line => map.removeLayer(line)); // Remove all request lines from the map
-      RequestLines = []; // Clear the request lines array
-      RequestCircles.forEach(circle => map.removeLayer(circle)); // Remove all circles from the map
-      RequestCircles = []; // Clear the circles array
+      RequestLines.forEach(line => map.removeLayer(line)); // αφαίρεση όλων των request lines απο τον χάρτη
+      RequestLines = []; // "καθαρισμός" πίνακα
+      RequestCircles.forEach(circle => map.removeLayer(circle)); // αφαίρεση όλων των κυκλων απο τον χάρτη
+      RequestCircles = []; // "καθαρισμός" πίνακα
     }
 
     // Remove lines if layer4 is deactivated
     if (layer === 'layer4') {
-      OfferLines.forEach(line => map.removeLayer(line)); // Remove all offer lines from the map
-      OfferLines = []; // Clear the offer lines array
-      OfferCircles.forEach(circle => map.removeLayer(circle)); // Remove all circles from the map
-      OfferCircles = []; // Clear the circles array
+      OfferLines.forEach(line => map.removeLayer(line)); //  αφαίρεση όλων των offer lines απο τον χάρτη
+      OfferLines = []; // "καθαρισμός" πίνακα
+      OfferCircles.forEach(circle => map.removeLayer(circle)); //  αφαίρεση όλων των κυκλων απο τον χάρτη
+      OfferCircles = []; // "καθαρισμός" πίνακα
     }
 
   } else {
-    // Add the layer if it is not active
+    // προσθηκη layer αν δεν ειανι ενεργο
     activeLayers[layer] = true;
 
-    // Initialize markers for the layer if not already done
+    // φιλτρα
     if (layer === 'layer1') {
       Waiting_requests_markers(volWaitingRequests);
 
     } else if (layer === 'layer2') {
       offers_markers(volWaitingOffers);
 
-    } else if (layer === 'layer3') { // Always call my_requests when enabling layer3
+    } else if (layer === 'layer3') { 
       my_requests(myRequests);
       drawRequestLines();
 
-    } else if (layer === 'layer4') { // Always call my_offers when enabling layer4
+    } else if (layer === 'layer4') { 
       my_offers(myOffers);
       drawOfferLines();
 
     }
   }
-  // Update the marker cluster group
+  // ενημερωση marker cluster group
   updateClusterGroup();
 }
 
 
-// Function to update the marker cluster group based on active layers
+// συνάρτηση για ενημερωση marker cluster group σύμφωνα με το φίλτρο που εχει επιλεγεί 
 function updateClusterGroup() {
-  // Clear all markers from the cluster group
+  // καθαρισμος όλων των markers απο το cluster group
   allMarkersClusterGroup.clearLayers();
 
   // Προσθήση markers στα ενεργά layers

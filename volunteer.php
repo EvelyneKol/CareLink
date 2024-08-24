@@ -753,6 +753,7 @@ $conn->close();
         </div>
 
         <div class="thirdsection" id="Map">
+            <br>
             <h2 class="with-hr" id="B" style="text-align: center;">Map</h2>
             <hr>
             <form class="filters">
@@ -774,6 +775,7 @@ $conn->close();
 
 
         <div class="forthection">
+          </br>
           <h2 class="with-hr" id="Task" style="text-align: center;">My tasks</h2>
           <hr>
           <div class="row">
@@ -1105,7 +1107,7 @@ $conn->close();
             showMyRequests(defaultUsername);
         });
 
-    //Συνάρτηση παράδωσης αιτιμάτων
+    //Συνάρτηση παράδoσης αιτημάτων
     function deliver_requests(requestId, category, product, quantity) {
             // Λήψη του ονόματος χρήστη από το στοιχείο με ID "txtUsername"
             var username = document.getElementById("txtUsername").value;
@@ -1150,7 +1152,7 @@ $conn->close();
             xhr.send(formData);
         }
 
-  //Συνάρτηση διαγραφής αιτιμάτων
+  //Συνάρτηση διαγραφής αιτημάτων
   function delete_request(requestId) {
         // Ορισμός του URL για το αίτημα POST
         var url = "delete_request_volunteer.php";

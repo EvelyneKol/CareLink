@@ -15,6 +15,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION
 $sql = "SELECT DISTINCT category_name FROM categories";
 $result = $conn->query($sql);
 
+
 ?>
 
 <!DOCTYPE html>
@@ -181,12 +182,15 @@ $result = $conn->query($sql);
                 e.preventDefault();
                 var selectedCategory = $("#categorySelect").val();
                 if (selectedCategory) {
-                    $.ajax({ //κληση αρχέιου για fetch των δεδομένων στην μορφή πίνακα
+                    $.ajax({
                         type: "POST",
                         url: "load_json_data.php",
                         data: { category: selectedCategory },
                         success: function(response) {
                             $("#result").html(response);
+                        },
+                        error: function(xhr, status, error) {
+                            $("#result").html("An error occurred while fetching data.");
                         }
                     });
                 } else {
@@ -194,6 +198,7 @@ $result = $conn->query($sql);
                 }
             });
         });
+
 
         // διαχείρηση φόρμας για φίλτρα και ενημέρωση γραφήματος μέσω AJAX
         $(document).ready(function() {
