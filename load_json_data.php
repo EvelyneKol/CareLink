@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["category"])) {
             $stmt->execute();
             $result_products_by_category = $stmt->get_result();
 
-            echo "<h2>Products in Category: $selected_category</h2>";
+            echo "<h2>Products in Base: $selected_category</h2>";
             if ($result_products_by_category->num_rows > 0) {
                 echo "<table border='1'>";
                 echo "<tr><th>Product</th><th>Quantity on Stock</th></tr>";
