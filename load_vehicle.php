@@ -31,7 +31,7 @@
         $username = $_GET['q'];
 
         //Επιλογή προιόντων και τις ποσότητες από τον πίνακα vehiclesOnAction με βάση τον οδηγό (driver)
-        $sql = "SELECT products, quantity FROM vehiclesOnAction WHERE driver = ?";
+        $sql = "SELECT category, products, quantity FROM vehiclesOnAction WHERE driver = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $username);
 
@@ -41,7 +41,7 @@
          die("Error: " . $stmt->error);
         }
          // Δέσμευση των αποτελεσμάτων
-        $stmt->bind_result($products, $quantity);
+        $stmt->bind_result($category, $products, $quantity);
 
         // Έλεγχος αν βρέθηκε κάποιο αποτέλεσμα
         if ($stmt->fetch()) {
@@ -51,6 +51,7 @@
             echo '<div class="col-sm-4">';
             echo '<table>';
             echo '<tr>';
+            echo '<th>Categories</th>';
             echo '<th>Product</th>';
             echo '<th>Quantity</th>';
             echo '</tr>';
@@ -58,6 +59,7 @@
             // Επανάληψη σε όλα τα αποτελέσματα και προσθήκη τους στον πίνακα
             do {
                 echo '<tr>';
+                echo '<td>' . htmlspecialchars($category) . '</td>';
                 echo '<td>' . htmlspecialchars($products) . '</td>';
                 echo '<td>' . htmlspecialchars($quantity) . '</td>';
                 echo '</tr>';
