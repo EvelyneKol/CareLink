@@ -10,24 +10,24 @@ if ($conn->connect_error) {
     exit();
 }
 
-if (isset($_FILES['json_file'])) {
-    $file_tmp = $_FILES['json_file']['tmp_name'];
-    $file_name = $_FILES['json_file']['name'];
+if (isset($_FILES['json_file'])) { //έλεγχος αν το αρχέιο είναι json 
+    $file_tmp = $_FILES['json_file']['tmp_name']; //όνομα αρχέιου που διαβάζε
+    $file_name = $_FILES['json_file']['name']; //όνομα που αποθηκεύει 
     
     // Βεβαιωθείτε ότι το αρχείο που ανεβάστηκε είναι JSON
     $file_ext = pathinfo($file_name, PATHINFO_EXTENSION);
-    if ($file_ext != 'json') {
-        $_SESSION['message'] = "Please upload a valid JSON file.";
-        header("Location: {$_SERVER['HTTP_REFERER']}");
-        exit();
+    if ($file_ext != 'json') {  // αν το file extension δεν ειναι json 
+        $_SESSION['message'] = "Please upload a valid JSON file."; //μήνυμα σφάλματος 
+        header("Location: {$_SERVER['HTTP_REFERER']}"); 
+        exit(); //τελος κώδικα 
     }
     
     // Ανάγνωση του περιεχομένου του αρχείου JSON
-    $jsondata = file_get_contents($file_tmp);
-    // Μετατροπή του αντικειμένου JSON σε συνειρμικό πίνακα PHP
+    $jsondata = file_get_contents($file_tmp); // διβάζει και φέρνει τα δεδομένα με την file_get_contents()
+    // Μετατροπή του αντικειμένου JSON σε πίνακα PHP
     $data = json_decode($jsondata, true);
 
-    if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+    if ($data === null && json_last_error() !== JSON_ERROR_NONE) { //ελέηχει αν το JSON decoding έγινε επιτυχώς 
         $_SESSION['message'] = "Error decoding JSON file.";
         header("Location: {$_SERVER['HTTP_REFERER']}");
         exit();
@@ -50,7 +50,7 @@ if (isset($_FILES['json_file'])) {
         // Λήψη των λεπτομερειών
         $category_id = $item['category'];
         $category_name = '';
-        // Εύρεση του ονόματος της κατηγορίας που αντιστοιχεί στο ID της κατηγορίας
+        // Εύρεση του ονόματος της κατηγορίας που αντιστοιχεί στο ID της κατηγορίας (σε περίπτωση ξανα υποβολής του ίδιουυ πχ αρχείου)
         foreach ($data['categories'] as $category) {
             if ($category['id'] == $category_id) {
                 $category_name = $category['category_name'];

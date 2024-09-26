@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Αν το προϊόν υπάρχει, ενημέρωση της ποσότητας στο απόθεμα
             $Checkprod->bind_result($currentQuantity);
             $Checkprod->fetch();
-            $newQuantity = $currentQuantity + $quantity;
+            $newQuantity = $currentQuantity + $quantity; //πρόσθεση 
 
             $stmtUpdate = $conn->prepare("UPDATE categories SET quantity_on_stock = ? WHERE category_name = ? AND products = ?");
             $stmtUpdate->bind_param("iss", $newQuantity, $category, $product);
@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Αν το προϊόν υπάρχει, έλεγχος αν η ποσότητα είναι επαρκής για διαγραφή
             $Checkprod->bind_result($currentQuantity);
             $Checkprod->fetch();
-            $newQuantity = $currentQuantity - $quantity;
+            $newQuantity = $currentQuantity - $quantity; //αφαίρεση 
             if ($currentQuantity >= $quantity) {
                 $stmtUpdate = $conn->prepare("UPDATE categories SET quantity_on_stock = ? WHERE category_name = ? AND products = ?");
                 $stmtUpdate->bind_param("iss", $newQuantity, $category, $product);
@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/jpg" sizes="96x96" href="images/favicon.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> <!-- icons -->
     <link rel="stylesheet" href="base.css">
 </head>
 <body>
@@ -138,10 +138,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="col-sm-6">
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <button class="Insert" type="submit" name="Insert">Insert</button>
+                                        <button class="Insert" type="submit" name="Insert">Insert</button> <!-- παει στο POST insert  -->
                                     </div>
                                     <div class="col-sm-6">
-                                        <button class="Delete" type="submit" name="Delete">Delete</button>
+                                        <button class="Delete" type="submit" name="Delete">Delete</button> <!-- παει στο POST delete  -->
                                     </div>
                                 </div>
                             </div>
@@ -180,7 +180,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </thead>
             <tbody>
                 <?php
-                // Λήψη δεδομένων από τον πίνακα shortage
+                // Λήψη δεδομένων από τον πίνακα categories
                 $sql = "SELECT * FROM categories ORDER BY category_name";
                 $result = $conn->query($sql);
 
@@ -203,34 +203,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </tbody>
         </table>
     </div>   
-    
-    <script>
-        document.getElementById("category_name").addEventListener("change", function() {
-            var categoryId = this.value;
-            var productDropdown = document.getElementById("product_name");
-            productDropdown.innerHTML = ""; // Εκκαθάριση των προηγούμενων επιλογών
 
-             // Λήψη προϊόντων για την επιλεγμένη κατηγορία μέσω AJAX
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "fetch_products.php", true); // Αποστολή αιτήματος POST στο αρχείο fetch_products.php
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        var products = JSON.parse(xhr.responseText); // Μετατροπή του JSON σε αντικείμενο JavaScript
-                        products.forEach(function(product) {
-                            var option = document.createElement("option");
-                            option.text = product;
-                            option.value = product;
-                            productDropdown.add(option); // Προσθήκη επιλογής στο dropdown προϊόντων
-                        });
-                    } else {
-                        console.error("Error fetching products");
-                    }
-                }
-            };
-            xhr.send("category_name=" + categoryId); // Αποστολή της επιλεγμένης κατηγορίας στο fetch_products.php
-        });
-    </script>
 </body>
 </html>

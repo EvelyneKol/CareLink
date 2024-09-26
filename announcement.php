@@ -42,9 +42,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->close(); } // Κλείσιμο του statement
 } 
 
-//new page
+/* //new page
 // Καθορισμός του αριθμού των ανακοινώσεων ανά σελίδα
-$announcementsPerPage = 20;
+$announcementsPerPage = 2;
 
 // Λήψη του συνολικού αριθμού ανακοινώσεων
 $totalAnnouncementsQuery = "SELECT COUNT(*) AS total FROM shortage";
@@ -62,12 +62,11 @@ $offset = ($currentPage - 1) * $announcementsPerPage;
 
 // Λήψη δεδομένων από τον πίνακα shortage για την τρέχουσα σελίδα
 $shortage = "SELECT * FROM shortage ORDER BY shortage_datetime DESC LIMIT $offset, $announcementsPerPage";
-$resultShortage = $conn->query($shortage); 
+$resultShortage = $conn->query($shortage);  */
 
-// Λήψη κατηγοριών από τη βάση δεδομένων
+//Λήψη κατηγοριών από τη βάση δεδομένων
 $sql = "SELECT distinct category_name FROM categories";
-$result = $conn->query($sql);
-
+$result = $conn->query($sql); 
 
 ?>
 
@@ -109,7 +108,6 @@ $result = $conn->query($sql);
                             <?php
                             // Έλεγχος αν υπάρχουν αποτελέσματα για τις κατηγορίες
                             if ($result->num_rows > 0) {
-                                // Output data of each row
                                 while($row = $result->fetch_assoc()) {
                                     echo '<option value="' . htmlspecialchars($row["category_name"]) . '">' . htmlspecialchars($row["category_name"]) . '</option>';
                                 }
@@ -187,11 +185,6 @@ $result = $conn->query($sql);
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <div class="pagination">
-                <?php for ($page = 1; $page <= $totalPages; $page++): ?>
-                    <a href="?page=<?php echo $page; ?>"<?php if ($page === $currentPage) echo ' class="active"'; ?>><?php echo $page; ?></a>
-                <?php endfor; ?>
             </div>
         </div>
     </div>

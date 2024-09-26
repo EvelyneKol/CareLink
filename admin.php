@@ -29,25 +29,25 @@ $result = $conn->query($sql);
     <link rel="stylesheet" href="admin.css">
     <link rel="icon" type="image/jpg" sizes="96x96" href="images/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  <!-- απεικόνιση των στατιστικών -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- δυναμική ενημέρωση του περιεχομένου χωρίς επαναφόρτωση της σελίδας για filter και κατάσταση της βάσης-->
 </head>
 
 <body>
 
-<div class="navbar">
-    <img src="images/logo1.png" alt="Logo" >
-    <ul class="nav">
-        <li><a class="active" href="Home.html">Home</a></li>
-        <p style="font-size: 18px;"> | </p >
-        <li><a href="admin_map.php">Map</a></li>
-        <p style="font-size: 18px;"> | </p >
-        <li><a href="base.php">Database </a></li>
-    </ul>
-    <ul class="nav">
-        <li><a href="logout.php"><i class="fa fa-sign-out" style="font-size:24px" ></i> Log out</a></li>
-    </ul>
-  </div>
+    <div class="navbar">
+        <img src="images/logo1.png" alt="Logo" >
+        <ul class="nav">
+            <li><a class="active" href="Home.html">Home</a></li>
+            <p style="font-size: 18px;"> | </p >
+            <li><a href="admin_map.php">Map</a></li>
+            <p style="font-size: 18px;"> | </p >
+            <li><a href="base.php">Base Management </a></li>
+        </ul>
+        <ul class="nav">
+            <li><a href="logout.php"><i class="fa fa-sign-out" style="font-size:24px" ></i> Log out</a></li>
+        </ul>
+    </div>
 
     <div class="Main container-fluid">
         <div class="Firstsection">

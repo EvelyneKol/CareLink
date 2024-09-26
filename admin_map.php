@@ -11,7 +11,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-function baseLocation($conn) {
+
+/* function baseLocation($conn) {
     //διαβασμα συντεταγμενων αποθηκης απο την βαση δεδομεων
     $baseLocation = "SELECT SUBSTRING_INDEX(base_location, ',', 1) AS latitude,
             SUBSTRING_INDEX(base_location, ',', -1) AS longitude
@@ -47,64 +48,60 @@ function baseLocation($conn) {
         } else {
             die("Error executing the SQL query: " . $conn->error);
         }
-    }
+    } */
 
 //query για οχηματα
-    $vehicles = "SELECT 
-                    vehicle.vehicle_name,
-                    SUBSTRING_INDEX(vehicle.vehicle_location, ',', 1) AS latitude,
-                    SUBSTRING_INDEX(vehicle.vehicle_location, ',', -1) AS longitude,
-                    GROUP_CONCAT(CONCAT(vehiclesOnAction.quantity, ' ', vehiclesOnAction.products) SEPARATOR '; ') AS products,
-                    SUM(COALESCE(vehiclesOnAction.quantity, 0)) AS quantity,
-                    COUNT(DISTINCT task.task_id) AS task_count
-                FROM 
-                    vehicle
-                LEFT JOIN 
-                    vehiclesOnAction ON vehicle.vehicle_name = vehiclesOnAction.v_name
-                LEFT JOIN 
-                    task ON vehiclesOnAction.driver = task.task_volunteer
-                GROUP BY 
-                    vehicle.vehicle_name";
+$vehicles = "SELECT 
+                vehicle.vehicle_name,
+                SUBSTRING_INDEX(vehicle.vehicle_location, ',', 1) AS latitude,
+                SUBSTRING_INDEX(vehicle.vehicle_location, ',', -1) AS longitude,
+                GROUP_CONCAT(CONCAT(vehiclesOnAction.quantity, ' ', vehiclesOnAction.products) SEPARATOR '; ') AS products,
+                SUM(COALESCE(vehiclesOnAction.quantity, 0)) AS quantity,
+                COUNT(DISTINCT task.task_id) AS task_count
+            FROM 
+                vehicle
+            LEFT JOIN 
+                vehiclesOnAction ON vehicle.vehicle_name = vehiclesOnAction.v_name
+            LEFT JOIN 
+                task ON vehiclesOnAction.driver = task.task_volunteer
+            GROUP BY 
+                vehicle.vehicle_name";
 
+$data2 = array();
+// Εκτέλεση του ερωτήματος με έλεγχο σφαλμάτων
+$sqlVehicle = $conn->query($vehicles);
+
+if ($sqlVehicle) {
+    // αρχικοποίηση πίνακα για αποθήκευση δεδομένων
     $data2 = array();
-    $sqlVehicle = $conn->query($vehicles);
-    
-    if ($sqlVehicle) {
-        // αρχικοποίηση πίνακα για αποθήκευση δεδομένων
-        $data2 = array();
-    
-        while ($row = $sqlVehicle->fetch_assoc()) {        
-            // αντιστοίχηση $data2 πίνακα με τα δεδομένα query
-            $data2[] = array(
-                "vehicle_name" => $row["vehicle_name"],
-                "quantity" => $row["quantity"],
-                "products" => $row["products"],
-                "task_count" => $row["task_count"],
-                "latitude" => $row["latitude"], 
-                "longitude" => $row["longitude"]
-            );
-        }
-       
-        // αποκωδικοποίηση $data3 σε JSON 
-        $json_data = json_encode($data2);
-    
-        // όνομα JSON file για αποθήκευση
-        $json_file = 'vehicles.json';
-    
-        // Write JSON data to file
-        if (file_put_contents($json_file, $json_data)) {
-           
-        } else {
-            echo "Unable to write JSON data to $json_file";
-        }
-        
-        // Close the result set
-        $sqlVehicle->close();
-    } else {
-        die("Error executing the SQL query: " . $conn->error);
-    }
 
+    while ($row = $sqlVehicle->fetch_assoc()) {        
+        // αντιστοίχηση $data2 πίνακα με τα δεδομένα query
+        $data2[] = array(
+            "vehicle_name" => $row["vehicle_name"],
+            "quantity" => $row["quantity"],
+            "products" => $row["products"],
+            "task_count" => $row["task_count"],
+            "latitude" => $row["latitude"], 
+            "longitude" => $row["longitude"]
+        );
+    }
     
+    // αποκωδικοποίηση $data2 σε JSON 
+    $json_data = json_encode($data2);
+
+    // όνομα JSON file για αποθήκευση
+    $json_file = 'vehicles.json';
+
+    // γραφει τα JSON δεδομένα sto json_file
+    file_put_contents($json_file, $json_data);
+ 
+    // Close the result set
+    $sqlVehicle->close();
+} else {
+    die("Error executing the SQL query: " . $conn->error);
+}
+
 
 
 
@@ -167,6 +164,7 @@ $sqlwaitingRequest->close();
 return "Error executing the SQL query: " . $conn->error;
 }
 
+
 // query για select offers
 $offers = "SELECT distinct
             civilian.civilian_first_name,
@@ -225,11 +223,7 @@ if ($sqloffers) {
     $json_file = 'Offers.json';
 
     // γράφει το JSON αρχείο με τα δεδομένα
-    if (file_put_contents($json_file, $json_data)) {
-    
-    } else {
-        echo "Unable to write JSON data to $json_file";
-    }
+    file_put_contents($json_file, $json_data);
     
     // κλείσιμο του result set
     $sqloffers->close();
@@ -297,10 +291,8 @@ if ($sqlOnTheWayRequest) {
     $json_file = 'OnWayRequests.json';
 
     // γράφει το JSON αρχείο με τα δεδομένα
-    if (file_put_contents($json_file, $json_data)) {
-    } else {
-        return "Unable to write JSON data to $json_file";
-    }
+    file_put_contents($json_file, $json_data);
+
     // κλείσιμο σύνδεσης για αποτελέσματα
     $sqlOnTheWayRequest->close();
 } else {
@@ -323,22 +315,21 @@ $conn->close();
     <link rel="icon" type="image/jpg" sizes="96x96" href="images/favicon.png">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" /> -->
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@latest/dist/MarkerCluster.Default.css" />
     <script src="https://unpkg.com/leaflet.markercluster@latest/dist/leaflet.markercluster.js"></script>
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" /> 
     <!-- Leaflet Routing Machine CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />  <!-- ευθειες γραμμες -->
     <!-- Leaflet Routing Machine JavaScript -->
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css" />
-    <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css" /> <!-- ομαδες pin -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script> <!-- ομαδες pin -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 

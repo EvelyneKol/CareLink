@@ -10,7 +10,8 @@ if ($conn->connect_error) {
 //ξεκινάει session που κρατά τα credits
 session_start();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST") { //αν το αίτημα είναι POST δηλαδή η φόρμα έχει εκτελεστεί 
+    //παίρνουμε τα δεδομένα τησ φόρμασ που έχουν σταλεί μέσω POST 
     $first_name = $_POST['name'];
     $last_name = $_POST['lastname'];
     $username = $_POST['username'];
@@ -18,19 +19,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // έλεγχος με το select query αν ο εθελοντής υπάρχει στο volunteer table
     $check_query = "SELECT * FROM volunteer WHERE vol_username = ?";
-    $check_stmt = $conn->prepare($check_query);
-    $check_stmt->bind_param("s", $username);
+    $check_stmt = $conn->prepare($check_query); //Προετοιμάζει το SQL query για εκτέλεση 
+    $check_stmt->bind_param("s", $username); //Συνδέει την τιμή του username στο placeholder ? του query, όπου s είναι string
     $check_stmt->execute();
     $result = $check_stmt->get_result();
 
     if ($result->num_rows > 0) {
         // εάν το usernmae υπάρχει, εμφάνισε μήνυμα και ανακατεύθυνε στο sign_up_volunteer.php
-        echo "<script>alert('Have already registered!'); window.location.href = 'sign_up_volunteer.php';</script>";
+        $_SESSION['error_message'] = "This username is already registered!";
+        header("Location: sign_up_volunteer.php"); // Ανακατεύθυνση στη σελίδα εγγραφής
         exit(); 
     } else {
         // το Username δεν υπάρχει άρα κάνει insert 
         $insert_stmt = $conn->prepare("INSERT INTO volunteer (vol_first_name, vol_last_name, vol_username, vol_password) VALUES (?, ?, ?, ?)");
-        $insert_stmt->bind_param("ssss", $first_name, $last_name, $username, $password);
+        $insert_stmt->bind_param("ssss", $first_name, $last_name, $username, $password); //Συνδέει τισ τιμές οι οποίες έιναι ολες string
 
         if ($insert_stmt->execute()) {
             // μήνυμα επιτυχίας
@@ -91,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         spellcheck="false" required>
                     <label for="password">Password</label>
                     <input type="password" placeholder="Enter Your Password" id="password" name="password"
-                    autocomplete="on" pattern="(?=.*\d)(?=.*[a-z]).{8,}"
+                    autocomplete="on" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                     title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
                     required>
                     <label for="showpass" id="rlabel">Show Password</label>
@@ -140,9 +142,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
       if (name === "" || lastname === "" || username === "" || password === "") {
         alert("Please fill in all fields.");  //εάν υπάρχουν κενά πεδία
-        return false;
-      } else if (password.length < 8 || password.length > 15 || !/[a-z]/.test(password)) {
-        alert("Password must be 8-15 characters long and include at least one capital letter and one symbol.");
         return false;
       } else {
         // προβολή alert

@@ -38,7 +38,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   // Εκτέλεση της δήλωσης
   if ($stmt->execute()) {
-      $success_message = "Request was made successfully"; // Μήνυμα επιτυχίας αν το αίτημα καταχωρηθεί
       // Ανακατεύθυνση στη σελίδα αιτημάτων μετά την επιτυχημένη υποβολή
       header("Location: civilian_requests.php");
       exit(); //exit για να μην υπάρχει περαιτέρω execution 
@@ -54,11 +53,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $sql = "SELECT distinct category_name FROM categories";
 $result = $conn->query($sql);
 
-// ανάκτηση shortage records απο την database
-$shortageQuery = "SELECT * FROM shortage ORDER BY shortage_datetime DESC";
-$shortageResult = $conn->query($shortageQuery);
-
-
 ?>
 
 <!DOCTYPE html>
@@ -72,7 +66,7 @@ $shortageResult = $conn->query($shortageQuery);
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="Civilian.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- for ajax -->
 </head>
 
 <body>
@@ -92,81 +86,76 @@ $shortageResult = $conn->query($shortageQuery);
       
   </div>
 
-    <div class="Secondsection">
-      <h3 id="A">Make a request!</h3>
-      <hr>
-      <p>Hey there! In this section, you have the chance to submit a form with all the
-        products that you need.
-        Quick reminder: stick to one product per category each time.
-        But guess what? You're not limited by quantity,
-        so go ahead and submit as many forms as your heart desires!</p>
-      <div class="row">
-        <div class="col-sm-3"></div>
-        <div class="req col-sm-6">
-        <form id="requestForm" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" onsubmit="resetForm()">
-            <div class="row">
-              <div class="col-sm-6">
-                <label for="txtUsername" class="form-label">Username</label>
-                <input type="text" class="form-control p-2" id="txtUsername" name="username"
-                placeholder="Write your Username..." autocomplete="on" required value="<?php echo $defaultUsername; ?>" readonly>
-              </div>
-              <br>
-              <div class="col-sm-6">
-                <label for="people" class="form-label">People</label>
-                <input type="text" class="form-control p-2" id="people" name="People"
-                  placeholder="Number of people" pattern="[0-9]{1,2}" autocomplete="on" required>
-              </div>
+  <div class="Secondsection">
+    <h3 id="A">Make a request!</h3>
+    <hr>
+    <p>Hey there! In this section, you have the chance to submit a form with all the
+      products that you need.
+      Quick reminder: stick to one product per category each time.
+      But guess what? You're not limited by quantity,
+      so go ahead and submit as many forms as your heart desires!</p>
+    <div class="row">
+      <div class="col-sm-3"></div>
+      <div class="req col-sm-6">
+      <form id="requestForm" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" onsubmit="resetForm()">
+          <div class="row">
+            <div class="col-sm-6">
+              <label for="txtUsername" class="form-label">Username</label>
+              <input type="text" class="form-control p-2" id="txtUsername" name="username"
+              placeholder="Write your Username..." autocomplete="on" required value="<?php echo $defaultUsername; ?>" readonly>
             </div>
             <br>
-            <div>
-                <div class="col-sm-6">
-                    <label for="categorySelect" class="form-label">Category</label>
-                    <select id="categorySelect" class="form-control p-2" name="categorySelect">
-                    <option value="">Select a category</option>
-                        <?php
-                        // Έλεγχος αν υπάρχουν αποτελέσματα από το ερώτημα για τις κατηγορίες
-                        if ($result->num_rows > 0) {
-                            while($row = $result->fetch_assoc()) {
-                                echo '<option value="' . htmlspecialchars($row["category_name"]) . '">' . htmlspecialchars($row["category_name"]) . '</option>';
-                            }
-                        } else {
-                            echo '<option value="">No categories available</option>';
-                        }
-                        $conn->close(); // Κλείσιμο της σύνδεσης με τη βάση δεδομένων
-                        ?>
-                    </select>
-                    
-                    <br>
-                    
-                    <div class="col-sm-6">
-                      <!-- Επιλογή προϊόντος από την επιλεγμένη κατηγορία-->
-                        <label for="productSelect" class="form-label">Product</label>
-                        <select id="productSelect" class="form-control p-2" name="productSelect">
-                        <option value="">Select a category First</option>
-                        </select>
-                    </div>
-                </div>
+            <div class="col-sm-6">
+              <label for="people" class="form-label">People</label>
+              <input type="text" class="form-control p-2" id="people" name="People"
+                placeholder="Number of people" pattern="[0-9]{1,2}" autocomplete="on" required>
             </div>
-            <?php
-            if (!empty($success_message)) {
-                echo "<p class='success-message'>$success_message</p>";
-            }
-            ?>
-            <br>
-            <button class="submit" type="submit">Submit</button>
-            <button class="reset" type="reset" onclick="resetForm()">Reset</button>
-           
-          </form>
-        </div>
-        <div class="col-sm-3"></div>
+          </div>
+          <br>
+          <div>
+              <div class="col-sm-6">
+                  <label for="categorySelect" class="form-label">Category</label>
+                  <select id="categorySelect" class="form-control p-2" name="categorySelect">
+                  <option value="">Select a category</option>
+                      <?php
+                      // Έλεγχος αν υπάρχουν αποτελέσματα από το ερώτημα για τις κατηγορίες
+                      if ($result->num_rows > 0) {
+                          while($row = $result->fetch_assoc()) {
+                              echo '<option value="' . htmlspecialchars($row["category_name"]) . '">' . htmlspecialchars($row["category_name"]) . '</option>';
+                          }
+                      } else {
+                          echo '<option value="">No categories available</option>';
+                      }
+                      $conn->close(); // Κλείσιμο της σύνδεσης με τη βάση δεδομένων
+                      ?>
+                  </select>
+                  
+                  <br>
+                  
+                  <div class="col-sm-6">
+                    <!-- Επιλογή προϊόντος από την επιλεγμένη κατηγορία-->
+                      <label for="productSelect" class="form-label">Product</label>
+                      <select id="productSelect" class="form-control p-2" name="productSelect">
+                      <option value="">Select a category First</option>
+                      </select>
+                  </div>
+              </div>
+          </div>
+          <br>
+          <button class="submit" type="submit">Submit</button>
+          <button class="reset" type="reset" onclick="resetForm()">Reset</button>
+          
+        </form>
       </div>
+      <div class="col-sm-3"></div>
     </div>
+  </div>
 
-    <div class="thirdsection">
-        <h3 id="B" >My requests</h3>
-        <hr>
-        <div id="userRequests"></div>
-    </div>
+  <div class="thirdsection">
+      <h3 id="B" >My requests</h3>
+      <hr>
+      <div id="userRequests"></div>
+  </div>
 
    
   <div class="Footer container-fluid">
@@ -234,7 +223,7 @@ $shortageResult = $conn->query($shortageQuery);
             xmlhttp.send(); // Αποστολή του αιτήματος
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function () { //όταν το DOM φορτωθεί
             // Λήψη της προεπιλεγμένης τιμής για το username
             var defaultUsername = document.getElementById("txtUsername").value;
 

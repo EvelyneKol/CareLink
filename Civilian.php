@@ -40,7 +40,6 @@ $conn->close();
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="Civilian.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
@@ -109,7 +108,7 @@ $conn->close();
                 echo '<p>Quantity: ' . htmlspecialchars($row["shortage_quantity"]) . '</p>';
                 echo '<p>Date & Time: ' . htmlspecialchars($row["shortage_datetime"]) . '</p>';  
                 // Κουμπί που επιτρέπει στο χρήστη να κάνει προσφορά για την έλλειψη
-                echo '<button class="delete"  onclick="addOffer(\'' . htmlspecialchars($row["id_shortage"]) . '\', \'' . htmlspecialchars($row["shortage_category"]) . '\', \'' . htmlspecialchars($row["shortage_product_name"]) . '\', \'' . htmlspecialchars($row["shortage_quantity"]) . '\')">Make an Offer</button>';
+                echo '<button class="accept"  onclick="addOffer(\'' . htmlspecialchars($row["id_shortage"]) . '\', \'' . htmlspecialchars($row["shortage_category"]) . '\', \'' . htmlspecialchars($row["shortage_product_name"]) . '\', \'' . htmlspecialchars($row["shortage_quantity"]) . '\')">Make an Offer</button>';
                 echo '</li>';
             }
             echo '</ul>';
@@ -154,23 +153,24 @@ $conn->close();
 
   <script>
     function addOffer(shortageId, category, product, quantity) {
+    
     // Λήψη του ονόματος χρήστη από το κρυφό h2 (κρυφό)
-    var usernameElement = document.getElementById("txtUsername");
+    var usernameElement = document.getElementById("txtUsername"); //Βρίσκει το HTML στοιχείο με το id txtUsername
     var username = usernameElement ? usernameElement.textContent : null;
 
-    var url = "add_offer_civilian.php"; // αρχέείο στο οποίο θα γίνει το αίτημα POST
-    var formData = new FormData();
-    formData.append("shortageId", shortageId);
+    var url = "add_offer_civilian.php"; // αρχέείο στο οποίο θα σταλεί το αίτημα POST
+    var formData = new FormData(); //Δημιουργεί ένα αντικείμενο FormData που θα χρησιμοποιηθεί για να στείλει δεδομένα στο server μέσω AJAX.
+    formData.append("shortageId", shortageId); //προσθήκη της τιμής shortageId στο αντικείμενο FormData με το όνομα "shortageId"
     formData.append("category", category);
     formData.append("product", product);
     formData.append("quantity", quantity);
     formData.append("username", username);
 
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
+    var xhr = new XMLHttpRequest(); // νέο αντικείμενο XMLHttpRequest, το οποίο χρησιμοποιείται για να στείλει το αίτημα AJAX στον server
+    xhr.open("POST", url, true); //aνοίγει το XMLHttpRequest και το ρυθμίζει να στείλει ένα POST αίτημα στη διεύθυνση url. αίτηση ασύγχρονη (true)
 
-    xhr.onload = function () {
-        if (xhr.status === 200) {
+    xhr.onload = function () { //συνάρτηση που θα εκτελεστεί όταν ολοκληρωθεί η φόρτωση του αιτήματος AJAX
+        if (xhr.status === 200) { //αν η αίτηση ήταν επιτυχής
             console.log("Success:", xhr.responseText);
             location.reload(); // Ανανεώνει τη σελίδα μετά από επιτυχή αποστολή
 
@@ -179,11 +179,11 @@ $conn->close();
         }
     };
 
-    xhr.onerror = function () {
+    xhr.onerror = function () { // συνάρτηση που θα εκτελεστεί αν υπάρχει κάποιο πρόβλημα δικτύου 
         console.error("Network error");
     };
 
-    xhr.send(formData);
+    xhr.send(formData); // το αντικείμενο FormData με τα δεδομένα στελνεται στον server μέσω AJAX
     console.log("AJAX request sent");
    }
   </script>

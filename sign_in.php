@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") //όταν η φόρμα υποβλη�
     if ($admin_result->num_rows > 0) {
         // θέτει τα cookies username and password
         setcookie("username", $username, time() + (86400 * 30), "/"); // 86400 seconds = 1 day
-        setcookie("password", $password, time() + (86400 * 30), "/");
+        //setcookie("password", $password, time() + (86400 * 30), "/");
 
         /*Θέτει τις μεταβλητές συνεδρίας (session) για την είσοδο του χρήστη, το όνομα χρήστη και τον ρόλο του ως admin.*/   
         $_SESSION['loggedin'] = true;
@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") //όταν η φόρμα υποβλη�
     } elseif ($volunteer_result->num_rows > 0) {
          // θέτει τα cookies username and password
         setcookie("username", $username, time() + (86400 * 30), "/"); // 86400 seconds = 1 day
-        setcookie("password", $password, time() + (86400 * 30), "/");
+        //setcookie("password", $password, time() + (86400 * 30), "/");
 
         /*θέτει τις μεταβλητές συνεδρίας του χρήστη σε ρόλο εθελοντή*/
         $_SESSION['loggedin'] = true;
@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") //όταν η φόρμα υποβλη�
     } elseif ($civilian_result->num_rows > 0) {
         // θέτει τα cookies username and password
         setcookie("username", $username, time() + (86400 * 30), "/"); // 86400 seconds = 1 day
-        setcookie("password", $password, time() + (86400 * 30), "/");
+        //setcookie("password", $password, time() + (86400 * 30), "/");
         
         /*θέτει τις μεταβλητές συνεδρίας του χρήστη σε ρόλο πολίτη*/
         $_SESSION['loggedin'] = true;
@@ -115,7 +115,7 @@ $conn->close();
                     ?>
                     <div class="button-center">
                     <!-- με το click του κουμπιού γίνεται Triggered η συνάρτηση  login-->    
-                    <button class="button1" onclick="login()"><strong>Log In</strong></button>
+                    <button class="button1" onclick="checkEmptyFields()"><strong>Log In</strong></button>
                     </div>
                 </form>
 
@@ -147,16 +147,13 @@ $conn->close();
             }
         }
 
-        function login() { //εάν υπάρχει κενό πεδίο βγάζει μήνυμα 
+        function checkEmptyFields() { //εάν υπάρχει κενό πεδίο βγάζει μήνυμα 
             var username = document.getElementById("username").value;
             var password = document.getElementById("password").value;
 
             if (username === "" || password === "") {
                 alert("Please fill in all fields.");
             } 
-            else {
-                
-            }
         }
     </script>
 

@@ -25,7 +25,7 @@ $.ajax({
         // Κλήση της συνάρτησης για να δημιουργηθεί ο αρχικός marker
         initializeBaseMarker(Lat, Lng);
     },
-    error: function(xhr, status, error) {
+    error: function(error) {
         // Εμφάνιση μηνύματος σφάλματος αν αποτύχει η AJAX κλήση
         console.error(error);
     }
@@ -60,7 +60,7 @@ function initializeBaseMarker(Lat, Lng) {
           baseMarker.setLatLng(newPosition);
           baseMarker.getPopup().setContent('BASE, new Position: ' + newPosition.toString()).update();
           $("#Latitude").val(newPosition.lat);
-          $("#Longitude").val(newPosition.lng).keyup();
+          $("#Longitude").val(newPosition.lng);
 
           // AJAX κλήση για ενημέρωση της βάσης δεδομένων με τις νέες συντεταγμένες
           $.ajax({
@@ -137,10 +137,10 @@ map.addLayer(allMarkersClusterGroup);
 const layerMarkers = {
   layer1: [], // εν αναμονή οχήματα
   layer2: [], // Οχήματα καθ' οδόν
-  layer3: [],
-  layer4: [],
-  layer5: [],
-  layer6: []
+  layer3: [], //προσφορές
+  layer4: [], //εν αναμονή αιτήματα 
+  layer5: [], //αιτήματα καθ' οδόν
+  layer6: [] //γραμμες
 };
 
 // Συνάρτηση για αρχικοποίηση markers για τα οχήματα σε αναμονή
@@ -463,7 +463,7 @@ function toggleLayer(layer) {
     activeLayers[layer] = true;
 
     // Αρχικοποίηση markers για το κάθε επίπεδο (φίλτρο)
-    if (layer === 'layer1' && layerMarkers.layer1.length === 0) {
+    if (layer === 'layer1' && layerMarkers.layer1.length === 0) { //Ελέγχει αν η λίστα των markers που αντιστοιχούν στο 'layer1' είναι άδεια
       Waiting_vehicles_markers(vehicles);
     } else if (layer === 'layer2' && layerMarkers.layer2.length === 0) {
       on_the_way_vehicles_markers(vehicles);
@@ -484,7 +484,7 @@ function toggleLayer(layer) {
   // Ενημέρωση του marker cluster group
   updateClusterGroup();
 
-  // Ενεργοποίηση/απενεργοποίηση του κουμπιού toggle για το layer6 με βάση την κατάσταση των layer2 και layer3
+  // Ενεργοποίηση/απενεργοποίηση του κουμπιού toggle για το layer6 με βάση την κατάσταση των layer2 
   document.getElementById('layer6').disabled = !(activeLayers['layer2']);
 }
 

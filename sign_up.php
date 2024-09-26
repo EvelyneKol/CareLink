@@ -19,14 +19,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt = $conn->prepare("INSERT INTO civilian (civilian_first_name, civilian_last_name, civilian_username, civilian_number, civilian_password, civilian_location) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("sssiss", $first_name, $last_name, $username, $phone, $password, $location);
     if ($stmt->execute()) {
-        // Redirect after successful form submission
+        // μετα την επιτυχημενη εγγραφη ξανα φορτώνει την ίδια σελίδα
         header("Location: sign_in.php");
         exit();
     } else {
         echo "Error: " . $stmt->error;
     }
 
-    // Close the statement and the database connection
+    // κλείσιμο statement και σύνδεσης με database
     $stmt->close();
     $conn->close();
 }
@@ -51,46 +51,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button onclick="showTab('signup')" class="active">Sign Up</button>
       </div>
       <div id="signup-tab" class="tab">
-        <p> <strong>CareLink</strong> is even better with an account!</p>
-        <form id="signup-form" action="<?php echo $_SERVER['PHP_SELF']; ?>" onsubmit="return validatePassword()"
-          method="post">
-          <label for="name">First Name</label>
-                    <input type="text" placeholder="Enter Your First Name" id="name" name="name" autocomplete="on"
-                        spellcheck="false" required>
-                    <label for="lastname">Last Name</label>
-                    <input type="text" placeholder="Enter Your Last Name" id="lastname" name="lastname"
-                        autocomplete="on" spellcheck="false" required>
-                    <label for="username">Username</label>
-                    <input type="text" placeholder="Enter Your Username" id="username" name="username" autocomplete="on"
-                        spellcheck="false" required>
-                    <label for="address">Address</label>
-                    <input type="text" placeholder="Enter Your Address" id="address" name="address" autocomplete="on"
-                        spellcheck="false" required>
-                    <label for="phone">Phone</label>
-                    <input type="text" placeholder="Enter Your Phone Number" id="phone" name="phone" autocomplete="on"
-                        spellcheck="false" required>
-                    <label for="password">Password</label>
-                    <input type="password" placeholder="Enter Your Password" id="password" name="password"
-                        autocomplete="on" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                        title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-                        required>
-                    <label for="showpass" id="rlabel">Show Password</label>
-                    <input type="checkbox" id="showpass" name="showpass" onclick="passwordvisibility()">
-                    <button class="button" type="reset" value="reset">Reset</button>
-                    <div class="button-center">
-                        <button class="button1" type="submit"><strong><span>Submit</span></strong></button>
-                    </div>
-                </form>
+          <p> <strong>CareLink</strong> is even better with an account!</p>
+          <form id="signup-form" action="<?php echo $_SERVER['PHP_SELF']; ?>" onsubmit="return validatePassword()"
+            method="post">
+            <label for="name">First Name</label>
+            <input type="text" placeholder="Enter Your First Name" id="name" name="name" autocomplete="on"
+                spellcheck="false" required>
+            <label for="lastname">Last Name</label>
+            <input type="text" placeholder="Enter Your Last Name" id="lastname" name="lastname"
+                autocomplete="on" spellcheck="false" required>
+            <label for="username">Username</label>
+            <input type="text" placeholder="Enter Your Username" id="username" name="username" autocomplete="on"
+                spellcheck="false" required>
+            <label for="address">Address</label>
+            <input type="text" placeholder="Enter Your Address" id="address" name="address" 
+                spellcheck="false" required readonly>
+            <label for="phone">Phone</label>
+            <input type="text" placeholder="Enter Your Phone Number" id="phone" name="phone" autocomplete="on"
+                spellcheck="false" required>
+            <label for="password">Password</label>
+            <input type="password" placeholder="Enter Your Password" id="password" name="password"
+                autocomplete="on" 
+                title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                required>
+            <label for="showpass" id="rlabel">Show Password</label>
+            <input type="checkbox" id="showpass" name="showpass" onclick="passwordvisibility()">
+            <button class="button" type="reset" value="reset">Reset</button>
+            <div class="button-center">
+                <button class="button1" type="submit"><strong><span>Submit</span></strong></button>
+            </div>
+        </form>
       </div>
     </div>
   </div>
 
   <script>
-    var currentTab = 0; // Current tab is set to be the first tab (0)
-    showTab(currentTab); // Display the current tab
+    var currentTab = 0; // η τρέχουσα καρτέλα (sign up) τίθεται στο 0 
+    showTab(currentTab); // προβολή τρέχπυσασ καρτέλας
 
     function showTab(n) {
-      // This function will display the specified tab of the form...
+      // συνάρτηση για εμφάνιση καρτέλας 
       var x = document.getElementsByClassName("tab");
       x[n].style.display = "block";
 
@@ -105,7 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       }
     }
 
-    function validatePassword() {
+    function validatePassword() { //συνάρτηση ελέγχου για έγκυρο κωδικό 
       var name = document.getElementById("name").value;
       var lastname = document.getElementById("lastname").value;
       var username = document.getElementById("username").value;
@@ -116,8 +117,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       if (name === "" || lastname === "" || username === "" || address === "" || phone === "" || password === "") {
         alert("Please fill in all fields.");
         return false;
-      } else if (password.length < 8 || password.length > 15 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) ) {
-        alert("Password must be 8-15 characters long and include at least one capital letter and one small letter.");
       } else {
         alert("Account created!");
         return true;
@@ -129,22 +128,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     function getLocation() {
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition);
+        navigator.geolocation.getCurrentPosition(Position);
       } else {
         alert("Geolocation is not supported by this browser.");
       }
     }
 
-    function showPosition(position) {
+    function Position(position) {
       var latitude = position.coords.latitude;
       var longitude = position.coords.longitude;
       var geolocation = latitude + ", " + longitude;
 
-      // Update the value of the address input field
+      // εισάγει τισ συντετγμένες στο πεδίο τοποθεσία 
       document.getElementById("address").value = geolocation;
     }
 
-    // Call getLocation directly when the page loads
+    // καλείται η getLocation μόλις η σελίδα φορτωθεί 
     getLocation();
   
   </script>

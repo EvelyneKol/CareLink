@@ -831,6 +831,7 @@ $conn->close();
             //Αλλάζει το display σε none
             form.style.display = 'none';
             }
+
     //Συνάρτηση για φόρτωση αυτοκινήτου        
     function LoadVehicle(username) {
         // Δημιουργούμε ένα νέο αντικείμενο XMLHttpRequest για να διαχειριστούμε το AJAX αίτημα
@@ -921,7 +922,8 @@ $conn->close();
                 console.log(xhr.responseText);
 
                 // Κλήση των συναρτήσεων για την ενημέρωση των δεδομένων
-                updateRequests();
+                //ανανέωση json αρχείων 
+                updateRequests(); 
                 updateMyRequests();
                 updatetasks(); 
                 location.reload();
@@ -984,7 +986,7 @@ $conn->close();
 
         
 
-    function handle_offers(offerId) {
+    function handle_offers(offerId) { 
         // Λήψη του ονόματος χρήστη από το στοιχείο με ID "txtUsername"
         var username = document.getElementById("txtUsername").value;
         // Ορισμός του URL για το αίτημα POST
@@ -1084,6 +1086,7 @@ $conn->close();
         };
         xhr.send();
     }
+    
     //Συνάρτηση των αιτημάτων του διασώστη
     function showMyRequests(username) {
             // Δημιουργούμε ένα νέο αντικείμενο XMLHttpRequest για να διαχειριστούμε το AJAX αίτημα
