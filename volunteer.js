@@ -481,7 +481,8 @@ function my_offers(data) {
         iconSize: [32, 32],
         iconAnchor: [16, 32],
         popupAnchor: [0, -32]
-      })
+      }),
+      offer_id: offer_id
     });
 
     marker.bindPopup(message);
@@ -511,18 +512,27 @@ function checkDistancesforOffers() {
 
   OfferMarkers.forEach(marker => {
     var distance = calculateDistance(marker.getLatLng(), userLocationMarker.getLatLng());
-    
     // έλεγχος αν η αποσταση ειναι <50 μέτρα
     if (distance < 50) {
-      //enable το κουμπί για φόρτωση       
-      document.querySelectorAll('button.AcceptOffer').forEach(button => {
+      const offer_id = marker.options.offer_id; // Επιβεβαίωση ότι το id_request είναι συνδεδεμένο με τον marker
+    
+     // Επιλογή του κουμπιού που έχει το σωστό id_request
+     const button = document.querySelector(`button.AcceptOffer[data-id_offer="${offer_id}"]`);
+
+      if (button) {
+        // Ενεργοποίηση του κουμπιού
         button.disabled = false;
-      });
+      }
     } else {
-      // Disable το κουμπί αν η αποσταση ειναι μεγαλυτερη απο 50 μετρα
-      document.querySelectorAll('button.AcceptOffer').forEach(button => {
+      const offer_id = marker.options.offer_id; // Επιβεβαίωση ότι το id_request είναι συνδεδεμένο με τον marker
+    
+      // Επιλογή του κουμπιού που έχει το σωστό id_request
+      const button = document.querySelector(`button.AcceptOffer[data-id_offer="${offer_id}"]`);
+
+      if (button) {
+        // Ενεργοποίηση του κουμπιού
         button.disabled = true;
-      });
+      }
     }
   });
 } 
