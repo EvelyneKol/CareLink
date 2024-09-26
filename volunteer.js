@@ -358,15 +358,16 @@ function my_requests(data) {
       '<br><strong>Date Accepted </strong> ' + task_date +
       '<br><strong>State:</strong> ' + state;
 
-    const marker = L.marker(location, {
-      icon: L.icon({
-        iconUrl: 'pin1.png',
-        iconSize: [32, 32],
-        iconAnchor: [16, 32],
-        popupAnchor: [0, -32]
-      }),
-      id_request: id_request
-    });
+      const marker = L.marker(location, {
+        icon: L.icon({
+          iconUrl: 'pin1.png',
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -32]
+        }),
+        id_request: id_request
+      });
+  
 
     // Bind popup με marker αιτήματος
     marker.bindPopup(message);
@@ -404,7 +405,7 @@ function checkDistancesforRequests() {
       const id_request = marker.options.id_request; // Επιβεβαίωση ότι το id_request είναι συνδεδεμένο με τον marker
     
     // Επιλογή του κουμπιού που έχει το σωστό id_request
-     const button = document.querySelector('button.DeliverReq[data-id_request="${id_request}"]');
+     const button = document.querySelector(`button.DeliverReq[data-id_request="${id_request}"]`);
 
       if (button) {
         // Ενεργοποίηση του κουμπιού
@@ -414,8 +415,8 @@ function checkDistancesforRequests() {
       const id_request = marker.options.id_request; // Επιβεβαίωση ότι το id_request είναι συνδεδεμένο με τον marker
     
       // Επιλογή του κουμπιού που έχει το σωστό id_request
-      const button = document.querySelector('button.DeliverReq[data-id_request="${id_request}"]');
-                                            
+      const button = document.querySelector(`button.DeliverReq[data-id_request="${id_request}"]`);
+
       if (button) {
         // Ενεργοποίηση του κουμπιού
         button.disabled = true;

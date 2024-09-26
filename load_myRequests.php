@@ -90,7 +90,7 @@ h3, .h3 {
 
 <?php
 // Ξεκινάει η συνεδρία για να έχουμε πρόσβαση στα δεδομένα που έχουμε αποθηκεύσει
-session_start(); 
+session_start();
 
 // Ανάκτηση των δεδομένων από τη συνεδρία
 $myRequests = isset($_SESSION['myRequests']) ? $_SESSION['myRequests'] : [];
@@ -107,9 +107,8 @@ foreach ($myRequests as $row) {
     echo '<p class="description"> Phone: +30 ' . htmlspecialchars($row["civilian_number"]) . '</p>';
     echo '<p class="description"> State: ' . htmlspecialchars($row["state"]) . '</p>';
     echo '<button class="DeleteReq" onclick="delete_request(' . htmlspecialchars($row["id_request"]) . ')">Delete</button>';
-    //echo '<button class="DeliverReq" onclick="deliver_requests(\'' . htmlspecialchars($row["id_request"]) . '\', \'' . htmlspecialchars($row["request_category"]) . '\', \'' . htmlspecialchars($row["request_product_name"]) . '\', \'' . htmlspecialchars($row["persons"]) . '\')" disabled>Deliver</button>';
-    //echo '<button class="DeliverReq" data-request-id="' . htmlspecialchars($row["id_request"]) . '" onclick="deliver_requests(\'' . htmlspecialchars($row["id_request"]) . '\', \'' . htmlspecialchars($row["request_category"]) . '\', \'' . htmlspecialchars($row["request_product_name"]) . '\', \'' . htmlspecialchars($row["persons"]) . '\')" disabled>Deliver</button>';
     echo '<button class="DeliverReq" data-id_request="' . htmlspecialchars($row["id_request"]) . '" onclick="deliver_requests(\'' . htmlspecialchars($row["id_request"]) . '\', \'' . htmlspecialchars($row["request_category"]) . '\', \'' . htmlspecialchars($row["request_product_name"]) . '\', \'' . htmlspecialchars($row["persons"]) . '\')" disabled>Deliver</button>';
+    //echo '<button class="DeliverReq" onclick="deliver_requests(\'' . htmlspecialchars($row["id_request"]) . '\', \'' . htmlspecialchars($row["request_category"]) . '\', \'' . htmlspecialchars($row["request_product_name"]) . '\', \'' . htmlspecialchars($row["persons"]) . '\')" disabled>Deliver</button>';
     echo '</div>';
     echo '</div>';
 }
